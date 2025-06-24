@@ -1,3 +1,5 @@
+# All different models defined to be used: 
+
 import torch as tr
 from entmax import sparsemax 
 import numpy as np
@@ -426,7 +428,7 @@ class model_theta_sure(tr.nn.Module):
 
 class model_theta_pi_sure(tr.nn.Module):
     """
-    Optimize both theta and pi
+    Optimize both theta and pi (SURE-PM). 
     """
 
     def __init__(self, Z, B, init_val_theta, init_val_pi, use_location=False, use_scale=True, device="cpu",
@@ -583,6 +585,10 @@ class model_theta_pi_sure(tr.nn.Module):
 
 class model_pi_sure_sparse(tr.nn.Module):
 
+    """
+    Optimize both theta and pi with sparsemax instead of softmax. 
+    """
+
     def __init__(self, Z, B, init_val, device="cpu",
                  quantile_IQR = 0.95):
 
@@ -718,7 +724,7 @@ def create_initialized_network(input_size, hidden_sizes, output_size,
 
 class model_covariates(tr.nn.Module):
     """
-    Optimize over theta grid and pi
+    Optimize over theta grid and pi with covariates (SURE-THING). 
     """
 
     def __init__(self, X, Z, d=2, B=100, hidden_sizes=(8,8), use_location=False, use_scale=False,
@@ -1061,6 +1067,9 @@ class model_covariates(tr.nn.Module):
 ## MARK: - Covariates (SURE LS)
 
 class model_sure_ls(tr.nn.Module): 
+    """
+    Optimize both mean and variance as a function of covariates in regression setting (SURE-LS). 
+    """
 
     def __init__(self, X, Z, d=2, hidden_sizes=(8,8), device="cpu", activation_fn=tr.nn.ReLU()): 
 
@@ -1157,6 +1166,9 @@ class model_sure_ls(tr.nn.Module):
 ## MARK: - EBCF
 
 class model_EBCF_NPreg(tr.nn.Module): 
+    """
+    Fitting the regression model for EBCF (Ignatiadis and Wager, 2019), using a neural network with covariates. 
+    """
 
     def __init__(self, X, Z, d=2, hidden_sizes=(8,8), device="cpu", activation_fn=tr.nn.ReLU()): 
 
@@ -1188,7 +1200,8 @@ class model_EBCF_NPreg(tr.nn.Module):
 
     def feature_representation(self, X):
 
-        """Takes a matrix of covariates, returns a fixed-length matrix (n x 2*m).
+        """
+        Takes a matrix of covariates, returns a fixed-length matrix (n x 2*m).
         2*m because there is a polynomial term
         """
         n = X.shape[0]
@@ -1221,6 +1234,9 @@ class model_EBCF_NPreg(tr.nn.Module):
         return Z_hat_n 
 
 def SURE_EBCF(A_param, *args): 
+    '''
+    SURE function for EBCF model (Ignatiadis and Wager, 2019). 
+    '''
 
     Z, variance, Z_hat = args 
 
@@ -1230,6 +1246,9 @@ def SURE_EBCF(A_param, *args):
     return sure_term
 
 def theta_hat_EBCF(theta, Z, X, Z_hat): 
+    '''
+    Estimated theta function for EBCF model (Ignatiadis and Wager, 2019). 
+    '''
 
     if Z.is_cuda:
         Z = Z.cpu().detach().numpy()
@@ -1260,7 +1279,8 @@ def theta_hat_EBCF(theta, Z, X, Z_hat):
  ## MARK: - Parametric
 
 def SURE_G(lambda_param, *args):
-    """Unbiased risk estimate of shrinkage towards the grand mean.
+    """
+    Unbiased risk estimate of shrinkage towards the grand mean.
     lambda_param: float, shrinkage factor. Larger lambda_param means less shrinkage.
     *args = (Z, X)
     n: number of observations

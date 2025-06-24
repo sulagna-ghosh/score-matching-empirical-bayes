@@ -1,3 +1,4 @@
+# different cases for SURE-THING under homo/heteroscedastic case with more than one covariates 
 
 import experiment_covariates_highD
 

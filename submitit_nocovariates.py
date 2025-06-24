@@ -1,3 +1,5 @@
+# Executes different experiments conducted to get table 1 and 2 in section 6.1 
+
 import submitit
 
 

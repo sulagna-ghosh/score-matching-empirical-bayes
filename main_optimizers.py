@@ -1,3 +1,5 @@
+# Executes experiments to comapre different optimizers and activation functions 
+
 import experiments_xie
 import pandas as pd
 import torch as tr

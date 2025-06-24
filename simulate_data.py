@@ -84,6 +84,9 @@ def simulate_data_covariates(mu_x=10*np.ones((1,)), sigma_x=1*np.ones((1,)),
            Z, m, d, n)
 
 def bayes_things(X, m_X, theta, sigma_theta, Z, n):
+    '''
+    Gives bayes risks. 
+    '''
 
     X = X.detach().numpy()
     Z = Z.detach().numpy()
@@ -104,6 +107,12 @@ def bayes_things(X, m_X, theta, sigma_theta, Z, n):
 
 
 def simulate_data_normal_nocovariates(n=1000, mu_theta=10, sigma_theta=1, sigma=1): 
+    '''
+    Simulates data with: 
+    theta ~ N(mu_theta, sigma_theta) 
+    Z | theta ~ N(theta, sigma) 
+    These are the experiments done in table 1 in section 6.1. 
+    '''
 
     # theta ~ Normal(mu_theta, sigma_theta)
     theta = mu_theta + sigma_theta*rn.normal(size = (n,))
@@ -125,6 +134,12 @@ def simulate_data_normal_nocovariates(n=1000, mu_theta=10, sigma_theta=1, sigma=
     return (theta, Z, X) 
 
 def simulate_data_discrete_nocovariates(n=1000, k=5, val_theta = 3, sigma=1): 
+    '''
+    Simulates data with: 
+    theta = val_theta for k of them and = 0 otehrwise 
+    Z | theta ~ N(theta, sigma) 
+    These are the experiments done in figure 2 in section 6.1. 
+    '''
 
     theta = np.zeros(n)
     theta[0:k] = val_theta # the last n - k of theta is 0
@@ -149,6 +164,10 @@ def simulate_data_discrete_nocovariates(n=1000, k=5, val_theta = 3, sigma=1):
     return (theta, Z, X) 
 
 def xie(experiment, n=10000, device=device):
+    '''
+    Eight experiments: First four of them are the same experiments as c, d, e, f from Xie 2012 
+    and rest are new additional experiments. These are the experiments done in figure 1 in section 6.2. 
+    '''
 
     if experiment == "c":
         variance = rn.uniform(0.1, 1, size=(n,))

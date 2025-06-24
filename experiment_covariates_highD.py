@@ -7,6 +7,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 # import copy # deep copy
 
+# Defines functions for executing different cases for SURE-THING under homo/heteroscedastic case with more than one covariates 
+
 ################### WELL SPECIFIED CASE ###################
 
 # define problems

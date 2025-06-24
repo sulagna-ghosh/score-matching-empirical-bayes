@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import numpy.random as rn
 
-# TODO: Add flag for n
+# Contains functions to execute experiments conducted to get table 1 and 2 in section 6.1 
 
 ################### GENERAL VARIABLES ###################
 
@@ -139,7 +139,7 @@ def make_df_normal(problems_normal_theta, sigma, m_sim=50):
 
     return results_df
 
-def make_df_normal_B(problems_normal_theta, m_sim=50): 
+def make_df_normal_B(problems_normal_theta, sigma, m_sim=50): 
     """
     For grid size = 5, 25
     """
@@ -273,7 +273,7 @@ def make_df_binary(problems_binary_theta, sigma, m_sim=50,
 
     return results_df 
 
-def make_df_binary_B(problems_binary_theta, m_sim=50): 
+def make_df_binary_B(problems_binary_theta, sigma, m_sim=50): 
     """
     For grid size = 5, 25
     """

@@ -11,15 +11,19 @@ import scipy.stats as ss
 import seaborn as sns
 import random
 
-# experiments c)-f) in xie 2012
+# experiments c)-f) in xie 2012 and four additional experiments in section 6.2 
 
 m = 20
 
 def get_simulation_result(ns = [100, 200, 400, 800, 1600, 3200, 6400],
                           experiments = ["c", "d", "d5", "e", "f"],
                           optimizer_str="adam", hidden_sizes=(8,8), B=100):
+    '''
+    Function that gives results for the eight different experiment simulations with different models 
+    in a fixed set-up. This does not take into account location and scale in our model. 
+    '''
     # covariates, no covariates (misspecified)
-    # NPMLE, EB
+    # NPMLE, EB 
 
     experiments_list = []
     ns_list = []
@@ -221,6 +225,10 @@ def simulate_nn_sizes(ns=[100, 200, 400, 800, 1600, 3200, 6400],
                           hidden_sizes_list=[(8,8), (256, 256), (256, 256, 256),
                                         (128, 128), (128, 128, 128)],
                             optimizer_str="adam", skip_connect=False):
+    '''
+    Function that gives results for the eight different experiment simulations with different models,
+    comparing different hidden layer sizes. It may also consider skip connection in the model if asked. 
+    '''
     # covariates, no covariates (misspecified)
     # NPMLE, EB
 
@@ -295,7 +303,11 @@ def simulate_location_scale(ns=[100, 200, 400, 800, 1600, 3200, 6400],
                           simulate_location_list=[True],
                           simulate_scale_list=[True], 
                           skip_connect=False):
-    
+    '''
+    Function that gives results for the eight different experiment simulations with different models. This is the 
+    final function used to get results of figure 1 in section 6.2. This also takes into account if location and 
+    scale will be used in our model. 
+    '''
 
     experiments_list = []
     ns_list = []
@@ -560,7 +572,7 @@ def make_df(ns=[100, 200, 400, 800, 1600, 3200, 6400],
             simulate_scale_list=[True], 
             skip_connect=False):
     """
-    Compute MSEs and SURE on train and test for all models, m_sim times
+    Compute MSEs and SURE on train and test for all models, m_sim times and returns a concatenated dataframe. 
     """
 
     mse_sure_results = [] # list of dataframes
@@ -609,7 +621,8 @@ def make_df(ns=[100, 200, 400, 800, 1600, 3200, 6400],
 def train_and_save_models(n=10000, B=100, experiments = ["c", "d", "d5", "e", "f"], optimizer_str="adam", activation_fn_str="relu",
                 verbose=False):
     """
-    optimizer and activation function comparisons
+    Optimizer and activation function comparisons. Trains and saves the models to be used later. Does not include 
+    the possibility of using location and scale. 
 
     * optimizer_str: describes the optimizer used. for optimizers that AREN'T "adam",
                      save the model output in a <experiment>_<optimizer_str>
@@ -721,7 +734,11 @@ def train_and_save_models_location_scale(seeds,
                                          simulate_scale_list=[True, False],
                                          optimizer_str="adam", path="models/xie_location_scale"):
     """
-    
+    Optimizer and activation function comparisons. Trains and saves the models to be used later. Does include 
+    the possibility of location and scale use in our model. 
+
+    * optimizer_str: describes the optimizer used. for optimizers that AREN'T "adam",
+                     save the model output in a <experiment>_<optimizer_str>
     """
 
     path = path + "_" + ''.join(str(seed) for seed in seeds) + "/"
@@ -1295,6 +1312,10 @@ def bfgs_versus_adam(n=10000, B=100, experiments = ["d", "d5"], model="misspec",
 
 def get_theta_hats(n, B, experiment, variance, endpoints=None):
 
+    """
+    Saves estimated theta values on some trained models with given dataset. 
+    """
+
     theta_hats = {}
 
     sigma = np.sqrt(variance)*tr.ones(n,)
@@ -1714,6 +1735,9 @@ def read_location_scale(seeds,
                         SURE_losses = ['SURE_misspec', 'SURE_NPMLEinit', 'SURE_wellspec', 'SURE_truth', 'SURE_surels'], 
                         simulate_location_list=[True, False],
                         simulate_scale_list=[True, False], path="models/xie_location_scale"):
+    """
+    Reads models with location and scale and returns data dictionary for different models. 
+    """
     
     item_lists = [data, ft_rep_string, model_states, SURE_losses] 
     path = path + "_" + "".join(str(seed) for seed in seeds) + "/"
@@ -1885,6 +1909,10 @@ def save_marginals_data_location_scale(seeds,
                                        simulate_location_list=[True, False],
                                        simulate_scale_list=[True, False], expanded=False, save_path="results/xie_checks"):
     
+    """
+    Save marginals from the models with loaction and scale. 
+    """
+
     save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
 
     experiment_list = []
@@ -2007,6 +2035,10 @@ def save_empirical_marginals_data_location_scale(seeds,
                                        simulate_location_list=[True, False],
                                        simulate_scale_list=[True, False], save_path="results/xie_checks"):
     
+    """
+    Save empirical marginals from the models with loaction and scale. 
+    """
+    
     save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
 
     experiment_list = []
@@ -2113,6 +2145,10 @@ def save_priors_location_scale(seeds,
                                experiments = ['c', 'd', 'd5', 'e', 'f'], 
                                simulate_location_list=[True, False],
                                simulate_scale_list=[True, False], save_path="results/xie_checks", B=100):
+    
+    """
+    Save priors from the models with loaction and scale. 
+    """
     
     save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
 

@@ -1,3 +1,5 @@
+# Contains functions to train different models used (section 6) 
+
 import models 
 
 import numpy as np
@@ -15,6 +17,7 @@ def train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
                         device=simulate_data.device, optimizer_str="adam",
                         lr=1e-2, n_iter=4000): 
     """
+    Training function for SURE-PM. 
     is_cuda: if True, then generate model on simulate_data.device (which is GPU if GPU is available).
              So if is_cuda=True but only CPU is available, it will be on CPU.
     """
@@ -100,6 +103,9 @@ def train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
 
 
 def train_npmle(n, B, Z, theta, X, quantile_IQR = 0.95): 
+    '''
+    Training function for NPMLE. 
+    '''
 
     if X.is_cuda | Z.is_cuda: 
         X = X.cpu()
@@ -160,6 +166,9 @@ def train_covariates(X, Z, theta, objective="SURE", set_seed=None,
                      optimizer_str="adam", activation_fn=tr.nn.ReLU(), hidden_sizes=(8,8),
                      use_location=False, use_scale=False, skip_connect=False,
                      lr=1e-2):
+    '''
+    Training function for SURE-THING. 
+    '''
 
     if set_seed is not None:
         tr.manual_seed(set_seed)
@@ -317,6 +326,9 @@ def train_covariates(X, Z, theta, objective="SURE", set_seed=None,
 def train_sure_ls(X, Z, theta, objective="SURE", set_seed = None, d=2, device=simulate_data.device, 
                   optimizer_str="adam", activation_fn=tr.nn.ReLU(), 
                   hidden_sizes=(8,8), lr=1e-2): 
+    '''
+    Training function for SURE-LS. 
+    '''
     
     if set_seed is not None:
         tr.manual_seed(set_seed)
@@ -394,6 +406,9 @@ def train_sure_ls(X, Z, theta, objective="SURE", set_seed = None, d=2, device=si
 def train_EBCF(X, Z, theta, K = 5, set_seed = None, d=2, device=simulate_data.device, 
                optimizer_str="adam", activation_fn=tr.nn.ReLU(), 
                hidden_sizes=(8,8), lr=1e-2): 
+    '''
+    Training function for EBCF from Ignatiadis and Wager, 2019. 
+    '''
     
     if set_seed is not None:
         tr.manual_seed(set_seed)
@@ -457,6 +472,9 @@ def train_EBCF(X, Z, theta, K = 5, set_seed = None, d=2, device=simulate_data.de
 
 def normal_settings(n, mu_theta, sigma_theta, sigma, B, 
                       use_location=False, use_scale=True):
+    '''
+    Returns MSE and SURE loss for no covariates normal settings, possibly using location and scale if needed. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
@@ -528,6 +546,9 @@ def normal_settings(n, mu_theta, sigma_theta, sigma, B,
     return (ALL_2norm_opt, ALL_loss_opt) 
 
 def normal_settings_main(n, mu_theta, sigma_theta, sigma, B):
+    '''
+    Returns MSE and SURE loss for no covariates normal settings, not using location and scale. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
@@ -570,6 +591,9 @@ def normal_settings_main(n, mu_theta, sigma_theta, sigma, B):
 
 def discrete_settings(n, k, val_theta, sigma, B, 
                       use_location=False, use_scale=True):
+    '''
+    Returns MSE and SURE loss for no covariates discrete settings, possibly using location and scale if needed. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)
@@ -644,6 +668,9 @@ def discrete_settings(n, k, val_theta, sigma, B,
     return (ALL_2norm_opt, ALL_loss_opt) 
 
 def discrete_settings_main(n, k, val_theta, sigma, B):
+    '''
+    Returns MSE and SURE loss for no covariates discrete settings, not using location and scale. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)
@@ -689,6 +716,9 @@ def discrete_settings_main(n, k, val_theta, sigma, B):
 ## MARK: - a single run
 
 def normal(n, mu_theta, sigma_theta, sigma, B): 
+    '''
+    Normal settings for only SURE-PM. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
@@ -700,6 +730,9 @@ def normal(n, mu_theta, sigma_theta, sigma, B):
     return (twonorm_diff_EB_both)
 
 def discrete(n, k, val_theta, sigma, B):
+    '''
+    Discrete settings for only SURE-PM. 
+    '''
 
     # Simulate data
     theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)

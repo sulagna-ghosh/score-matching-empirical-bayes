@@ -1,3 +1,5 @@
+# Executes eight different experiments conducted to get figure 1 in section 6.2 
+
 import submitit
 
 

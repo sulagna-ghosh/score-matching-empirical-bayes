@@ -5,7 +5,7 @@ import numpy.random as rn
 from scipy.stats import norm
 import math 
 
-# Numerical calculations for the cases when the bayes risk is not closed form 
+# Numerical calculations for the cases when the bayes risk does not have a closed form in experiments of section 6.2 
 
 # Two-point \mu and uniform \sigma 
 BR = 0; M = 10; n = 1000000; k = 10

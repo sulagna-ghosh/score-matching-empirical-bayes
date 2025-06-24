@@ -102,7 +102,7 @@ def normal_score_simulation(ns=[100, 500, 1000, 2000, 10000],
     df_score_final = pd.concat(df_score_list, axis=0, ignore_index=True)
     df_score_final.to_csv('results/score_normal.csv')
 
-def xie_score_simulation(ns = [100, 1000],
+def xie_score_simulation(ns = [100, 1000], B = 100,
                          experiments = ["c", "d", "e", "f"],
                          variance_dict = {"c": [0.2, 0.55, 0.9],
                                         "d": [0.01, 0.125, 1],
@@ -267,6 +267,17 @@ def nocovariates_score_simulation(experiment = 'Normal',
                                   ks = [5, 50, 500], 
                                   mu_theta = 10, 
                                   B = 100): 
+    """
+    theta ~ N(10, sigma_theta) or k of them equals val_theta and 0 otherwise 
+    Z | theta ~ N(theta, 1) 
+
+    Scores for this setting using models:
+    * NPMLE
+    * EB, no covariates code 
+    * True 
+
+    Saves csv 
+    """
     df_score_list = []
 
     if experiment == 'Normal': 

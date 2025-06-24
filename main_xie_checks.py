@@ -1,3 +1,5 @@
+# Executes checks for eight different experiments conducted to get figure 2 and 3 in section 6.2.1 
+
 import experiments_xie
 import pandas as pd
 import torch as tr 
