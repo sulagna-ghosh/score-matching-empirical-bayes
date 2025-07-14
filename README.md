@@ -20,11 +20,8 @@ This is a repository of the codes used to get results for the paper "Stein's unb
 
 ## .py files 
 1. bayes_risk_calculation: Numerical calculation of bayes risk for experiments with no closed form bayes risk; 
-2. experiment_covariates_highD.py and main_covariates.py: Codes for comparing the models which use covariates (including SURE-THING); 
-3. experiment_nocovariates.py, main_nocovariates.py and submitit_nocovariates.py: Codes for comparing the models with no covariates (including SURE-PM), which gives us the tables in section 6.1; 
-4. experiments_xie.py, main_xie_checks and submitit_xie.py: All codes involving the experiments done in section 6.2 with eight different experiments and different models; 
-5. main_optimizers.py: Codes to compare effect of different optimizers and activation functions; 
-6. models.py: Contains all the models (SURE-PM, SURE-THING, SURE-grandmean, SURE-LS and EBCF); 
-7. score.py: Codes to test for score values for models with the truth; 
-8. simulate_data.py: Codes to simulate data in different scenarios in section 6; 
-9. train.py: Functions to train different models (SURE-PM, SURE-THING, SURE-grandmean, SURE-LS, NPMLE and EBCF). 
+2. experiment_nocovariates.py, main_nocovariates.py and submitit_nocovariates.py: Codes for comparing the models with no covariates (including SURE-PM), which give Table 1 and 2 in section 6.1; 
+3. experiments_xie.py, main_xie_checks and submitit_xie.py: All codes involving the experiments done involving covariates with eight different experiments and different models, which give Figure 1, 2 and 3 in Section 6.2; 
+4. models.py: Contains all the models (SURE-PM, SURE-THING, SURE-LS, EBCF and SURE-grandmean); 
+5. simulate_data.py: Codes to simulate data in different scenarios in section 6; 
+6. train.py: Functions to train different models (SURE-PM, SURE-THING, SURE-grandmean, SURE-LS, NPMLE and EBCF). 

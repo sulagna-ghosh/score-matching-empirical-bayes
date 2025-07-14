@@ -468,7 +468,7 @@ def train_EBCF(X, Z, theta, K = 5, set_seed = None, d=2, device=simulate_data.de
 
     return (theta_hats, A_hats, MSE, model) 
 
-## MARK: - a single run
+## MARK: Homoscedastic case for models with no covariates 
 
 def normal_settings(n, mu_theta, sigma_theta, sigma, B, 
                       use_location=False, use_scale=True):
@@ -542,50 +542,6 @@ def normal_settings(n, mu_theta, sigma_theta, sigma, B,
                      twonorm_diff_EB_sparse, twonorm_diff_EB_both_npmle, twonorm_diff_BAYES]
     ALL_loss_opt = [loss_NPMLE, SURE_EB_theta, SURE_EB_pi, SURE_EB_both, SURE_EB_2step, SURE_EB_sparse, SURE_EB_both_npmle, 
                     SURE_NPMLE_OBJ, SURE_EB_OBJ]
-
-    return (ALL_2norm_opt, ALL_loss_opt) 
-
-def normal_settings_main(n, mu_theta, sigma_theta, sigma, B):
-    '''
-    Returns MSE and SURE loss for no covariates normal settings, not using location and scale. 
-    '''
-
-    # Simulate data
-    theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
-
-    # NPMLE 
-    results_NPMLE = train_npmle(n, B, Z, theta, X) 
-    problem_NPMLE, loss_NPMLE, score_NPMLE, theta_hat_NPMLE, twonorm_diff_NPMLE, pi_hat_NPMLE = results_NPMLE
-    pi_hat_NPMLE[pi_hat_NPMLE < 0] = 0
-
-    # EB (both theta and pi)
-    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both')
-    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
-    SURE_EB_both = SURE_EB_both[-1]
-
-    # EB (both pi and theta; NPMLE initial)
-    results_EB_both_npmle = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE))
-    model_EB_both_npmle, SURE_EB_both_npmle, scores_EB_both_npmle, theta_hats_EB_both_npmle, twonorm_diff_EB_both_npmle = results_EB_both_npmle 
-    SURE_EB_both_npmle = SURE_EB_both_npmle[-1] 
-
-    # EB (only pi; NPMLE initial; one iteration)
-    model = models.model_pi_sure(B, init_val=tr.log(pi_hat_NPMLE)) 
-    SURE_EB_pi_npmle_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
-    SURE_NPMLE_OBJ = SURE_EB_pi_npmle_one_iter.item() 
-
-    # EB (loss for one iteration with uniform initialization for pi)
-    model = models.model_pi_sure(B, init_val=tr.log(tr.Tensor([1.5]))) 
-    SURE_EB_pi_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
-    SURE_EB_OBJ = SURE_EB_pi_one_iter.item() 
-
-    # BAYES 
-    sigma = X[:,-1] 
-    theta_hat_bayes = mu_theta*(sigma**2)/(sigma**2+sigma_theta**2) + Z*(sigma_theta**2)/(sigma**2+sigma_theta**2)
-    twonorm_diff_BAYES = (np.linalg.norm(theta_hat_bayes.detach().numpy() - theta)**2) 
-
-    # List of 2-norm differences and optimal losses
-    ALL_2norm_opt = [twonorm_diff_NPMLE, twonorm_diff_EB_both, twonorm_diff_EB_both_npmle, twonorm_diff_BAYES]
-    ALL_loss_opt = [loss_NPMLE, SURE_EB_both, SURE_EB_both_npmle, SURE_NPMLE_OBJ, SURE_EB_OBJ] 
 
     return (ALL_2norm_opt, ALL_loss_opt) 
 
@@ -666,79 +622,3 @@ def discrete_settings(n, k, val_theta, sigma, B,
                     SURE_NPMLE_OBJ, SURE_EB_OBJ]
 
     return (ALL_2norm_opt, ALL_loss_opt) 
-
-def discrete_settings_main(n, k, val_theta, sigma, B):
-    '''
-    Returns MSE and SURE loss for no covariates discrete settings, not using location and scale. 
-    '''
-
-    # Simulate data
-    theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)
-
-    # NPMLE 
-    results_NPMLE = train_npmle(n, B, Z, theta, X) 
-    problem_NPMLE, loss_NPMLE, score_NPMLE, theta_hat_NPMLE, twonorm_diff_NPMLE, pi_hat_NPMLE = results_NPMLE
-    pi_hat_NPMLE[pi_hat_NPMLE < 0] = 0 
-
-    # EB (both theta and pi)
-    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both')
-    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
-    SURE_EB_both = SURE_EB_both[-1]
-
-    # EB (both pi and theta; NPMLE initial)
-    results_EB_both_npmle = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE))
-    model_EB_both_npmle, SURE_EB_both_npmle, scores_EB_both_npmle, theta_hats_EB_both_npmle, twonorm_diff_EB_both_npmle = results_EB_both_npmle 
-    SURE_EB_both_npmle = SURE_EB_both_npmle[-1]
-
-    # EB (only pi; NPMLE initial; one iteration)
-    model = models.model_pi_sure(B, init_val=tr.log(pi_hat_NPMLE)) 
-    SURE_EB_pi_npmle_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
-    SURE_NPMLE_OBJ = SURE_EB_pi_npmle_one_iter.item() 
-
-    # EB (loss for one iteration with uniform initialization for pi)
-    model = models.model_pi_sure(B, init_val=tr.log(tr.Tensor([1.5]))) 
-    SURE_EB_pi_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
-    SURE_EB_OBJ = SURE_EB_pi_one_iter.item() 
-
-    # BAYES 
-    sigma = X[:,-1]
-    theta_num = val_theta*(k/n)*tr.exp(-0.5*(((Z-val_theta)/sigma)**2)) 
-    theta_denom = (k/n)*tr.exp(-0.5*(((Z-val_theta)/sigma)**2)) + (1-k/n)*tr.exp(-0.5*((Z/sigma)**2)) 
-    theta_hat_bayes = theta_num / theta_denom 
-    twonorm_diff_BAYES = (np.linalg.norm(theta_hat_bayes.detach().numpy() - theta)**2) 
-
-    # List of 2-norm differences and optimal losses
-    ALL_2norm_opt = [twonorm_diff_NPMLE, twonorm_diff_EB_both, twonorm_diff_EB_both_npmle, twonorm_diff_BAYES]
-    ALL_loss_opt = [loss_NPMLE, SURE_EB_both, SURE_EB_both_npmle, SURE_NPMLE_OBJ, SURE_EB_OBJ]
-
-    return (ALL_2norm_opt, ALL_loss_opt) 
-
-## MARK: - a single run
-
-def normal(n, mu_theta, sigma_theta, sigma, B): 
-    '''
-    Normal settings for only SURE-PM. 
-    '''
-
-    # Simulate data
-    theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
-
-    # EB (both theta and pi)
-    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both')
-    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
-
-    return (twonorm_diff_EB_both)
-
-def discrete(n, k, val_theta, sigma, B):
-    '''
-    Discrete settings for only SURE-PM. 
-    '''
-
-    # Simulate data
-    theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)
-
-    # EB (both theta and pi)
-    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both')
-    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
-
-    return (twonorm_diff_EB_both) 

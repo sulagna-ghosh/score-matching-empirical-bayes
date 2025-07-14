@@ -6,425 +6,9 @@ import numpy as np
 import numpy.random as rn
 from scipy import optimize
 
-class model_pi_sure_no_grid_modeling(tr.nn.Module):
-    """
-    Optimize pi, theta grid fixed
+## MARK: - No covariates
 
-    Typically used without training, just initialized at the NPMLE solution
-    The default is for this model to run on CPU
-    """
-
-    def __init__(self, Z, B, init_val, device="cpu",
-                 quantile_IQR = 0.95):
-
-        super(model_pi_sure_no_grid_modeling, self).__init__()
-        # real hyperparams 
-        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
-        self.B = B
-
-        self.min_Z = min(Z).to(device)
-        self.max_Z = max(Z).to(device)
-
-        # no grid modeling because only training pi, not theta
-        self.device = device
-        
-    def forward(self):
-        """Forward pass through the network. 
-        Input:
-            NONE
-            
-        Output: 
-            a (B x 1) tensor of pi, the probability vector, 
-                B: number of theta values in grid
-        """
-        return tr.nn.Softmax(dim=0)(self.real_params)
-    
-    def get_theta_grid_and_pi(self, n, B):
-        pi_param = self.forward()
-        pi_param = pi_param[None, :]
-        pi_nB = pi_param.expand(n, B)
-
-        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
-        theta_cum = tr.cumsum( tr.concat((tr.zeros(1).to(self.device), theta_diff), dim=0), dim = 0)
-        theta_grid = theta_cum*(self.max_Z - self.min_Z) + self.min_Z
-        theta_grid = theta_grid[None, :]
-        theta_nB = theta_grid.expand(n, B)
-
-        return(theta_nB, pi_nB)
-
-    def opt_func(self, Z, n, B, sigma): 
-        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
-        """ # SURE of t(z) = z + sigma * s(z; w)
-
-        assert len(sigma.shape) == 1
-        
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        # print(f"Z.device: {Z.device}")
-        # print(f"Z_nb.device : {Z_nb.device}")
-        # print(f"theta_nB.device : {theta_nB.device}")
-        # print(f"pi_nB.device : {pi_nB.device}")
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-        ratio = 2*numerator/denominator
-
-        score_squared = (self.compute_score(Z, n, B, sigma))**2 
-        score_term = score_squared*(sigma**4) 
-
-        sigma_squared = (sigma**2) 
-
-        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
-    
-    def compute_score(self, Z, n, B, sigma, verbose=False):
-        """
-        sigma.shape = n,
-        """
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-
-        if verbose:
-            print(f"Z_theta_by_sigma_sq.shape : {Z_theta_by_sigma_sq.shape}")
-            print(f"numerator.shape : {numerator.shape}")
-            print(f"denominator.shape : {denominator.shape}")
-
-
-        return (numerator/denominator)
-    
-    def get_prior(self, Z):
-
-        Z = Z.detach().numpy()
-        pi_param = self.forward()
-
-        theta_diff = np.concatenate([[0], 1/(self.B-1) * np.ones(self.B-1)])
-        # standardize and scale
-        theta_cum = np.cumsum(theta_diff, axis=0)
-        theta_grid = theta_cum*(self.max_Z.cpu().item() - self.min_Z.cpu().item()) + self.min_Z.cpu().item()
-
-        return theta_grid.reshape(self.B,), pi_param.to('cpu')
-
-    def get_theta_hat(self, n, B, Z_grid, sigma):
-        """
-        Return n-length np.array of shrinkage rules for n values of Z
-
-        sigma is either a float or (n,)
-        """
-
-        if isinstance(sigma, float) or isinstance(sigma, int):
-            sigma = sigma*tr.ones(n,)
-            variance = sigma**2
-        else:
-            variance = sigma**2
-        
-        score = self.compute_score(Z_grid, n, B, sigma)
-
-        theta_hat = Z_grid + variance * score
-
-        return(theta_hat.cpu().detach().numpy())
-
-    def get_marginal(self, n, B, Z_grid, sigma):
-        """
-        * sigma: float
-        """
-
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-
-        Z_nb = Z_grid[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
-
-        normal_pdf = tr.exp(-Z_theta_by_sigma_sq/2) / (np.sqrt(2*np.pi) * sigma )
-
-        conditional_marginal = (pi_nB * normal_pdf).sum(axis = 1) # conditional marginal
-
-        return(conditional_marginal.detach().numpy())
-
-class model_pi_sure(tr.nn.Module):
-    """
-    Optimize pi, theta grid fixed
-
-    Typically used without training, just initialized at the NPMLE solution
-    The default is for this model to run on CPU
-    """
-
-    def __init__(self, Z, B, init_val, device="cpu",
-                 quantile_IQR = 0.95):
-
-        super(model_pi_sure, self).__init__()
-        # real hyperparams 
-        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
-        self.B = B
-
-        self.min_Z = min(Z).to(device)
-        self.max_Z = max(Z).to(device)
-
-        self.median_Z = tr.median(Z).to(device)
-        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
-        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
-        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
-
-        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=False)
-        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=False)
-
-        # no grid modeling because only training pi, not theta
-        self.device = device
-        
-    def forward(self):
-        """Forward pass through the network. 
-        Input:
-            NONE
-            
-        Output: 
-            a (B x 1) tensor of pi, the probability vector, 
-                B: number of theta values in grid
-        """
-        return tr.nn.Softmax(dim=0)(self.real_params)
-    
-    def get_theta_grid_and_pi(self, n, B):
-        pi_param = self.forward()
-        pi_param = pi_param[None, :]
-        pi_nB = pi_param.expand(n, B)
-
-        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
-        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
-                      theta_diff), dim=0), dim = 0) 
-                      - 0.5) * tr.exp(self.log_scale)
-        theta_cum = theta_cum[None, :]
-        theta_nB = theta_cum.expand(n, B) + self.location 
-
-        return(theta_nB, pi_nB)
-
-    def opt_func(self, Z, n, B, sigma): 
-        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
-        """ # SURE of t(z) = z + sigma * s(z; w)
-
-        assert len(sigma.shape) == 1
-        
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        # print(f"Z.device: {Z.device}")
-        # print(f"Z_nb.device : {Z_nb.device}")
-        # print(f"theta_nB.device : {theta_nB.device}")
-        # print(f"pi_nB.device : {pi_nB.device}")
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-        ratio = 2*numerator/denominator
-
-        score_squared = (self.compute_score(Z, n, B, sigma))**2 
-        score_term = score_squared*(sigma**4) 
-
-        sigma_squared = (sigma**2) 
-
-        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
-    
-    def compute_score(self, Z, n, B, sigma, verbose=False):
-        """
-        sigma.shape = n,
-        """
-        assert len(sigma.shape) == 1
-
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-
-        if verbose:
-            print(f"Z_theta_by_sigma_sq.shape : {Z_theta_by_sigma_sq.shape}")
-            print(f"numerator.shape : {numerator.shape}")
-            print(f"denominator.shape : {denominator.shape}")
-
-
-        return (numerator/denominator)
-    
-    def get_prior(self, Z):
-
-        Z = Z.detach().numpy()
-        pi_param = self.forward()
-
-        theta_diff = np.concatenate([[0], 1/(self.B-1) * np.ones(self.B-1)])
-        # standardize and scale
-        theta_grid = (np.cumsum(theta_diff) - 0.5)*(tr.exp(self.log_scale).cpu().item()) + self.location.cpu().item()
-
-        return theta_grid.reshape(self.B,), pi_param.to('cpu')
-
-    def get_theta_hat(self, n, B, Z_grid, sigma):
-        """
-        Return n-length np.array of shrinkage rules for n values of Z
-
-        sigma is either a float or (n,)
-        """
-
-        if isinstance(sigma, float) or isinstance(sigma, int):
-            sigma = sigma*tr.ones(n,)
-            variance = sigma**2
-        else:
-            variance = sigma**2
-        
-        score = self.compute_score(Z_grid, n, B, sigma)
-
-        theta_hat = Z_grid + variance * score
-
-        return(theta_hat.cpu().detach().numpy())
-
-    def get_marginal(self, n, B, Z_grid, sigma):
-        """
-        * sigma: float
-        """
-
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-
-        Z_nb = Z_grid[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
-
-        normal_pdf = tr.exp(-Z_theta_by_sigma_sq/2) / (np.sqrt(2*np.pi) * sigma )
-
-        conditional_marginal = (pi_nB * normal_pdf).sum(axis = 1) # conditional marginal
-
-        return(conditional_marginal.detach().numpy())
-
-
-
-class model_theta_sure(tr.nn.Module):
-    """
-    Optimize theta grid, pi fixed = 1/B
-    """
-
-    def __init__(self, Z, B, init_val=tr.log(tr.Tensor([1.5])), device="cpu", use_location=False, use_scale=True,
-                 quantile_IQR = 0.95):
-
-        super(model_theta_sure, self).__init__()
-
-        # real hyperparams 
-        self.theta_real_vals = tr.nn.Parameter((tr.ones(B-1) * init_val).to(device), requires_grad=True)
-
-        self.B = B
-        self.min_Z = min(Z).to(device)
-        self.max_Z = max(Z).to(device)
-
-        self.median_Z = tr.median(Z).to(device)
-        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
-        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
-        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
-
-        self.use_location=use_location
-        self.use_scale=use_scale
-
-        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=use_location)
-        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=use_scale)
-
-        self.device = device
-        
-    def forward(self):
-        """Forward pass through the network. 
-        Input:
-            NONE
-            
-        Output: 
-            a (B x 1) tensor of pi, the probability vector, 
-                B: number of theta values in grid
-        """
-        return tr.nn.Softmax(dim=0)(self.theta_real_vals) 
-    
-    def get_theta_grid_and_pi(self, n, B):
-
-        theta_diff = self.forward() 
-        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
-                            theta_diff), dim=0), dim = 0) 
-                            - 0.5) * tr.exp(self.log_scale)
-        theta_cum = theta_cum[None, :]
-        theta_nB = theta_cum.expand(n, B) + self.location
-
-        pi_param = (1/B)*tr.ones(B).to(self.device)
-        pi_param = pi_param[None, :]
-        pi_nB = pi_param.expand(n, B)
-
-        return(theta_nB, pi_nB)
-    
-    def opt_func(self, Z, n, B, sigma): 
-        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
-        """ # SURE of t(z) = z + sigma * s(z; w)
-
-        assert len(sigma.shape) == 1
-        
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2)
-    
-        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-        ratio = 2*numerator/denominator
-
-        score_squared = (self.compute_score(Z, n, B, sigma))**2 
-        score_term = score_squared*(sigma**4) 
-
-        sigma_squared = (sigma**2) 
-
-        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
-    
-    def compute_score(self, Z, n, B, sigma):
-
-        assert len(sigma.shape) == 1
-
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2)
-
-        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2)
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-
-        return (numerator/denominator)
-    
-    def get_marginal(self, n, B, Z_grid, sigma):
-        
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-
-        # print(f"theta_cum: {theta_cum}")
-        Z_nb = Z_grid[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
-
-        conditional_marginal = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1) # conditional marginal
-
-        return(conditional_marginal.detach().numpy())
-
+## MARK: - SURE-PM 
 
 class model_theta_pi_sure(tr.nn.Module):
     """
@@ -579,105 +163,9 @@ class model_theta_pi_sure(tr.nn.Module):
 
         conditional_marginal = (pi_param * normal_pdf).sum(axis = 1) # conditional marginal
 
-        return(conditional_marginal.detach().numpy())
-
-
-
-class model_pi_sure_sparse(tr.nn.Module):
-
-    """
-    Optimize both theta and pi with sparsemax instead of softmax. 
-    """
-
-    def __init__(self, Z, B, init_val, device="cpu",
-                 quantile_IQR = 0.95):
-
-        super(model_pi_sure_sparse, self).__init__()
-        # real hyperparams 
-        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
-
-        self.min_Z = min(Z).to(device)
-        self.max_Z = max(Z).to(device)
-
-        self.median_Z = tr.median(Z).to(device)
-        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
-        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
-        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
-
-        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=False)
-        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=False)
-
-        self.device = device
-        
-    def forward(self):
-        """Forward pass through the network. 
-        Input:
-            NONE
-            
-        Output: 
-            a (B x 1) tensor of pi, the probability vector, 
-                B: number of theta values in grid
-        """
-        return sparsemax(self.real_params, dim=0)
-
-    def get_theta_grid_and_pi(self, n, B):
-        pi_param = self.forward()
-        pi_param = pi_param[None, :]
-        pi_nB = pi_param.expand(n, B)
-
-        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
-        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
-                      theta_diff), dim=0), dim = 0) 
-                      - 0.5) * tr.exp(self.log_scale)
-        theta_cum = theta_cum[None, :]
-        theta_nB = theta_cum.expand(n, B) + self.location 
-
-        return(theta_nB, pi_nB)
+        return(conditional_marginal.detach().numpy()) 
     
-    def opt_func(self, Z, n, B, sigma): 
-        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
-        """ # SURE of t(z) = z + sigma * s(z; w)
-
-        assert len(sigma.shape) == 1
-        
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-        ratio = 2*numerator/denominator
-
-        score_squared = (self.compute_score(Z, n, B, sigma))**2 
-        score_term = score_squared*(sigma**4) 
-
-        sigma_squared = (sigma**2) 
-
-        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
-    
-    def compute_score(self, Z, n, B, sigma):
-
-        assert len(sigma.shape) == 1
-
-        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
-        
-        Z_nb = Z[:, None]
-        Z_nb = Z_nb.expand(n, B) 
-        Z_theta = Z_nb - theta_nB
-        Z_theta_sq = Z_theta**2
-        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
-        
-        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2)
-        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
-
-        return (numerator/denominator) 
-    
- ## MARK: - Covariates
-
+## MARK: - Covariates
 
 def create_initialized_network(input_size, hidden_sizes, output_size, 
                                activation_fn=tr.nn.ReLU(), 
@@ -720,7 +208,7 @@ def create_initialized_network(input_size, hidden_sizes, output_size,
 
     return sequential
 
-
+## MARK: - SURE-THING 
 
 class model_covariates(tr.nn.Module):
     """
@@ -1064,7 +552,7 @@ class model_covariates(tr.nn.Module):
 
         return(conditional_marginal.detach().numpy())
 
-## MARK: - Covariates (SURE LS)
+## MARK: - SURE LS 
 
 class model_sure_ls(tr.nn.Module): 
     """
@@ -1276,7 +764,7 @@ def theta_hat_EBCF(theta, Z, X, Z_hat):
 
     return theta_hat, MSE, SURE, A_hat 
 
- ## MARK: - Parametric
+## MARK: - SURE-grandmean 
 
 def SURE_G(lambda_param, *args):
     """
@@ -1334,3 +822,514 @@ def theta_hat_G(theta, Z, X):
 
     return theta_hat_G, MSE, SURE, grand_mean, lambda_hat
 
+## MARK: - Other models 
+
+class model_pi_sure_no_grid_modeling(tr.nn.Module):
+    """
+    Optimize pi, theta grid fixed
+
+    Typically used without training, just initialized at the NPMLE solution
+    The default is for this model to run on CPU
+    """
+
+    def __init__(self, Z, B, init_val, device="cpu",
+                 quantile_IQR = 0.95):
+
+        super(model_pi_sure_no_grid_modeling, self).__init__()
+        # real hyperparams 
+        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
+        self.B = B
+
+        self.min_Z = min(Z).to(device)
+        self.max_Z = max(Z).to(device)
+
+        # no grid modeling because only training pi, not theta
+        self.device = device
+        
+    def forward(self):
+        """Forward pass through the network. 
+        Input:
+            NONE
+            
+        Output: 
+            a (B x 1) tensor of pi, the probability vector, 
+                B: number of theta values in grid
+        """
+        return tr.nn.Softmax(dim=0)(self.real_params)
+    
+    def get_theta_grid_and_pi(self, n, B):
+        pi_param = self.forward()
+        pi_param = pi_param[None, :]
+        pi_nB = pi_param.expand(n, B)
+
+        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
+        theta_cum = tr.cumsum( tr.concat((tr.zeros(1).to(self.device), theta_diff), dim=0), dim = 0)
+        theta_grid = theta_cum*(self.max_Z - self.min_Z) + self.min_Z
+        theta_grid = theta_grid[None, :]
+        theta_nB = theta_grid.expand(n, B)
+
+        return(theta_nB, pi_nB)
+
+    def opt_func(self, Z, n, B, sigma): 
+        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
+        """ # SURE of t(z) = z + sigma * s(z; w)
+
+        assert len(sigma.shape) == 1
+        
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        # print(f"Z.device: {Z.device}")
+        # print(f"Z_nb.device : {Z_nb.device}")
+        # print(f"theta_nB.device : {theta_nB.device}")
+        # print(f"pi_nB.device : {pi_nB.device}")
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+        ratio = 2*numerator/denominator
+
+        score_squared = (self.compute_score(Z, n, B, sigma))**2 
+        score_term = score_squared*(sigma**4) 
+
+        sigma_squared = (sigma**2) 
+
+        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
+    
+    def compute_score(self, Z, n, B, sigma, verbose=False):
+        """
+        sigma.shape = n,
+        """
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+
+        if verbose:
+            print(f"Z_theta_by_sigma_sq.shape : {Z_theta_by_sigma_sq.shape}")
+            print(f"numerator.shape : {numerator.shape}")
+            print(f"denominator.shape : {denominator.shape}")
+
+
+        return (numerator/denominator)
+    
+    def get_prior(self, Z):
+
+        Z = Z.detach().numpy()
+        pi_param = self.forward()
+
+        theta_diff = np.concatenate([[0], 1/(self.B-1) * np.ones(self.B-1)])
+        # standardize and scale
+        theta_cum = np.cumsum(theta_diff, axis=0)
+        theta_grid = theta_cum*(self.max_Z.cpu().item() - self.min_Z.cpu().item()) + self.min_Z.cpu().item()
+
+        return theta_grid.reshape(self.B,), pi_param.to('cpu')
+
+    def get_theta_hat(self, n, B, Z_grid, sigma):
+        """
+        Return n-length np.array of shrinkage rules for n values of Z
+
+        sigma is either a float or (n,)
+        """
+
+        if isinstance(sigma, float) or isinstance(sigma, int):
+            sigma = sigma*tr.ones(n,)
+            variance = sigma**2
+        else:
+            variance = sigma**2
+        
+        score = self.compute_score(Z_grid, n, B, sigma)
+
+        theta_hat = Z_grid + variance * score
+
+        return(theta_hat.cpu().detach().numpy())
+
+    def get_marginal(self, n, B, Z_grid, sigma):
+        """
+        * sigma: float
+        """
+
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+
+        Z_nb = Z_grid[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
+
+        normal_pdf = tr.exp(-Z_theta_by_sigma_sq/2) / (np.sqrt(2*np.pi) * sigma )
+
+        conditional_marginal = (pi_nB * normal_pdf).sum(axis = 1) # conditional marginal
+
+        return(conditional_marginal.detach().numpy())
+
+class model_pi_sure(tr.nn.Module):
+    """
+    Optimize pi, theta grid fixed
+
+    Typically used without training, just initialized at the NPMLE solution
+    The default is for this model to run on CPU
+    """
+
+    def __init__(self, Z, B, init_val, device="cpu",
+                 quantile_IQR = 0.95):
+
+        super(model_pi_sure, self).__init__()
+        # real hyperparams 
+        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
+        self.B = B
+
+        self.min_Z = min(Z).to(device)
+        self.max_Z = max(Z).to(device)
+
+        self.median_Z = tr.median(Z).to(device)
+        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
+        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
+        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
+
+        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=False)
+        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=False)
+
+        # no grid modeling because only training pi, not theta
+        self.device = device
+        
+    def forward(self):
+        """Forward pass through the network. 
+        Input:
+            NONE
+            
+        Output: 
+            a (B x 1) tensor of pi, the probability vector, 
+                B: number of theta values in grid
+        """
+        return tr.nn.Softmax(dim=0)(self.real_params)
+    
+    def get_theta_grid_and_pi(self, n, B):
+        pi_param = self.forward()
+        pi_param = pi_param[None, :]
+        pi_nB = pi_param.expand(n, B)
+
+        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
+        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
+                      theta_diff), dim=0), dim = 0) 
+                      - 0.5) * tr.exp(self.log_scale)
+        theta_cum = theta_cum[None, :]
+        theta_nB = theta_cum.expand(n, B) + self.location 
+
+        return(theta_nB, pi_nB)
+
+    def opt_func(self, Z, n, B, sigma): 
+        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
+        """ # SURE of t(z) = z + sigma * s(z; w)
+
+        assert len(sigma.shape) == 1
+        
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        # print(f"Z.device: {Z.device}")
+        # print(f"Z_nb.device : {Z_nb.device}")
+        # print(f"theta_nB.device : {theta_nB.device}")
+        # print(f"pi_nB.device : {pi_nB.device}")
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+        ratio = 2*numerator/denominator
+
+        score_squared = (self.compute_score(Z, n, B, sigma))**2 
+        score_term = score_squared*(sigma**4) 
+
+        sigma_squared = (sigma**2) 
+
+        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
+    
+    def compute_score(self, Z, n, B, sigma, verbose=False):
+        """
+        sigma.shape = n,
+        """
+        assert len(sigma.shape) == 1
+
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+
+        if verbose:
+            print(f"Z_theta_by_sigma_sq.shape : {Z_theta_by_sigma_sq.shape}")
+            print(f"numerator.shape : {numerator.shape}")
+            print(f"denominator.shape : {denominator.shape}")
+
+
+        return (numerator/denominator)
+    
+    def get_prior(self, Z):
+
+        Z = Z.detach().numpy()
+        pi_param = self.forward()
+
+        theta_diff = np.concatenate([[0], 1/(self.B-1) * np.ones(self.B-1)])
+        # standardize and scale
+        theta_grid = (np.cumsum(theta_diff) - 0.5)*(tr.exp(self.log_scale).cpu().item()) + self.location.cpu().item()
+
+        return theta_grid.reshape(self.B,), pi_param.to('cpu')
+
+    def get_theta_hat(self, n, B, Z_grid, sigma):
+        """
+        Return n-length np.array of shrinkage rules for n values of Z
+
+        sigma is either a float or (n,)
+        """
+
+        if isinstance(sigma, float) or isinstance(sigma, int):
+            sigma = sigma*tr.ones(n,)
+            variance = sigma**2
+        else:
+            variance = sigma**2
+        
+        score = self.compute_score(Z_grid, n, B, sigma)
+
+        theta_hat = Z_grid + variance * score
+
+        return(theta_hat.cpu().detach().numpy())
+
+    def get_marginal(self, n, B, Z_grid, sigma):
+        """
+        * sigma: float
+        """
+
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+
+        Z_nb = Z_grid[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
+
+        normal_pdf = tr.exp(-Z_theta_by_sigma_sq/2) / (np.sqrt(2*np.pi) * sigma )
+
+        conditional_marginal = (pi_nB * normal_pdf).sum(axis = 1) # conditional marginal
+
+        return(conditional_marginal.detach().numpy()) 
+    
+class model_theta_sure(tr.nn.Module):
+    """
+    Optimize theta grid, pi fixed = 1/B
+    """
+
+    def __init__(self, Z, B, init_val=tr.log(tr.Tensor([1.5])), device="cpu", use_location=False, use_scale=True,
+                 quantile_IQR = 0.95):
+
+        super(model_theta_sure, self).__init__()
+
+        # real hyperparams 
+        self.theta_real_vals = tr.nn.Parameter((tr.ones(B-1) * init_val).to(device), requires_grad=True)
+
+        self.B = B
+        self.min_Z = min(Z).to(device)
+        self.max_Z = max(Z).to(device)
+
+        self.median_Z = tr.median(Z).to(device)
+        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
+        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
+        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
+
+        self.use_location=use_location
+        self.use_scale=use_scale
+
+        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=use_location)
+        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=use_scale)
+
+        self.device = device
+        
+    def forward(self):
+        """Forward pass through the network. 
+        Input:
+            NONE
+            
+        Output: 
+            a (B x 1) tensor of pi, the probability vector, 
+                B: number of theta values in grid
+        """
+        return tr.nn.Softmax(dim=0)(self.theta_real_vals) 
+    
+    def get_theta_grid_and_pi(self, n, B):
+
+        theta_diff = self.forward() 
+        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
+                            theta_diff), dim=0), dim = 0) 
+                            - 0.5) * tr.exp(self.log_scale)
+        theta_cum = theta_cum[None, :]
+        theta_nB = theta_cum.expand(n, B) + self.location
+
+        pi_param = (1/B)*tr.ones(B).to(self.device)
+        pi_param = pi_param[None, :]
+        pi_nB = pi_param.expand(n, B)
+
+        return(theta_nB, pi_nB)
+    
+    def opt_func(self, Z, n, B, sigma): 
+        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
+        """ # SURE of t(z) = z + sigma * s(z; w)
+
+        assert len(sigma.shape) == 1
+        
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2)
+    
+        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+        ratio = 2*numerator/denominator
+
+        score_squared = (self.compute_score(Z, n, B, sigma))**2 
+        score_term = score_squared*(sigma**4) 
+
+        sigma_squared = (sigma**2) 
+
+        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
+    
+    def compute_score(self, Z, n, B, sigma):
+
+        assert len(sigma.shape) == 1
+
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2)
+
+        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2)
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+
+        return (numerator/denominator)
+    
+    def get_marginal(self, n, B, Z_grid, sigma):
+        
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+
+        # print(f"theta_cum: {theta_cum}")
+        Z_nb = Z_grid[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma**2)
+
+        conditional_marginal = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1) # conditional marginal
+
+        return(conditional_marginal.detach().numpy()) 
+
+class model_pi_sure_sparse(tr.nn.Module):
+
+    """
+    Optimize both theta and pi with sparsemax instead of softmax. 
+    """
+
+    def __init__(self, Z, B, init_val, device="cpu",
+                 quantile_IQR = 0.95):
+
+        super(model_pi_sure_sparse, self).__init__()
+        # real hyperparams 
+        self.real_params = tr.nn.Parameter((tr.ones(B) * init_val).to(device), requires_grad=True)
+
+        self.min_Z = min(Z).to(device)
+        self.max_Z = max(Z).to(device)
+
+        self.median_Z = tr.median(Z).to(device)
+        self.lower_quantile_Z = tr.quantile(Z, 0.5-quantile_IQR/2).to(device)
+        self.higher_quantile_Z = tr.quantile(Z, 0.5+quantile_IQR/2).to(device)
+        self.log_IQR_Z = tr.log(self.higher_quantile_Z - self.lower_quantile_Z ).to(device)
+
+        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=False)
+        self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=False)
+
+        self.device = device
+        
+    def forward(self):
+        """Forward pass through the network. 
+        Input:
+            NONE
+            
+        Output: 
+            a (B x 1) tensor of pi, the probability vector, 
+                B: number of theta values in grid
+        """
+        return sparsemax(self.real_params, dim=0)
+
+    def get_theta_grid_and_pi(self, n, B):
+        pi_param = self.forward()
+        pi_param = pi_param[None, :]
+        pi_nB = pi_param.expand(n, B)
+
+        theta_diff = (1/(B-1))*tr.ones(B-1).to(self.device)
+        theta_cum = (tr.cumsum( tr.concat((tr.zeros(1).to(self.device),
+                      theta_diff), dim=0), dim = 0) 
+                      - 0.5) * tr.exp(self.log_scale)
+        theta_cum = theta_cum[None, :]
+        theta_nB = theta_cum.expand(n, B) + self.location 
+
+        return(theta_nB, pi_nB)
+    
+    def opt_func(self, Z, n, B, sigma): 
+        """Takes a matrix of square of (z-theta) and features, returns a scalar to be optimized.
+        """ # SURE of t(z) = z + sigma * s(z; w)
+
+        assert len(sigma.shape) == 1
+        
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*Z_theta_sq*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)) 
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+        ratio = 2*numerator/denominator
+
+        score_squared = (self.compute_score(Z, n, B, sigma))**2 
+        score_term = score_squared*(sigma**4) 
+
+        sigma_squared = (sigma**2) 
+
+        return (ratio.sum() - score_term.sum() - sigma_squared.sum())/n 
+    
+    def compute_score(self, Z, n, B, sigma):
+
+        assert len(sigma.shape) == 1
+
+        theta_nB, pi_nB = self.get_theta_grid_and_pi(n, B)
+        
+        Z_nb = Z[:, None]
+        Z_nb = Z_nb.expand(n, B) 
+        Z_theta = Z_nb - theta_nB
+        Z_theta_sq = Z_theta**2
+        Z_theta_by_sigma_sq = Z_theta_sq/(sigma[:,None]**2) 
+        
+        numerator = ((pi_nB*(-1*Z_theta)*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1))/(sigma**2)
+        denominator = (pi_nB*tr.exp(-Z_theta_by_sigma_sq/2)).sum(axis = 1)
+
+        return (numerator/denominator) 

@@ -7,7 +7,7 @@ import math
 
 # Numerical calculations for the cases when the bayes risk does not have a closed form in experiments of section 6.2 
 
-# Two-point \mu and uniform \sigma 
+# Two-point \mu and uniform \sigma (experiment g) 
 BR = 0; M = 10; n = 1000000; k = 10
 for m in range(M): 
     A_N = rn.uniform(0.1, 0.5, size=(n,)) 
@@ -21,7 +21,7 @@ for m in range(M):
     BR += np.mean(BR_N) 
 print(BR/M) 
 
-# Poisson \mu 
+# Poisson \mu (experiment h) 
 BR = 0; M = 10; B = 100; n = 1000000 
 for m in range(M): 
     A_N = rn.uniform(0.1, 1, size=(n,)) 
@@ -38,7 +38,7 @@ for m in range(M):
     BR += np.mean(BR_N) 
 print(BR/M) 
 
-# Five covariates 
+# Five covariates (experiment i) 
 BR = 0; M = 10; n = 1000000 
 for m in range(M): 
     A_N = rn.uniform(1.5, 2.5, size=(n,)) 

@@ -3,80 +3,50 @@
 import submitit
 
 
-def no_covariates_binary_simulation(m_sim=20, setting='homoskedastic'):
+def no_covariates_binary_simulation(m_sim=20):
     
     print("Start location_scale_comparison")
 
-    n = experiment_nocovariates.n
-    # grid_size = experiment_nocovariates.grid_size
+    n = experiment_nocovariates.n 
     homoskedastic_sigma = experiment_nocovariates.homoskedastic_sigma
-    heteroskedastic_sigma = experiment_nocovariates.heteroskedastic_sigma
     problems_binary_theta = experiment_nocovariates.problems_binary_theta
     
-    if setting == 'homoskedastic':
-    
-        results_binary_homoeskedastic_case = experiment_nocovariates.make_df_binary(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
+    results_binary_homoeskedastic_case = experiment_nocovariates.make_df_binary(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
-        csv_names = glob.glob("results/no_covariates/binary_homo_*.csv")
-        if len(csv_names) == 0:
-            results_binary_homoeskedastic_case.to_csv('results/no_covariates/binary_homo_0.csv', index=False) 
-        else:
+    csv_names = glob.glob("results/no_covariates/binary_homo_*.csv")
+    if len(csv_names) == 0:
+        results_binary_homoeskedastic_case.to_csv('results/no_covariates/binary_homo_0.csv', index=False) 
+    else:
 
-            underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
-            period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
-            unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
-            
-            filename = "results/no_covariates/binary_homo_" + str(unique_suffix) + ".csv"
-            results_binary_homoeskedastic_case.to_csv(filename)
-
-    if setting == 'heteroskedastic':
-
-        results_binary_heteroskedastic_case = experiment_nocovariates.make_df_binary(problems_binary_theta, sigma=heteroskedastic_sigma, m_sim=m_sim) 
+        underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
+        period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
+        unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
         
-        csv_names = glob.glob("results/no_covariates/binary_hetero_*.csv")
-        if len(csv_names) == 0:
-            results_binary_heteroskedastic_case.to_csv('results/no_covariates/binary_hetero_0.csv', index=False) 
-        else:
-
-            underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
-            period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
-            unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
-            
-            filename = "results/no_covariates/binary_hetero_" + str(unique_suffix) + ".csv"
-            results_binary_heteroskedastic_case.to_csv(filename)
+        filename = "results/no_covariates/binary_homo_" + str(unique_suffix) + ".csv"
+        results_binary_homoeskedastic_case.to_csv(filename) 
         
 
-def no_covariates_normal_simulation(m_sim=20, setting='homoskedastic'):
+def no_covariates_normal_simulation(m_sim=20):
     
     print("Start location_scale_comparison")
 
     n = experiment_nocovariates.n
-    # grid_size = experiment_nocovariates.grid_size
     homoskedastic_sigma = experiment_nocovariates.homoskedastic_sigma
-    heteroskedastic_sigma = experiment_nocovariates.heteroskedastic_sigma
     problems_normal_theta = experiment_nocovariates.problems_normal_theta
     
-    if setting == 'homoskedastic':
-    
-        results_normal_homoeskedastic_case = experiment_nocovariates.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
+    results_normal_homoeskedastic_case = experiment_nocovariates.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
-        csv_names = glob.glob("results/no_covariates/normal_homo_*.csv")
-        if len(csv_names) == 0:
-            results_normal_homoeskedastic_case.to_csv('results/no_covariates/normal_homo_0.csv', index=False) 
-        else:
+    csv_names = glob.glob("results/no_covariates/normal_homo_*.csv")
+    if len(csv_names) == 0:
+        results_normal_homoeskedastic_case.to_csv('results/no_covariates/normal_homo_0.csv', index=False) 
+    else:
 
-            underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
-            period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
-            unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
-            
-            filename = "results/no_covariates/normal_homo_" + str(unique_suffix) + ".csv"
-            results_normal_homoeskedastic_case.to_csv(filename)
-
-    if setting == 'heteroskedastic':
-
-        # TODO
-        print("")
+        underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
+        period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
+        unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
         
+        filename = "results/no_covariates/normal_homo_" + str(unique_suffix) + ".csv"
+        results_normal_homoeskedastic_case.to_csv(filename) 
     
 
 
@@ -93,7 +63,8 @@ if __name__ == "__main__":
     executor.update_parameters(name="EB", slurm_partition="general", gpus_per_node=1, nodes=5,
                                mem_gb=3, timeout_min=600)
 
-    job = executor.submit(no_covariates_normal_simulation, m_sim=5)  
+    job = executor.submit(no_covariates_normal_simulation, m_sim=5) 
+    # job = executor.submit(no_covariates_binary_simulation, m_sim=5) 
 
     print(f"job.job_id: {job.job_id}")
 
