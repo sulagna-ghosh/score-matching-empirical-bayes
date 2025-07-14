@@ -1,0 +1,134 @@
+library(tidyverse)
+library(ggh4x) # facetted_pos_scales
+library(ggpubr) # arrange multiple figures together
+library(latex2exp)
+library(RColorBrewer)
+library(lemon)
+library(scales)
+palette1 <- brewer.pal(8, "Dark2")
+palette2 <- brewer.pal(8, "Set1")
+palette3 <- brewer.pal(8, "Set2")
+dark2_palette <- unique(c(palette1, palette2, palette3)) 
+theme_set(theme_bw())
+
+## In-sample MSE ##### 
+
+df_names = list.files("results/xie_losses")
+df_names = df_names[str_detect(df_names, "location_scale_comparison")]
+
+df = NULL
+for (df_name in df_names[-1]){ # ignore location_scale_comparison 0
+  
+  if (is.null(df)){
+    df = read.csv(paste("results/xie_losses", df_name, sep="/"))
+  } else {
+    df = df %>% bind_rows(read.csv(paste("results/xie_losses", df_name, sep="/")))
+  }
+  
+}
+
+df = df %>% 
+  select(-X) %>% 
+  pivot_longer(5:17, names_to = "model", values_to = "value") %>% 
+  separate(model, c("objective", "model"))
+
+df$use_location = as.logical(df$use_location)
+df$use_scale = as.logical(df$use_scale)
+
+df_mean = df %>%
+  group_by(n, use_location, use_scale, experiment, data, objective, model) %>%
+  summarize(mean = mean(value, na.rm=T),
+            count = n(),
+            se = sd(value, na.rm=T)/sqrt(count), .groups="drop")
+
+df_mean = df_mean  %>% 
+  mutate(se = if_else(n > 400, NA, se))
+
+view(df_mean)
+
+
+#### Plot: !use location, use scale ####
+
+m_sim = unique(df_mean$count)
+
+bayes_risk = data.frame("experiment" = c("c", "d", "e", "f", "g", "h", "i", "j"),
+                        "yintercept" = c(0, 0, 0.15, 0, 0.036, 0.338, 1.327, 0.833),
+                        "model" = rep("Bayes risk", 8)) %>%
+  mutate(experiment = factor(experiment))
+
+
+df_mean_plot = df_mean %>%
+  filter(data=="train", objective=="MSE",
+         !use_location, use_scale, experiment != "d5",
+         model != "NPMLEinit") %>%
+  mutate(model = case_when(model == "misspec" ~ "SURE-PM",
+                           model == "wellspec" ~ "SURE-THING",
+                           model == "thetaG" ~ "SURE-grandmean",
+                           model == "surels" ~ "SURE-LS", 
+                           TRUE ~ model),
+         model = factor(model, levels=c("NPMLE", "SURE-PM", "SURE-grandmean", "SURE-THING", "EBCF", "SURE-LS", "Bayes risk"))) %>%
+  mutate(experiment = factor(experiment),
+         experiment = factor(experiment, levels=c("c", "d", "e", "f", "g", "h", "i", "j"))) 
+
+ground_truth_df = df_mean_plot %>% 
+  group_by(n, experiment) %>%
+  summarize(count = n()) %>% 
+  left_join(bayes_risk, by = "experiment") %>%
+  mutate(model = factor(model, levels=c("NPMLE", "SURE-PM", "SURE-grandmean", "SURE-THING", "EBCF", "SURE-LS", "Bayes risk")),
+         experiment = factor(experiment)) %>%
+  rename(mean = yintercept)
+
+
+levels(df_mean_plot$experiment) = c(c = TeX(r"(Uniform$$ prior)"), 
+                                    d = TeX(r"(Inverse-$\chi^2$ prior)"),
+                                    e = TeX(r"(Bimodal $\mu_i$, Two-point $\sigma_i$)"),
+                                    f = TeX(r"(Uniform$$ likelihood)"),
+                                    g = TeX(r"(Two-point $\mu_i$, Uniform $\sigma_i$)"),
+                                    h = TeX(r"(Poisson $\mu_i$)"),
+                                    i = TeX(r"(Five$$ covariates)"),
+                                    j = TeX(r"(Uni-covariate$$ heteroscedastic$$ prior)"))
+
+levels(ground_truth_df$experiment) = c(c = TeX(r"(Uniform$$ prior)"), 
+                                       d = TeX(r"(Inverse-$\chi^2$ prior)"),
+                                       e = TeX(r"(Bimodal $\mu_i$, Two-point $\sigma_i$)"),
+                                       f = TeX(r"(Uniform$$ likelihood)"),
+                                       g = TeX(r"(Two-point $\mu_i$, Uniform $\sigma_i$)"),
+                                       h = TeX(r"(Poisson $\mu_i$)"),
+                                       i = TeX(r"(Five$$ covariates)"),
+                                       j = TeX(r"(Uni-covariate$$ heteroscedastic$$ prior)"))
+
+levels(bayes_risk$experiment) = c(c = TeX(r"(Uniform$$ prior)"), 
+                                  d = TeX(r"(Inverse-$\chi^2$ prior)"),
+                                  e = TeX(r"(Bimodal $\mu_i$, Two-point $\sigma_i$)"),
+                                  f = TeX(r"(Uniform$$ likelihood)"),
+                                  g = TeX(r"(Two-point $\mu_i$, Uniform $\sigma_i$)"),
+                                  h = TeX(r"(Poisson $\mu_i$)"),
+                                  i = TeX(r"(Five$$ covariates)"),
+                                  j = TeX(r"(Uni-covariate$$ heteroscedastic$$ prior)"))
+
+df_mean_plot_line = df_mean_plot %>%
+  select(n, experiment, count, mean, model,) %>%
+  bind_rows(ground_truth_df)
+
+ggplot(df_mean_plot, aes(x = factor(n), color=model, shape=model, linetype=model)) +
+  geom_point(aes(y = mean), size = 2.5) +
+  geom_line(data= df_mean_plot_line, aes(y = mean, group = model,  linetype=model), linewidth=0.75) +
+  geom_errorbar(aes(ymin = mean-1.96*se, 
+                    ymax = mean+1.96*se, 
+                    group=model), alpha=0.5, show.legend=F, width=0.5) +
+  facet_wrap( ~ experiment, scales="free_y", labeller=label_parsed, nrow = 4, ncol = 2) +
+  # labs(title="In-sample MSE, scale only") +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position="bottom",
+        text=element_text(size=25),
+        legend.key.size = unit(2,"line")) +
+  # geom_hline(data = bayes_risk, aes(yintercept = yintercept), show.legend = F) +
+  geom_text(data = bayes_risk, aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)), hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
+  scale_y_continuous(expand = expansion(mult = c(0.13, 0.1))) + 
+  scale_color_manual(values=dark2_palette[c(1,3,2,4,10,9,8)], name="") +
+  scale_linetype_manual(values=c(2, 4, 3, 1, 6, 5, 1), name="") +
+  scale_shape_manual(values=c(15, 17, 16, 18, 19, 20, 1), name="") +
+  ylab("In-sample MSE") +
+  xlab("n")
+
+ggsave("results/xie_plots/median_scale_MSE_all_final_small.png", height=20, width=16)
