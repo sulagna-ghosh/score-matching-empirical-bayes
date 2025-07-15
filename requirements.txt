@@ -1,0 +1,23 @@
+Required python and R libraries to run the codes: 
+
+1. Python: 
+    - math 
+    - numpy 
+    - pandas 
+    - torch 
+    - cvxpy 
+    - scipy 
+    - random 
+    - glob 
+    - entmax 
+    - sys 
+    - submitit (if running code in cluster) 
+2. R: 
+    - tidyverse 
+    - ggh4x 
+    - ggpubr 
+    - latex2exp 
+    - RColorBrewer 
+    - lemon 
+    - scales 
+3. mosek license 

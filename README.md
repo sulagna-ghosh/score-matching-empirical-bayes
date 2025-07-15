@@ -3,14 +3,24 @@ This is a repository of the codes used to get results for the paper "Stein's unb
 
 ## Folders 
 1. results: Contains specific .csv files along with .png files, used to run the results and get what we need, such as, 
-    - no_covariates: All results involving SURE-PM for getting Table 1 and 2 in section 6.1; 
-    - xie_losses: Contains all .csv files to get figure 1, 2 and 3 in section 6.2; 
-    - xie_plots: Contains all necessary images used in section 6.2. 
+    - no_covariates: All results involving SURE-PM for getting Table 1 and 2 in section 6.1, such as: 
+        - binary_homo_*.csv: csv files containing simulations for homoscedastic no covariates case with binary mu, providing Table 2 in section 6.1; 
+        - normal_homo_*.csv: csv files containing simulations for homoscedastic no covariates case with binary mu, providing Table 1 in section 6.1; 
+    - xie_losses: Contains all .csv files to get figure 1, 2 and 3 in section 6.2, such as: 
+        - location_scale_comparison_*.csv: csv files containing simulations for different heteroscedastic cases with covariates, providing Figure 1 in section 6.2; 
+        - location_scale_priors.csv: contains priors from a single simulation for experiment with bimodal mu, two-point sigma, providing Figure 2 in section 6.2; 
+        - location_scale_marginals.csv and xie_shrinkage_location_scale.csv: contain mu_hat's and marginals from a single simulation for experiment with bimodal mu, two-point sigma, providing Figure 3 in section 6.2; 
+    - xie_plots: Contains Figures 1, 2 and 3 in section 6.2. 
 
 ## .py files 
 1. simulate_data.py: Codes to simulate data in different scenarios in section 6; 
-2. models.py: Contains all the models (SURE-PM, SURE-THING, SURE-LS, EBCF and SURE-grandmean); 
-3. train.py: Functions to train different models (SURE-PM, SURE-THING, SURE-grandmean, SURE-LS, NPMLE and EBCF); 
-4. experiment_nocovariates.py, main_nocovariates.py, submitit_nocovariates.py and plot_results_nocovariates.R: Codes for comparing the models with no covariates (including SURE-PM), which give Table 1 and 2 in section 6.1; 
-5. bayes_risk_calculation: Numerical calculation of bayes risk for xie experiments in Section 6.2 with no closed form bayes risk; 
-6. experiments_xie.py, main_xie_checks, submitit_xie.py and plot_results_xie.R: All codes involving the experiments done involving covariates with eight different experiments and different models, which give Figure 1, 2 and 3 in Section 6.2. 
+2. models.py: Contains all the models (SURE-PM, SURE-THING, SURE-LS, EBCF and SURE-grandmean) defined and used for getting the results; 
+3. train.py: Functions to train all the models (SURE-PM, SURE-THING, SURE-grandmean, SURE-LS, NPMLE and EBCF); 
+4. experiment_nocovariates.py: Function to generate dataframes for binary or normal mu and homoscedastic Z for section 6.1; 
+5. main_nocovariates.py and submitit_nocovariates.py: Contain functions to save the dataframes for binary or normal mu and homoscedastic Z for section 6.1; 
+6. plot_results_nocovariates.R: Codes for getting Table 1 and 2 in section 6.1; 
+7. bayes_risk_calculation: Numerical calculation of bayes risk for xie experiments in section 6.2 with no closed form bayes risk; 
+8. experiments_xie.py: Function to generate dataframes for different heteroscedastic cases with covariates for section 6.2; 
+9. main_xie.py and submitit_xie.py: Contain functions to save the dataframes for different heteroscedastic cases with covariates for section 6.2; 
+10. plot_results_xie.R: Codes for getting images for eight different heteroscedastic experiments with different models, which give Figure 1, 2 and 3 in section 6.2; 
+11. requirements.txt: Contains all the libraries of Python and R that will be needed to replicate the results. 

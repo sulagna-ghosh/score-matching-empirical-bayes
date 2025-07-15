@@ -308,8 +308,7 @@ def train_and_save_models_location_scale(seeds,
                                          simulate_scale_list=[True, False],
                                          optimizer_str="adam", path="models/xie_location_scale"):
     """
-    Optimizer and activation function comparisons. Trains and saves the models to be used later. Does include 
-    the possibility of location and scale use in our model. 
+    Trains and saves the models to be used later. Does include the possibility of location and scale use in our model. 
 
     * optimizer_str: describes the optimizer used. for optimizers that AREN'T "adam",
                      save the model output in a <experiment>_<optimizer_str>
@@ -431,6 +430,105 @@ def train_and_save_models_location_scale(seeds,
             print(n); print(varA.min()); print(varA.max())  
             SURE_truth = tr.sum(((Z - 2.5 + 5*varA)/2)**2 - (varA)) / n 
         tr.save(SURE_truth, path + experiment_str +  "/SURE_truth") 
+
+def read_location_scale(seeds,
+                        B=100, experiments = ['c', 'd', 'd5', 'e', 'f', 'g'], 
+                        ft_rep_string = ['Ft_Rep_wellspec', 'Ft_Rep_surels'], data = ['X', 'Z', 'theta', 'grand_mean', 'lambda_hat'], 
+                        model_states = ['pi_hat_NPMLE', 'model_EB_misspec', 'model_EB_NPMLEinit', 'model_EB_wellspec', 'model_NPMLE', 'model_EB_surels'], 
+                        SURE_losses = ['SURE_misspec', 'SURE_NPMLEinit', 'SURE_wellspec', 'SURE_truth', 'SURE_surels'], 
+                        simulate_location_list=[True, False],
+                        simulate_scale_list=[True, False], path="models/xie_location_scale"):
+    
+    '''
+    Reads the models to be used later. Does include the possibility of location and scale use in our model. 
+    '''
+    
+    item_lists = [data, ft_rep_string, model_states, SURE_losses] 
+    path = path + "_" + "".join(str(seed) for seed in seeds) + "/"
+
+    data_dict = {}
+    parameteric_model_dict = {}
+    NPMLE_model_dict = {}
+    wellspec_model_dict = {}
+    misspec_model_dict = {}
+    NPMLEinit_model_dict = {}
+    surels_model_dict = {}
+
+    # Read models
+    print("Reading data and models")
+    for experiment in experiments:
+
+        experiment_str = "_" + experiment 
+        print(experiment)
+
+        for list in item_lists:
+            for item_name in list:
+
+                # Read items that don't depend on use_location or use_scale
+                if item_name == 'X' or item_name == 'Z' or item_name == 'SURE_truth': # tensor load
+                    data_dict[item_name + experiment_str] = tr.load(path + experiment + "/" + item_name,
+                                                                    map_location=tr.device('cpu'), weights_only=True)
+                elif item_name == "pi_hat_NPMLE":
+                    NPMLE_model_dict[item_name + experiment_str] = np.load(path + experiment + "/" + item_name + ".npy")
+                elif 'model' not in item_name and 'SURE' not in item_name and "Ft_Rep" not in item_name: # np load prametric, 
+                    parameteric_model_dict[item_name + experiment_str] = np.load(path + experiment + "/" + item_name + ".npy")
+                elif item_name == 'model_NPMLE':
+                    NPMLE_model_dict[item_name + experiment_str] = models.model_pi_sure_no_grid_modeling(Z=data_dict['Z' + experiment_str],
+                                                                                B=B, 
+                                                                                init_val=tr.log(tr.tensor(NPMLE_model_dict['pi_hat_NPMLE' + experiment_str])))
+                elif item_name == 'SURE_surels' or item_name == 'Ft_Rep_surels': 
+                    surels_model_dict[item_name + experiment_str] = tr.load(path + experiment + "/" + item_name,map_location=tr.device('cpu'), weights_only=True)
+                elif item_name == 'model_EB_surels': 
+                    surels_model_dict[item_name + experiment_str] = models.model_sure_ls(X=data_dict['X' + experiment_str], 
+                                                                                         Z=data_dict['Z' + experiment_str], d=2, 
+                                                                                         hidden_sizes=(8, 8)) 
+                    surels_model_dict[item_name + experiment_str].load_state_dict(tr.load(path + experiment + "/" + item_name, 
+                                                                                          map_location=tr.device('cpu'), 
+                                                                                          weights_only=False))
+                # Read items that *do* depend on the suffix, eg. _location_scale
+                else: 
+                    for use_scale in simulate_scale_list:
+                        for use_location in simulate_location_list:
+
+                            if use_location & use_scale:
+                                suffix = "_location_scale"
+                            elif use_location & (not use_scale): 
+                                suffix = "_location_IQR"
+                            elif (not use_location) & use_scale:
+                                suffix = "_median_scale"
+                            else:
+                                suffix = "_median_IQR"
+                    
+                            if ('SURE' in item_name and item_name != 'SURE_surels') or item_name == 'Ft_Rep_wellspec':
+                                wellspec_model_dict[item_name + experiment_str + suffix] = tr.load(path + experiment + "/" + item_name + suffix,map_location=tr.device('cpu'), weights_only=True)
+                            elif item_name == 'model_EB_wellspec':
+                                wellspec_model_dict[item_name + experiment_str + suffix] = models.model_covariates(X=data_dict['X' + experiment_str], 
+                                                                                            Z=data_dict['Z' + experiment_str],
+                                                                                            hidden_sizes=(8, 8),
+                                                                                            B=100, use_location=use_location,
+                                                                                                    use_scale=use_scale)
+                                wellspec_model_dict[item_name + experiment_str + suffix].load_state_dict(tr.load(path + experiment + "/" + item_name + suffix, 
+                                                                                                    map_location=tr.device('cpu'), 
+                                                                                                    weights_only=False))
+                            elif item_name == 'model_EB_misspec':
+                                misspec_model_dict[item_name + experiment_str + suffix] = models.model_theta_pi_sure(Z=data_dict['Z' + experiment_str],
+                                                                                            B=B, 
+                                                                                            init_val_theta=tr.log(tr.Tensor([1.5])), 
+                                                                                            init_val_pi=tr.log(tr.Tensor([1.5])), use_location=use_location,
+                                                                                                    use_scale=use_scale)
+                                misspec_model_dict[item_name + experiment_str + suffix].load_state_dict(tr.load(path + experiment + "/" + item_name + suffix, 
+                                                                                                    map_location=tr.device('cpu'), 
+                                                                                                    weights_only=True))
+                            elif item_name == 'model_EB_NPMLEinit':
+                                NPMLEinit_model_dict[item_name + experiment_str + suffix] = models.model_theta_pi_sure(Z=data_dict['Z' + experiment_str],
+                                                                                            B=B, 
+                                                                                            init_val_theta=tr.log(tr.Tensor([1.5])), 
+                                                                                            init_val_pi=tr.log(tr.Tensor([1.5])))
+                                NPMLEinit_model_dict[item_name + experiment_str + suffix].load_state_dict(tr.load(path + experiment + "/" + item_name  + suffix, 
+                                                                                                    map_location=tr.device('cpu'), 
+                                                                                                weights_only=True))
+                                
+    return(data_dict, parameteric_model_dict, NPMLE_model_dict, wellspec_model_dict, misspec_model_dict, NPMLEinit_model_dict, surels_model_dict)
 
 def save_theta_hats(seeds, 
                     data_dict, parameteric_model_dict, NPMLE_model_dict, wellspec_model_dict, misspec_model_dict, NPMLEinit_model_dict, surels_model_dict,
@@ -616,134 +714,22 @@ def save_marginals_data_location_scale(seeds,
                     true_marginal_list.extend(true_marginal)
 
     df = pd.DataFrame({'experiment': experiment_list,
-                              'variance': variance_for_df_list,
-                              'use_location': use_location_list,
-                              'use_scale': use_scale_list,
-                              'Z': Z_grid_list,
-                              'NPMLE': NPMLE_marginal_list,
-                              'thetaG': parametric_marginal_list,
-                              'misspec': misspec_marginal_list,
-                              'NPMLEinit': NPMLEinit_marginal_list,
-                              'wellspec': wellspec_marginal_list,
-                              'surels': surels_marginal_list, 
-                              'truth': true_marginal_list})
+                       'variance': variance_for_df_list,
+                       'use_location': use_location_list,
+                       'use_scale': use_scale_list,
+                       'Z': Z_grid_list,
+                       'NPMLE': NPMLE_marginal_list,
+                       'thetaG': parametric_marginal_list,
+                       'misspec': misspec_marginal_list,
+                       'NPMLEinit': NPMLEinit_marginal_list,
+                       'wellspec': wellspec_marginal_list,
+                       'surels': surels_marginal_list, 
+                       'truth': true_marginal_list})
 
     if expanded:
-        df.to_csv(save_path + "location_scale_marginals_expanded" + experiment_str + ".csv")
+        df.to_csv(save_path + "location_scale_marginals_expanded.csv")
     else:
-        df.to_csv(save_path + "location_scale_marginals" + experiment_str + ".csv")
-
-def save_empirical_marginals_data_location_scale(seeds,
-                                                 data_dict, parametric_model_dict, NPMLE_model_dict, wellspec_model_dict, misspec_model_dict, NPMLEinit_model_dict,
-                                                 experiments = ['c', 'd', 'd5', 'e', 'f'], 
-                                       n=6400, B=100, 
-                                       simulate_location_list=[True, False],
-                                       simulate_scale_list=[True, False], save_path="results/xie_checks"):
-    
-    """
-    Save empirical marginals from the models with loaction and scale. 
-    """
-    
-    save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
-
-    experiment_list = []
-    use_location_list = []
-    use_scale_list = []
-
-    Z_grid_list = []
-
-    NPMLE_empirical_marginal_list = []
-    parametric_empirical_marginal_list = []
-    misspec_empirical_marginal_list = []
-    NPMLEinit_empirical_marginal_list = []
-    wellspec_empirical_marginal_list = []
-    true_empirical_marginal_list = []
-
-
-    for experiment in experiments:
-
-            experiment_str = "_" + experiment 
-
-            X_train = data_dict["X" + experiment_str] 
-            Z_train = data_dict["Z" + experiment_str] 
-
-            Z_grid_np = np.linspace(min(Z_train).detach().numpy(), max(Z_train).detach().numpy(), n)
-            Z_grid = tr.tensor(Z_grid_np)
-
-            for use_scale in simulate_scale_list:
-                for use_location in simulate_location_list:
-
-                    if use_location & use_scale:
-                        suffix = "_location_scale"
-                    elif use_location & (not use_scale): 
-                        suffix = "_location_IQR"
-                    elif (not use_location) & use_scale:
-                        suffix = "_median_scale"
-                    else:
-                        suffix = "_median_IQR"
-
-                    experiment_list.extend(n*[experiment])
-                    use_location_list.extend(n*[use_location])
-                    use_scale_list.extend(n*[use_scale])
-                    Z_grid_list.extend(Z_grid_np.tolist())
-
-                    misspec_empirical_marginal = np.zeros((n,)) 
-                    NPMLEinit_empirical_marginal = np.zeros((n,)) 
-                    NPMLE_empirical_marginal = np.zeros((n,))
-                    wellspec_empirical_marginal = np.zeros((n,)) 
-                    parametric_empirical_marginal = np.zeros((n,)) 
-                    true_empirical_marginal = np.zeros((n,)) 
-
-                    for idx in range(len(X_train)):
-
-                        # variance = variance_list[column]
-                        sigma_float = X_train[idx] 
-                        variance = sigma_float**2
-                        sigma_n1 = sigma_float*tr.ones(n,1)
-
-
-                        grand_mean = parametric_model_dict["grand_mean" + experiment_str].item()
-                        lambda_hat = parametric_model_dict["lambda_hat" + experiment_str].item()
-
-                        parametric_empirical_marginal += ss.norm.pdf(Z_grid, loc=grand_mean, scale=np.sqrt(lambda_hat)) 
-                        NPMLE_empirical_marginal += NPMLE_model_dict["model_NPMLE" + experiment_str].get_marginal(n, B, Z_grid, sigma_float)
-
-                        misspec_empirical_marginal += misspec_model_dict["model_EB_misspec" + experiment_str + suffix].get_marginal(n, B, Z_grid, sigma_float)
-                        NPMLEinit_empirical_marginal += NPMLEinit_model_dict["model_EB_NPMLEinit" + experiment_str + suffix].get_marginal(n, B, Z_grid, sigma_float)
-                        wellspec_empirical_marginal += wellspec_model_dict["model_EB_wellspec" + experiment_str + suffix].get_marginal(Z_grid, sigma_n1)
-
-                        if experiment != "e":
-                            true_empirical_marginal += ss.norm.pdf(Z_grid, loc=variance, scale=np.sqrt(variance))
-                        
-                        else:
-                            if sigma_float == np.sqrt(0.1):
-                                true_empirical_marginal += ss.norm.pdf(Z_grid, loc=2, scale=np.sqrt(2*variance)) 
-                            elif sigma_float == np.sqrt(0.5):
-                                true_empirical_marginal += ss.norm.pdf(Z_grid, loc=0, scale=np.sqrt(2*variance)) 
-                            else: 
-                                print("Error occurred in experiment e")
-                    
-                    # did not divide by n 
-                    NPMLE_empirical_marginal_list.extend(NPMLE_empirical_marginal.tolist())
-                    parametric_empirical_marginal_list.extend(parametric_empirical_marginal.tolist())
-                    misspec_empirical_marginal_list.extend(misspec_empirical_marginal.tolist())
-                    NPMLEinit_empirical_marginal_list.extend(NPMLEinit_empirical_marginal.tolist())
-                    wellspec_empirical_marginal_list.extend(wellspec_empirical_marginal.tolist())
-                    true_empirical_marginal_list.extend(true_empirical_marginal.tolist())
-
-
-    df = pd.DataFrame({'experiment': experiment_list,
-                              'use_location': use_location_list,
-                              'use_scale': use_scale_list,
-                              'Z': Z_grid_list,
-                              'NPMLE': NPMLE_empirical_marginal_list,
-                              'thetaG': parametric_empirical_marginal_list,
-                              'misspec': misspec_empirical_marginal_list,
-                              'NPMLEinit': NPMLEinit_empirical_marginal_list,
-                              'wellspec': wellspec_empirical_marginal_list,
-                              'truth': true_empirical_marginal_list})
-
-    df.to_csv(save_path + "location_scale_empirical_marginals.csv")
+        df.to_csv(save_path + "location_scale_marginals.csv")
 
 def save_priors_location_scale(seeds,
                                data_dict, NPMLE_model_dict, misspec_model_dict, NPMLEinit_model_dict, 
