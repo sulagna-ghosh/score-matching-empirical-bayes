@@ -11,7 +11,7 @@ mu_theta = experiment_nocovariates.mu_theta
 print("Running normal theta case....") 
 problems_normal_theta = experiment_nocovariates.problems_normal_theta
 results_normal_case = experiment_nocovariates.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=50) 
-results_normal_case.to_csv('results/nocovariates_normal_homo.csv', index=False) 
+results_normal_case.to_csv('results/no_covariates/normal_homo.csv', index=False) 
 
 ################### BINARY THETA CASE ###################
 print("Running binary theta case....") 
