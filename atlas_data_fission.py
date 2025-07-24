@@ -169,10 +169,10 @@ def make_fissioned_datasets(m, Z=Z, alpha=alpha, epsilon_matrix=epsilon_matrix, 
 
     if (not fixing_Z_for_debug):
 
-        Z_train = (Z + alpha*epsilon).cpu().detach().clone().to(device)
+        Z_train = (Z.cpu() + alpha*epsilon).cpu().detach().clone().to(device)
         scaled_sigma_train = tr.tensor(np.sqrt((1 + alpha**2) * sigma_np**2)).reshape(n,1).to(device)
 
-        Z_evaluate = (Z - epsilon/alpha).cpu().detach().clone().to(device)
+        Z_evaluate = (Z.cpu() - epsilon/alpha).cpu().detach().clone().to(device)
         scaled_sigma_evaluate = tr.tensor(np.sqrt((1 + 1/alpha**2) * sigma_np**2)).reshape(n,1).to(device)
     
     else: 
