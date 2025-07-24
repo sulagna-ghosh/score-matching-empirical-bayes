@@ -13,7 +13,7 @@ def location_scale_comparison(m_sim, ns=[100, 200, 400, 800, 1600, 3200, 6400],
     
     print("Start location_scale_comparison")
 
-    df = experiments_xie.make_df(m_sim=m_sim,
+    df = experiment_heteroscedastic.make_df(m_sim=m_sim,
                                  ns=ns,
                                  experiments=experiments,
                                  hidden_sizes=hidden_sizes, hidden_sizes_list=hidden_sizes_list, 
@@ -32,7 +32,7 @@ def location_scale_comparison(m_sim, ns=[100, 200, 400, 800, 1600, 3200, 6400],
     df.to_csv(filename) 
 
 if __name__ == "__main__":
-    import experiments_xie
+    import experiment_heteroscedastic
     import pandas as pd
     import glob
 

@@ -7,11 +7,11 @@ def no_covariates_binary_simulation(m_sim=20):
     
     print("Start location_scale_comparison")
 
-    n = experiment_nocovariates.n 
-    homoskedastic_sigma = experiment_nocovariates.homoskedastic_sigma
-    problems_binary_theta = experiment_nocovariates.problems_binary_theta
+    n = experiment_homoscedastic.n 
+    homoskedastic_sigma = experiment_homoscedastic.homoskedastic_sigma
+    problems_binary_theta = experiment_homoscedastic.problems_binary_theta
     
-    results_binary_homoeskedastic_case = experiment_nocovariates.make_df_binary(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
+    results_binary_homoeskedastic_case = experiment_homoscedastic.make_df_binary(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
     csv_names = glob.glob("results/no_covariates/binary_homo_*.csv")
     if len(csv_names) == 0:
@@ -30,11 +30,11 @@ def no_covariates_normal_simulation(m_sim=20):
     
     print("Start location_scale_comparison")
 
-    n = experiment_nocovariates.n
-    homoskedastic_sigma = experiment_nocovariates.homoskedastic_sigma
-    problems_normal_theta = experiment_nocovariates.problems_normal_theta
+    n = experiment_homoscedastic.n
+    homoskedastic_sigma = experiment_homoscedastic.homoskedastic_sigma
+    problems_normal_theta = experiment_homoscedastic.problems_normal_theta
     
-    results_normal_homoeskedastic_case = experiment_nocovariates.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
+    results_normal_homoeskedastic_case = experiment_homoscedastic.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
     csv_names = glob.glob("results/no_covariates/normal_homo_*.csv")
     if len(csv_names) == 0:
@@ -51,7 +51,7 @@ def no_covariates_normal_simulation(m_sim=20):
 
 
 if __name__ == "__main__":
-    import experiment_nocovariates
+    import experiment_homoscedastic
     import pandas as pd
     import glob
 

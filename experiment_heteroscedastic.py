@@ -306,7 +306,7 @@ def train_and_save_models_location_scale(seeds,
                                          experiments = ["c", "d", "d5", "e", "f", "g"],
                                          simulate_location_list=[True, False],
                                          simulate_scale_list=[True, False],
-                                         optimizer_str="adam", path="models/xie_location_scale"):
+                                         optimizer_str="adam", path="results/one_run_heteroscedastic/models"):
     """
     Trains and saves the models to be used later. Does include the possibility of location and scale use in our model. 
 
@@ -314,13 +314,12 @@ def train_and_save_models_location_scale(seeds,
                      save the model output in a <experiment>_<optimizer_str>
     """
 
-    path = path + "_" + ''.join(str(seed) for seed in seeds) + "/"
-
     for experiment in experiments:
 
         print(f"experiment: {experiment}")
         
         experiment_str = experiment 
+        path = path + "/" + experiment_str
         
         print(experiment_str)
 
@@ -330,9 +329,9 @@ def train_and_save_models_location_scale(seeds,
 
         # Simulate and save data
         theta, Z, X = simulate_data.xie(experiment=experiment, n=n)
-        np.save(path + experiment_str +  "/theta", theta)
-        tr.save(Z, path + experiment_str +  "/Z")
-        tr.save(X, path + experiment_str +  "/X")
+        np.save(path  + "/theta", theta)
+        tr.save(Z, path +  "/Z")
+        tr.save(X, path +  "/X")
 
         # Train methods that don't depend on scale or location
         found_NPMLE_solution=False
@@ -349,7 +348,7 @@ def train_and_save_models_location_scale(seeds,
             # model_NPMLE is CPU
             print(f"Finished solving NPMLE, with SURE {SURE_NPMLE}")
             print(f"Finished solving NPMLE, with in-sample MSE {twonorm_diff_NPMLE / n}")
-            np.save(path + experiment_str +  "/pi_hat_NPMLE", pi_hat_NPMLE.detach().numpy())
+            np.save(path +  "/pi_hat_NPMLE", pi_hat_NPMLE.detach().numpy())
             
             found_NPMLE_solution = True
 
@@ -360,9 +359,9 @@ def train_and_save_models_location_scale(seeds,
         theta_hat_G, MSE_thetaG, SURE_thetaG, grand_mean, lambda_hat = models.theta_hat_G(theta, Z, X)
         print(f"Finished solving parametric estimator, with SURE {SURE_thetaG}")
         print(f"Finished solving parametric estimator, with in-sample MSE {MSE_thetaG}")
-        np.save(path + experiment_str +  "/theta_hat_G", theta_hat_G)
-        np.save(path + experiment_str +  "/grand_mean", grand_mean)
-        np.save(path + experiment_str +  "/lambda_hat", lambda_hat)
+        np.save(path +  "/theta_hat_G", theta_hat_G)
+        np.save(path +  "/grand_mean", grand_mean)
+        np.save(path +  "/lambda_hat", lambda_hat)
         
 
         for use_scale in simulate_scale_list:
@@ -389,8 +388,8 @@ def train_and_save_models_location_scale(seeds,
                     model_NPMLEinit, SURE_NPMLEinit, score_NPMLEinit, theta_hats_NPMLEinit, twonorm_diff_NPMLEinit = result_NPMLEinit
                     print(f"Finished training EB misspecified with NPMLE init, with SURE: {SURE_NPMLEinit[-1]}")
                     print(f"Finished training EB misspecified with NPMLE init, with in-sample MSE: {twonorm_diff_NPMLEinit / n}")
-                    tr.save(model_NPMLEinit.state_dict(), path + experiment_str +  "/model_EB_NPMLEinit" + suffix)
-                    tr.save(SURE_NPMLEinit, path + experiment_str +  "/SURE_NPMLEinit"+ suffix)
+                    tr.save(model_NPMLEinit.state_dict(), path +  "/model_EB_NPMLEinit" + suffix)
+                    tr.save(SURE_NPMLEinit, path +  "/SURE_NPMLEinit"+ suffix)
 
                 # EB - misspecified
                 result_misspec = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
@@ -398,8 +397,8 @@ def train_and_save_models_location_scale(seeds,
                 model_misspec, SURE_misspec, score_misspec, theta_hats_misspec, twonorm_diff_misspec = result_misspec
                 print(f"Finished training EB misspecified, with SURE: {SURE_misspec[-1]}")
                 print(f"Finished training EB misspecified, with in-sample MSE: {twonorm_diff_misspec / n}")
-                tr.save(model_misspec.state_dict(), path + experiment_str +  "/model_EB_misspec" + suffix)
-                tr.save(SURE_misspec, path + experiment_str +  "/SURE_misspec" + suffix)
+                tr.save(model_misspec.state_dict(), path +  "/model_EB_misspec" + suffix)
+                tr.save(SURE_misspec, path +  "/SURE_misspec" + suffix)
                 
 
                 # EB - well specified
@@ -409,9 +408,9 @@ def train_and_save_models_location_scale(seeds,
                 model_wellspec, Ft_Rep_wellspec, SURE_wellspec, NLL_wellspec, score_wellspec, theta_hats_wellspec, twonorm_diff_wellspec = result_wellspec
                 print(f"Finished training EB wellspecified, with SURE: {SURE_wellspec[-1]}")
                 print(f"Finished training EB wellspecified, with in-sample MSE: {twonorm_diff_wellspec / n}")
-                tr.save(model_wellspec.state_dict(), path + experiment_str +  "/model_EB_wellspec" + suffix)
-                tr.save(Ft_Rep_wellspec, path + experiment_str +  "/Ft_Rep_wellspec" + suffix)
-                tr.save(SURE_wellspec, path + experiment_str +  "/SURE_wellspec"+ suffix)
+                tr.save(model_wellspec.state_dict(), path +  "/model_EB_wellspec" + suffix)
+                tr.save(Ft_Rep_wellspec, path +  "/Ft_Rep_wellspec" + suffix)
+                tr.save(SURE_wellspec, path +  "/SURE_wellspec"+ suffix)
 
         # EB - surels
         result_surels = train.train_sure_ls(X, Z, theta, set_seed = None, d=2, device=simulate_data.device, 
@@ -419,9 +418,9 @@ def train_and_save_models_location_scale(seeds,
         model_surels, Ft_Rep_surels, SURE_surels, score_surels, theta_hats_surels, twonorm_diff_surels = result_surels
         print(f"Finished training EB SURE-LS, with SURE: {SURE_surels[-1]}")
         print(f"Finished training EB SURE-LS, with in-sample MSE: {twonorm_diff_surels / n}") 
-        tr.save(model_surels.state_dict(), path + experiment_str +  "/model_EB_surels")
-        tr.save(Ft_Rep_surels, path + experiment_str +  "/Ft_Rep_surels")
-        tr.save(SURE_surels, path + experiment_str +  "/SURE_surels")
+        tr.save(model_surels.state_dict(), path +  "/model_EB_surels")
+        tr.save(Ft_Rep_surels, path +  "/Ft_Rep_surels")
+        tr.save(SURE_surels, path +  "/SURE_surels")
     
         # SURE - ground truth
         SURE_truth = tr.tensor(0)
@@ -429,7 +428,7 @@ def train_and_save_models_location_scale(seeds,
             varA = X**2
             print(n); print(varA.min()); print(varA.max())  
             SURE_truth = tr.sum(((Z - 2.5 + 5*varA)/2)**2 - (varA)) / n 
-        tr.save(SURE_truth, path + experiment_str +  "/SURE_truth") 
+        tr.save(SURE_truth, path +  "/SURE_truth") 
 
 def read_location_scale(seeds,
                         B=100, experiments = ['c', 'd', 'd5', 'e', 'f', 'g'], 
@@ -437,14 +436,13 @@ def read_location_scale(seeds,
                         model_states = ['pi_hat_NPMLE', 'model_EB_misspec', 'model_EB_NPMLEinit', 'model_EB_wellspec', 'model_NPMLE', 'model_EB_surels'], 
                         SURE_losses = ['SURE_misspec', 'SURE_NPMLEinit', 'SURE_wellspec', 'SURE_truth', 'SURE_surels'], 
                         simulate_location_list=[True, False],
-                        simulate_scale_list=[True, False], path="models/xie_location_scale"):
+                        simulate_scale_list=[True, False], path="results/one_run_heteroscedastic/models/"):
     
     '''
     Reads the models to be used later. Does include the possibility of location and scale use in our model. 
     '''
     
     item_lists = [data, ft_rep_string, model_states, SURE_losses] 
-    path = path + "_" + "".join(str(seed) for seed in seeds) + "/"
 
     data_dict = {}
     parameteric_model_dict = {}
@@ -535,14 +533,13 @@ def save_theta_hats(seeds,
                     n=6400, B=100,
                     variance_dict = {"c": [0.2, 0.55, 0.9], "d": [0.01, 0.125, 1], "d5": [0.2, 0.7, 4.74, 10], "e": [0.1, 0.5], "f": [0.2, 0.55, 0.9], "g": [0.2, 0.35, 0.5]},
                     simulate_location_list=[True, False],
-                    simulate_scale_list=[True, False], save_path="results/xie_checks",
+                    simulate_scale_list=[True, False], save_path="results/one_run_heteroscedastic/",
                     endpoints=None): 
     
     """
     Save plots: prior, SURE training loss, theta hat dataframe, marginal, empirical margina
     """
 
-    save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
     theta_hat_list = []
 
     for experiment, variance_list in variance_dict.items():
@@ -599,7 +596,7 @@ def save_theta_hats(seeds,
             theta_hat_list.append(pd.DataFrame(theta_hats)) 
     
     theta_hat_df = pd.concat(theta_hat_list)
-    theta_hat_df.to_csv(save_path + 'xie_shrinkage_location_scale.csv') 
+    theta_hat_df.to_csv(save_path + 'shrinkage_rule.csv') 
 
 
 def save_marginals_data_location_scale(seeds,
@@ -610,13 +607,11 @@ def save_marginals_data_location_scale(seeds,
                                                         "e": [0.1, 0.5], "f": [0.2, 0.55, 0.9], "g": [0.2, 0.35, 0.45], 
                                                         "j": [1, 4, 8]},
                                        simulate_location_list=[True, False],
-                                       simulate_scale_list=[True, False], expanded=False, save_path="results/xie_checks"):
+                                       simulate_scale_list=[True, False], expanded=False, save_path="results/one_run_heteroscedastic/"):
     
     """
     Save marginals from the models with loaction and scale. 
     """
-
-    save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
 
     experiment_list = []
     variance_for_df_list = []
@@ -727,22 +722,20 @@ def save_marginals_data_location_scale(seeds,
                        'truth': true_marginal_list})
 
     if expanded:
-        df.to_csv(save_path + "location_scale_marginals_expanded.csv")
+        df.to_csv(save_path + "marginal_expanded.csv")
     else:
-        df.to_csv(save_path + "location_scale_marginals.csv")
+        df.to_csv(save_path + "marginal.csv")
 
 def save_priors_location_scale(seeds,
                                data_dict, NPMLE_model_dict, misspec_model_dict, NPMLEinit_model_dict, 
                                experiments = ['c', 'd', 'd5', 'e', 'f'], 
                                simulate_location_list=[True, False],
-                               simulate_scale_list=[True, False], save_path="results/xie_checks", B=100):
+                               simulate_scale_list=[True, False], save_path="results/one_run_heteroscedastic/", B=100):
     
     """
     Save priors from the models with loaction and scale. 
     """
     
-    save_path = save_path + "_" + "".join(str(seed) for seed in seeds) + "/"
-
     prior_dict = {} # compute grids and priors
 
 
@@ -795,4 +788,4 @@ def save_priors_location_scale(seeds,
                     
     df = pd.DataFrame(prior_dict)
 
-    df.to_csv(save_path + "location_scale_priors.csv")
+    df.to_csv(save_path + "prior.csv")
