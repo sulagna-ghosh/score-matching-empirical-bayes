@@ -73,7 +73,7 @@ alpha=1
 np.random.seed(5012025)
 epsilon_matrix = np.concatenate([ss.norm.rvs(loc=0, scale=sigma_np).reshape(n, 1) for i in range(m_sim)], axis = 1)
 epsilon_matrix_for_fixing_Z = np.concatenate([ss.norm.rvs(loc=0, scale=sigma_np).reshape(n, 1) for i in range(m_sim)], axis = 1)
-np.save("epsilon_matrix_5012025.npy", epsilon_matrix)
+np.save("miscellaneous/epsilon_matrix_5012025.npy", epsilon_matrix)
 
 # Functions ###
 

@@ -4,10 +4,10 @@ import submitit
 def simulate_sse_without_close():
     
     df = data_fission.fission_mse_without_close()
-    df.to_csv('atlas_results/mse.csv')
+    df.to_csv('results/atlas/data_fission_mse.csv')
 
 if __name__ == "__main__":
-    import data_fission
+    import atlas_data_fission
     import pandas as pd
 
     print("%j")
