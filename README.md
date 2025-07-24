@@ -1,6 +1,8 @@
 # Replication code for "Stein's unbiased risk estimate and Hyvarinen's score matching". 
 
-This repository contains the implementation of various EB estimators and code for experiments in sections 5-7 of the paper "Stein's unbiased risk estimate and Hyvarinen's score matching". As an overview, the following is an outline of sections 5-7 and the corresponding files in the repository.
+This repository contains the implementation of various EB estimators and code for experiments in sections 5-7 of the paper "Stein's unbiased risk estimate and Hyvarinen's score matching". 
+
+The following is an outline of sections 5-7 and the corresponding files in the repository.
 
 * Section 5: Computational strategy for SURE-training
     - `models.py` contains classes that correspond to SURE-PM, SURE-THING, SURE-LS, and other benchmark estimators.
@@ -18,8 +20,9 @@ This repository contains the implementation of various EB estimators and code fo
     - `submitit_covariates.py` generates the .csv files by running the simulations on SLURM. The file has dependencies: `experiment_heteroscedastic.py`, `train.py`, `models.py`, and `simulate_data.py`.
 
 * Section 6.2.1: Comparison of SURE-PM and NPMLE in the bimodal case
-    - The folder `results/one_run_heteroscedastic` contains the prior, marginal, and shrinkage rule for one run of the bimodal heterscedastic (experiment c). 
+    - The folder `results/one_run_heteroscedastic` contains .csv files for the prior, marginal, and shrinkage rule of *one run* of the bimodal heterscedastic (experiment c). The folder also contains the saved models themselves (that were created from `one_run_heteroscedastic.py`).
     - The R file `plot_results_heteroscedastic.R` processes the above .csv files to create Figures 2 and 3.
+    - The final figures are in the folder `results/figures`.
 
 * Section 7: Application to the Opportunity Atlas 
 
