@@ -52,6 +52,8 @@ bayes_risk = data.frame("experiment" = c("c", "d", "e", "f", "g", "h", "i", "j")
                         "model" = rep("Bayes risk", 8)) %>%
   mutate(experiment = factor(experiment))
 
+# calculated in miscellaneous/bayes_risk_calculation.ipynb
+
 
 df_mean_plot = df_mean %>%
   filter(data=="train", objective=="MSE",
