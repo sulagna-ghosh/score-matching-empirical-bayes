@@ -6,9 +6,7 @@ import numpy as np
 import numpy.random as rn
 from scipy import optimize
 
-## MARK: - No covariates
-
-## MARK: - SURE-PM 
+# SURE-PM  
 
 class model_theta_pi_sure(tr.nn.Module):
     """
@@ -165,7 +163,7 @@ class model_theta_pi_sure(tr.nn.Module):
 
         return(conditional_marginal.detach().numpy()) 
     
-## MARK: - Covariates
+# SURE-THING
 
 def create_initialized_network(input_size, hidden_sizes, output_size, 
                                activation_fn=tr.nn.ReLU(), 
@@ -208,7 +206,7 @@ def create_initialized_network(input_size, hidden_sizes, output_size,
 
     return sequential
 
-## MARK: - SURE-THING 
+ 
 
 class model_covariates(tr.nn.Module):
     """
@@ -552,7 +550,7 @@ class model_covariates(tr.nn.Module):
 
         return(conditional_marginal.detach().numpy())
 
-## MARK: - SURE LS 
+# SURE LS 
 
 class model_sure_ls(tr.nn.Module): 
     """
@@ -651,7 +649,7 @@ class model_sure_ls(tr.nn.Module):
 
         return (b_n + (1 - lambda_n) * Z) 
 
-## MARK: - EBCF
+# EBCF
 
 class model_EBCF_NPreg(tr.nn.Module): 
     """
@@ -764,10 +762,12 @@ def theta_hat_EBCF(theta, Z, X, Z_hat):
 
     return theta_hat, MSE, SURE, A_hat 
 
-## MARK: - SURE-grandmean 
+# SURE-grandmean 
 
 def SURE_G(lambda_param, *args):
     """
+    Implementation of theta hat G from "SURE Estimates for a Heteroscedastic Hierarchical Model" (Xie et al, 2012)
+
     Unbiased risk estimate of shrinkage towards the grand mean.
     lambda_param: float, shrinkage factor. Larger lambda_param means less shrinkage.
     *args = (Z, X)
@@ -822,7 +822,7 @@ def theta_hat_G(theta, Z, X):
 
     return theta_hat_G, MSE, SURE, grand_mean, lambda_hat
 
-## MARK: - Other models 
+# Other models 
 
 class model_pi_sure_no_grid_modeling(tr.nn.Module):
     """
