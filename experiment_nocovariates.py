@@ -5,6 +5,10 @@ import pandas as pd
 import numpy as np
 import numpy.random as rn
 
+from train import train_npmle, train_no_covariates
+import simulate_data
+import models
+
 # Contains functions to execute experiments conducted to get table 1 and 2 in section 6.1 
 
 ################### GENERAL VARIABLES ###################
@@ -50,6 +54,160 @@ problems_binary_theta = [binary_theta_lowk,
 
 ################### RESULTS ###################
 
+
+def normal_settings(n, mu_theta, sigma_theta, sigma, B, 
+                      use_location=False, use_scale=True):
+    '''
+    Returns MSE and SURE loss for no covariates normal settings, possibly using location and scale if needed. 
+    '''
+
+    # Simulate data
+    theta, Z, X = simulate_data.simulate_data_normal_nocovariates(n, mu_theta, sigma_theta, sigma)
+
+    # NPMLE 
+    results_NPMLE = train_npmle(n, B, Z, theta, X) 
+    problem_NPMLE, loss_NPMLE, score_NPMLE, theta_hat_NPMLE, twonorm_diff_NPMLE, pi_hat_NPMLE = results_NPMLE
+    pi_hat_NPMLE[pi_hat_NPMLE < 0] = 0
+
+    # EB (only theta)
+    results_EB_theta = train_no_covariates(n, B, Z, theta, X, opt_objective = 'theta-only',
+                                           use_location=use_location, use_scale=use_scale) 
+    model_EB_theta, SURE_EB_theta, scores_EB_theta, theta_hats_EB_theta, twonorm_diff_EB_theta = results_EB_theta
+    SURE_EB_theta = SURE_EB_theta[-1]
+    theta_diff_EB_theta = model_EB_theta.forward() 
+
+    # EB (only pi)
+    results_EB_pi = train_no_covariates(n, B, Z, theta, X, opt_objective = 'pi-only',
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_pi, SURE_EB_pi, scores_EB_pi, theta_hats_EB_pi, twonorm_diff_EB_pi = results_EB_pi
+    SURE_EB_pi = SURE_EB_pi[-1]
+
+    # EB (both theta and pi)
+    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
+    SURE_EB_both = SURE_EB_both[-1]
+
+    # EB (two-step)
+    results_EB_2step = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', 
+                                                 init_val_theta = tr.log(theta_diff_EB_theta).to('cpu'),
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_2step, SURE_EB_2step, scores_EB_2step, theta_hats_EB_2step, twonorm_diff_EB_2step = results_EB_2step
+    SURE_EB_2step = SURE_EB_2step[-1]
+
+    # EB (sparse)
+    results_EB_sparse = train_no_covariates(n, B, Z, theta, X, opt_objective = 'pi-sparse',
+                                           use_location=use_location, use_scale=use_scale) 
+    model_EB_sparse, SURE_EB_sparse, scores_EB_sparse, theta_hats_EB_sparse, twonorm_diff_EB_sparse = results_EB_sparse
+    SURE_EB_sparse = SURE_EB_sparse[-1]
+
+    # EB (both pi and theta; NPMLE initial)
+    results_EB_both_npmle = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE),
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_both_npmle, SURE_EB_both_npmle, scores_EB_both_npmle, theta_hats_EB_both_npmle, twonorm_diff_EB_both_npmle = results_EB_both_npmle 
+    SURE_EB_both_npmle = SURE_EB_both_npmle[-1]
+
+    # EB (only pi; NPMLE initial; one iteration)
+    model = models.model_pi_sure(Z, B, init_val=tr.log(pi_hat_NPMLE), device=simulate_data.device) 
+    SURE_EB_pi_npmle_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
+    SURE_NPMLE_OBJ = SURE_EB_pi_npmle_one_iter.item() 
+
+    # EB (loss for one iteration with uniform initialization for pi)
+    model = models.model_pi_sure(Z, B, init_val=tr.log(tr.Tensor([1.5])), device=simulate_data.device) 
+    SURE_EB_pi_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
+    SURE_EB_OBJ = SURE_EB_pi_one_iter.item() 
+
+    # BAYES 
+    sigma = X[:,-1] 
+    theta_hat_bayes = mu_theta*(sigma**2)/(sigma**2+sigma_theta**2) + Z*(sigma_theta**2)/(sigma**2+sigma_theta**2)
+    twonorm_diff_BAYES = (np.linalg.norm(theta_hat_bayes.cpu().detach().numpy() - theta)**2) 
+
+    # List of 2-norm differences and optimal losses
+    ALL_2norm_opt = [twonorm_diff_NPMLE, twonorm_diff_EB_theta, twonorm_diff_EB_pi, twonorm_diff_EB_both, twonorm_diff_EB_2step, 
+                     twonorm_diff_EB_sparse, twonorm_diff_EB_both_npmle, twonorm_diff_BAYES]
+    ALL_loss_opt = [loss_NPMLE, SURE_EB_theta, SURE_EB_pi, SURE_EB_both, SURE_EB_2step, SURE_EB_sparse, SURE_EB_both_npmle, 
+                    SURE_NPMLE_OBJ, SURE_EB_OBJ]
+
+    return (ALL_2norm_opt, ALL_loss_opt) 
+
+def discrete_settings(n, k, val_theta, sigma, B, 
+                      use_location=False, use_scale=True):
+    '''
+    Returns MSE and SURE loss for no covariates discrete settings, possibly using location and scale if needed. 
+    '''
+
+    # Simulate data
+    theta, Z, X = simulate_data.simulate_data_discrete_nocovariates(n, k, val_theta, sigma)
+
+    # NPMLE 
+    results_NPMLE = train_npmle(n, B, Z, theta, X) 
+    problem_NPMLE, loss_NPMLE, score_NPMLE, theta_hat_NPMLE, twonorm_diff_NPMLE, pi_hat_NPMLE = results_NPMLE
+    pi_hat_NPMLE[pi_hat_NPMLE < 0] = 0
+
+    # EB (only theta)
+    results_EB_theta = train_no_covariates(n, B, Z, theta, X, opt_objective = 'theta-only',
+                                           use_location=use_location, use_scale=use_scale) 
+    model_EB_theta, SURE_EB_theta, scores_EB_theta, theta_hats_EB_theta, twonorm_diff_EB_theta = results_EB_theta
+    SURE_EB_theta = SURE_EB_theta[-1]
+    theta_diff_EB_theta = model_EB_theta.forward() 
+
+    # EB (only pi)
+    results_EB_pi = train_no_covariates(n, B, Z, theta, X, opt_objective = 'pi-only',
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_pi, SURE_EB_pi, scores_EB_pi, theta_hats_EB_pi, twonorm_diff_EB_pi = results_EB_pi
+    SURE_EB_pi = SURE_EB_pi[-1]
+
+    # EB (both theta and pi)
+    results_EB_both = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_both, SURE_EB_both, scores_EB_both, theta_hats_EB_both, twonorm_diff_EB_both = results_EB_both
+    SURE_EB_both = SURE_EB_both[-1]
+
+    # EB (two-step)
+    results_EB_2step = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', 
+                                                 init_val_theta = tr.log(theta_diff_EB_theta).to('cpu'),
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_2step, SURE_EB_2step, scores_EB_2step, theta_hats_EB_2step, twonorm_diff_EB_2step = results_EB_2step
+    SURE_EB_2step = SURE_EB_2step[-1]
+
+    # EB (sparse)
+    results_EB_sparse = train_no_covariates(n, B, Z, theta, X, opt_objective = 'pi-sparse',
+                                           use_location=use_location, use_scale=use_scale) 
+    model_EB_sparse, SURE_EB_sparse, scores_EB_sparse, theta_hats_EB_sparse, twonorm_diff_EB_sparse = results_EB_sparse
+    SURE_EB_sparse = SURE_EB_sparse[-1]
+
+    # EB (both pi and theta; NPMLE initial)
+    results_EB_both_npmle = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE).to('cpu'),
+                                           use_location=use_location, use_scale=use_scale)
+    model_EB_both_npmle, SURE_EB_both_npmle, scores_EB_both_npmle, theta_hats_EB_both_npmle, twonorm_diff_EB_both_npmle = results_EB_both_npmle 
+    SURE_EB_both_npmle = SURE_EB_both_npmle[-1] 
+
+    # EB (only pi; NPMLE initial; one iteration)
+    model = models.model_pi_sure(Z, B, init_val=tr.log(pi_hat_NPMLE), device=simulate_data.device)
+    SURE_EB_pi_npmle_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
+    SURE_NPMLE_OBJ = SURE_EB_pi_npmle_one_iter.item() 
+
+    # EB (loss for one iteration with uniform initialization for pi)
+    model = models.model_pi_sure(Z, B, init_val=tr.log(tr.Tensor([1.5])), device=simulate_data.device)
+    SURE_EB_pi_one_iter = model.opt_func(Z, n, B, sigma = X[:,-1]) 
+    SURE_EB_OBJ = SURE_EB_pi_one_iter.item() 
+
+    # BAYES 
+    # TODO: Fix the Bayes solution. No more Bernoulli
+    sigma = X[:,-1]
+    theta_num = val_theta*(k/n)*tr.exp(-0.5*(((Z-val_theta)/sigma)**2)) 
+    theta_denom = (k/n)*tr.exp(-0.5*(((Z-val_theta)/sigma)**2)) + (1-k/n)*tr.exp(-0.5*((Z/sigma)**2)) 
+    theta_hat_bayes = theta_num / theta_denom 
+    twonorm_diff_BAYES = (np.linalg.norm(theta_hat_bayes.cpu().detach().numpy() - theta)**2) 
+
+    # List of 2-norm differences and optimal losses
+    ALL_2norm_opt = [twonorm_diff_NPMLE, twonorm_diff_EB_theta, twonorm_diff_EB_pi, twonorm_diff_EB_both, twonorm_diff_EB_2step, 
+                     twonorm_diff_EB_sparse, twonorm_diff_EB_both_npmle, twonorm_diff_BAYES]
+    ALL_loss_opt = [loss_NPMLE, SURE_EB_theta, SURE_EB_pi, SURE_EB_both, SURE_EB_2step, SURE_EB_sparse, SURE_EB_both_npmle, 
+                    SURE_NPMLE_OBJ, SURE_EB_OBJ]
+
+    return (ALL_2norm_opt, ALL_loss_opt) 
+
 def make_df_normal(problems_normal_theta, sigma, m_sim=50): 
 
     results = [] 
@@ -94,7 +252,7 @@ def make_df_normal(problems_normal_theta, sigma, m_sim=50):
                 count = 0
                 while count < 1: 
                     try: 
-                        ALL_2norm_opt, ALL_loss_opt = train.normal_settings(n, mu_theta, sigma_theta, sigma, B = 100) 
+                        ALL_2norm_opt, ALL_loss_opt = normal_settings(n, mu_theta, sigma_theta, sigma, B = 100) 
                         
                         SURE_2step_MSE.append(ALL_2norm_opt[4]/n)
                         SURE_2step_LOSS.append(ALL_loss_opt[4]) 
@@ -188,7 +346,7 @@ def make_df_binary(problems_binary_theta, sigma, m_sim=50,
                 count = 0
                 while count < 1:
                     try: 
-                        ALL_2norm_opt, ALL_loss_opt = train.discrete_settings(n, k, val_theta, sigma, B = 100,
+                        ALL_2norm_opt, ALL_loss_opt = discrete_settings(n, k, val_theta, sigma, B = 100,
                                                                               use_location=use_location,
                                                                               use_scale=use_scale) 
                         
