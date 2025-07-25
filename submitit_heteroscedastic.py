@@ -23,12 +23,12 @@ def location_scale_comparison(m_sim, ns=[100, 200, 400, 800, 1600, 3200, 6400],
                                  simulate_scale_list=simulate_scale_list, 
                                  skip_connect=skip_connect) 
     
-    csv_names = glob.glob("results/xie_losses/final_results/location_scale_comparison_*.csv")
+    csv_names = glob.glob("results/heteroscedastic/location_scale_comparison_*.csv")
     underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
     period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
     unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
     
-    filename = "results/xie_losses/final_results/location_scale_comparison_" + str(unique_suffix) + ".csv"
+    filename = "results/heteroscedastic/location_scale_comparison_" + str(unique_suffix) + ".csv"
     df.to_csv(filename) 
 
 if __name__ == "__main__":

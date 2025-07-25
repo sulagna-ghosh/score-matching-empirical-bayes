@@ -13,16 +13,16 @@ def no_covariates_binary_simulation(m_sim=20):
     
     results_binary_homoeskedastic_case = experiment_homoscedastic.make_df_binary(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
-    csv_names = glob.glob("results/no_covariates/binary_homo_*.csv")
+    csv_names = glob.glob("results/homoscedastic/binary_homo_*.csv")
     if len(csv_names) == 0:
-        results_binary_homoeskedastic_case.to_csv('results/no_covariates/binary_homo_0.csv', index=False) 
+        results_binary_homoeskedastic_case.to_csv('results/homoscedastic/binary_homo_0.csv', index=False) 
     else:
 
         underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
         period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
         unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
         
-        filename = "results/no_covariates/binary_homo_" + str(unique_suffix) + ".csv"
+        filename = "results/homoscedastic/binary_homo_" + str(unique_suffix) + ".csv"
         results_binary_homoeskedastic_case.to_csv(filename) 
         
 
@@ -36,16 +36,16 @@ def no_covariates_normal_simulation(m_sim=20):
     
     results_normal_homoeskedastic_case = experiment_homoscedastic.make_df_normal(problems_normal_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 
-    csv_names = glob.glob("results/no_covariates/normal_homo_*.csv")
+    csv_names = glob.glob("results/homoscedastic/normal_homo_*.csv")
     if len(csv_names) == 0:
-        results_normal_homoeskedastic_case.to_csv('results/no_covariates/normal_homo_0.csv', index=False) 
+        results_normal_homoeskedastic_case.to_csv('results/homoscedastic/normal_homo_0.csv', index=False) 
     else:
 
         underscore_max_idx_list = [max([pos for pos, char in enumerate(list_item) if char == "_"]) for list_item in csv_names]
         period_max_idx_list  = [max([pos for pos, char in enumerate(list_item) if char == "."]) for list_item in csv_names]
         unique_suffix = max([int(csv_names[idx][(underscore_max_idx_list[idx]+1):period_max_idx_list[idx]]) for idx in range(len(csv_names))]) + 1 # add one to make it unique
         
-        filename = "results/no_covariates/normal_homo_" + str(unique_suffix) + ".csv"
+        filename = "results/homoscedastic/normal_homo_" + str(unique_suffix) + ".csv"
         results_normal_homoeskedastic_case.to_csv(filename) 
     
 
