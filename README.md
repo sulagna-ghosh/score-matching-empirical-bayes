@@ -18,7 +18,7 @@ The following is an outline of sections 5-7 and the corresponding files in the r
     - The folder `results/heteroscedastic` contains the simulation results for the *heteroscedastic* experiments *with covariates*. Files named `location_scale_comparison_*.csv` contain the in- and out-sample MSE of various estimators for experiments (c) through (g). (These simulation results include the four specifications of fixing or training the location $m$ and scale $s$ parameters.) 
     - The R file `plot_results_heteroscedastic.R` processes the above .csv files to create Figure 1.
     - `submitit_heteroscedastic.py` generates the .csv files by running the simulations on SLURM. The file has dependencies: `experiment_heteroscedastic.py`, `train.py`, `models.py`, and `simulate_data.py`.
-    - `bayes_risk_calculation.ipynb` contains numerical calculations of the Bayes risks for the experiments with no closed form Bayes risk. 
+    - `miscellaneous/bayes_risk_calculation.ipynb` contains numerical calculations of the Bayes risks for the experiments with no closed form Bayes risk. 
 
 * Section 6.2.1: Comparison of SURE-PM and NPMLE in the bimodal case
     - The folder `results/one_run_heteroscedastic` contains .csv files for the prior, marginal, and shrinkage rule of *one run* of the bimodal heterscedastic (experiment e). The folder also contains the saved models themselves (that were created from `one_run_heteroscedastic.py`).
