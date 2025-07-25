@@ -20,7 +20,7 @@ The following is an outline of sections 5-7 and the corresponding files in the r
     - `submitit_covariates.py` generates the .csv files by running the simulations on SLURM. The file has dependencies: `experiment_heteroscedastic.py`, `train.py`, `models.py`, and `simulate_data.py`.
 
 * Section 6.2.1: Comparison of SURE-PM and NPMLE in the bimodal case
-    - The folder `results/one_run_heteroscedastic` contains .csv files for the prior, marginal, and shrinkage rule of *one run* of the bimodal heterscedastic (experiment c). The folder also contains the saved models themselves (that were created from `one_run_heteroscedastic.py`).
+    - The folder `results/one_run_heteroscedastic` contains .csv files for the prior, marginal, and shrinkage rule of *one run* of the bimodal heterscedastic (experiment e). The folder also contains the saved models themselves (that were created from `one_run_heteroscedastic.py`).
     - The R file `plot_results_heteroscedastic.R` processes the above .csv files to create Figures 2 and 3.
     - The final figures are in the folder `results/figures`.
 
@@ -33,16 +33,6 @@ Note to remember for this repository, 'wellspec' means SURE-THING, 'misspec' mea
 
 
 
-## Folders 
-1. results: Contains specific .csv files along with .png files, used to run the results and get what we need, such as, 
-    - no_covariates: All results involving SURE-PM for getting Table 1 and 2 in section 6.1, such as: 
-        - binary_homo_*.csv: csv files containing simulations for homoscedastic no covariates case with binary mu, providing Table 2 in section 6.1; 
-        - normal_homo_*.csv: csv files containing simulations for homoscedastic no covariates case with binary mu, providing Table 1 in section 6.1; 
-    - xie_losses: Contains all .csv files to get figure 1, 2 and 3 in section 6.2, such as: 
-        - location_scale_comparison_*.csv: csv files containing simulations for different heteroscedastic cases with covariates, providing Figure 1 in section 6.2; 
-        - location_scale_priors.csv: contains priors from a single simulation for experiment with bimodal mu, two-point sigma, providing Figure 2 in section 6.2; 
-        - location_scale_marginals.csv and xie_shrinkage_location_scale.csv: contain mu_hat's and marginals from a single simulation for experiment with bimodal mu, two-point sigma, providing Figure 3 in section 6.2; 
-    - xie_plots: Contains Figures 1, 2 and 3 in section 6.2. 
 
 ## .py files 
 1. simulate_data.py: Codes to simulate data in different scenarios in section 6; 
