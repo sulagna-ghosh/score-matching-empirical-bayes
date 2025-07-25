@@ -14,7 +14,7 @@ Z_color = "darkgrey"
 
 # Plot shrinkage rules against sigma #### 
 
-theta_hat = read.csv("results/one_run_heteroscedastic/shrinkage_rule.csv") %>% select(-X)
+theta_hat = read.csv("results/atlas/shrinkage_rule.csv") %>% select(-X)
 
 theta_hat_pivot = theta_hat %>%
   pivot_longer(1:5, names_to = "estimator", values_to = "y") 
