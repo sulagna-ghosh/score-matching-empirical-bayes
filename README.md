@@ -26,7 +26,15 @@ The following is an outline of sections 5-7 and the corresponding files in the r
     - The final figures are in the folder `results/figures`.
 
 * Section 7: Application to the Opportunity Atlas 
+    - The Opportunity Atlas dataset is the .feather file in the folder `atlas_data`. It was taken straight from [Jiafeng Chen's replication code](https://github.com/jiafengkevinchen/close-replication/tree/main/data/processed). Some of the code pertaining to this application, such as the data preprocessing function, is also from that repository.
+    - The .csv file `results/atlas/shrinkage_rule.csv` contains the fitted shrinkage rules for EB estimators when applied to the Opportunity Atlas data.
+    - The R file `plot_results_atlas.R` creates Figure 4. 
+    - The Jupyter notebook `atlas_prior_and_shrinkage.ipynb` fits the EB methods, saves the shrinkage rules, and also prints the fitted priors.
 
+* Section 7.1: Evaluation with data fission
+    - The .csv file `results/atlas/data_fission_mse.csv` contains the results of 25 data fission replicates. The MSE values are between the fitted shrinkage rules and the evaluation fold; they are \emph{not adjusted}, so they are \emph{not} the FMSE values in equation 68.
+    - The R file `plot_results_atlas.R` process the above file to compute the numbers in Table 3. (This is where the adjustment happens, where the adjustment constant was computed in `atlas_prior_and_shrinkage.ipynb`.
+    - `submitit_data_fission.py` generates the .csv file by running the simulation on SLURM. The file has dependencies: `atlas_data_fission.py`.
 
 
 Note to remember for this repository, 'wellspec' means SURE-THING, 'misspec' means SURE-PM, '...G' means SURE-grandmean and 'ls' for SURE-LS. Finally, `requirements.txt` contains all the libraries of Python and R that will be needed to replicate the results. 
