@@ -12,6 +12,7 @@ Required python and R libraries to run the codes:
     - entmax 
     - sys 
     - submitit (if running code in cluster) 
+    - pyfixest (Opportunity Atlas application)
 2. R: 
     - tidyverse 
     - ggh4x 
