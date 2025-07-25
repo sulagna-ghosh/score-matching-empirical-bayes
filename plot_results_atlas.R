@@ -148,6 +148,7 @@ mean_squared_standard_error = 0.0029098331424100635
 B = 25 # number of replicates
 
 improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
+  filter(mosek_fail=="False") %>%
   head(B) %>%
   select(-mosek_fail, -X) %>%
   mutate(rel_PM = (MLE - PM) / (MLE - 2*mean_squared_standard_error),
@@ -158,5 +159,4 @@ improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
 improvement_over_MLE %>%
   group_by(model) %>%
   summarize(mean_improvement = mean(relative_improvement),
-            se_improvement = sd(relative_improvement)/sqrt(B)) %>%
-  view()
+            se_improvement = sd(relative_improvement)/sqrt(B)) 
