@@ -26,14 +26,14 @@ theta_hat_pivot = theta_hat_pivot %>%
                                estimator == "SURE.THING" ~ "SURE-THING",
                                TRUE ~ estimator),
          plot_panel = case_when(estimator %in% c("Z (MLE)", "NPMLE", "SURE-PM") ~ 1,
-                                estimator %in% c("Z (MLE)", "SURE-THING", "SURE-LS") ~ 2)) 
+                                estimator %in% c("Z (MLE)", "SURE-THING", "SURE-LS") ~ 2),
+         estimator = factor(estimator, levels = c("Z (MLE)", "NPMLE", "SURE-PM", "SURE-LS", "SURE-THING"))) 
 
 shrinkage_plot = theta_hat_pivot %>% 
   filter(plot_panel == 1) %>%
   ggplot(aes(x = log.sigma, y = y, group = estimator, color = estimator)) +
   geom_point(size = 0.01, alpha=0.9) +
-  scale_color_manual(values = c(Z_color, NPMLE_color, SURE_PM_color, 
-                                SURE_THING_color, SURE_LS_color)) + 
+  scale_color_manual(values = c(Z_color, NPMLE_color, SURE_PM_color)) + 
   theme( strip.text.x = element_blank(), legend.position = "bottom", 
          legend.box="vertical",
          text=element_text(size=12), legend.margin=margin(),
@@ -129,7 +129,7 @@ prior_plot = ggplot(prior_data, aes(x = grid, y = prob, group = model)) +
   theme(legend.position="bottom",
         text=element_text(size=12), legend.margin=margin(),
         legend.key.size = unit(3,"line")) +
-  xlab(TeX("$mu_j\n\n\n$")) +
+  xlab(TeX("$u_j\n\n\n$")) +
   ylab(TeX("$pi_j"))
 
 # Figure 4 #### 

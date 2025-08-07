@@ -190,10 +190,11 @@ prior_e %>%
   scale_linetype_manual(values=c("dotted", "dashed"), name="", labels = parse_format()) +
   theme(legend.position="bottom",
         text=element_text(size=24), legend.margin=margin(),
-        legend.key.size = unit(3,"line")) +
-  xlab(TeX("$theta_j$")) +
+        legend.key.size = unit(3,"line"),
+        axis.title.x = element_text(vjust=-1)) +
+  xlab(TeX("$u_j$")) +
   ylab(TeX("$pi_j")) +
-  scale_x_continuous(limit = c(-5, 5))
+  scale_x_continuous(limit = c(-5, 5)) 
 
 ggsave("results/figures/figure_2.png", height=6, width=10)
 
