@@ -29,19 +29,22 @@ theta_hat_pivot = theta_hat_pivot %>%
                                 estimator %in% c("Z (MLE)", "SURE-THING", "SURE-LS") ~ 2),
          estimator = factor(estimator, levels = c("Z (MLE)", "NPMLE", "SURE-PM", "SURE-LS", "SURE-THING"))) 
 
-shrinkage_plot =theta_hat_pivot %>% 
+library(scales)
+
+shrinkage_plot = theta_hat_pivot %>% 
   filter(plot_panel == 1) %>%
-  ggplot(aes(x = 10^(log.sigma), y = y, group = estimator, color = estimator)) +
+  ggplot(aes(x = (10^(log.sigma))**2, y = y, group = estimator, color = estimator)) +
   geom_point(size = 0.01, alpha=0.9) +
   scale_color_manual(values = c(Z_color, NPMLE_color, SURE_PM_color)) + 
   theme( strip.text.x = element_blank(), legend.position = "bottom", 
          legend.box="vertical",
          text=element_text(size=12), legend.margin=margin(),
-        legend.key.size = unit(3,"line"))   +
-  ylab(TeX("$\\hat{\\mu}_i$")) + xlab(TeX("$\\sigma_i$")) +
+        legend.key.size = unit(1,"line"),
+        axis.title.x = element_text(vjust=-0.05))   +
+  guides(color = guide_legend(override.aes = list(size = 1.5))) +
+  ylab(TeX("$\\hat{\\mu}_i$")) + xlab(TeX("$\\sigma_i^2$")) +
   labs(color="") + 
-  coord_trans(x = "log10") +
-  scale_x_continuous(breaks = c(0, 0.001, 0.01, 0.1))
+  scale_x_log10(labels = label_log(digits = 2))
 
 shrinkage_plot
 
@@ -123,17 +126,22 @@ theta_grid_pm = c(-3.6618e-01, -3.4025e-01, -3.2663e-01, -3.1930e-01, -3.1277e-0
 
 prior_data = data.frame("prob" = c(pi_hat_npmle, pi_hat_pm),
            "grid" = c(theta_grid_npmle, theta_grid_pm),
-           "model" = c(rep("NPMLE", 100), rep("SURE-PM", 100)))
+           "model" = c(rep("NPMLE", 100), rep("SURE-PM", 100)),
+           "idx" = c(rep(0, 100), 1:100))
 
-prior_plot = ggplot(prior_data, aes(x = grid, y = prob, group = model)) +
+prior_plot = prior_data %>%
+  filter(prob > 0) %>%
+  ggplot(aes(x = grid, y = prob, group = model)) +
   geom_point(aes(color = model), size=1, alpha=0.9) +
   geom_segment(aes(color=model, xend=grid, yend= 0), alpha=0.9, size = 0.5) + 
   scale_color_manual(values = c(NPMLE_color, SURE_PM_color)) +
   theme(legend.position="bottom",
         text=element_text(size=12), legend.margin=margin(),
-        legend.key.size = unit(3,"line")) +
+        legend.key.size = unit(1,"line")) +
   xlab(TeX("$u_j\n\n\n$")) +
-  ylab(TeX("$pi_j"))
+  ylab(TeX("$pi_j")) 
+
+
 
 # Figure 4 #### 
 
@@ -163,3 +171,59 @@ improvement_over_MLE %>%
   group_by(model) %>%
   summarize(mean_improvement = mean(relative_improvement),
             se_improvement = sd(relative_improvement)/sqrt(B)) 
+
+
+# Scratch ####
+
+# if |u_j - u_j'| < 0.001, 
+# then merge them and assign 
+# the merged thing a probability \pi_j + \pi_j'
+
+merged_pi_hat_npmle = c()
+merged_theta_grid_npmle = c()
+merged_pi_hat_pm = c()
+merged_theta_grid_pm = c()
+
+merge_epsilon = 0.01
+
+for (j in seq(1, 100, 2)){ # merge odd idx
+  
+  if (abs(theta_grid_npmle[j] - theta_grid_npmle[j+1]) < merge_epsilon){
+    
+    merged_theta_grid_npmle = c(merged_theta_grid_npmle, theta_grid_npmle[j] + theta_grid_npmle[j+1])
+    merged_pi_hat_npmle = c(merged_pi_hat_npmle, pi_hat_npmle[j] + pi_hat_npmle[j+1])
+    
+  } else {
+    
+    merged_theta_grid_npmle = c(merged_theta_grid_npmle, theta_grid_npmle[j], theta_grid_npmle[j+1])
+    merged_pi_hat_npmle = c(merged_pi_hat_npmle, pi_hat_npmle[j], pi_hat_npmle[j+1])
+    
+  }
+  
+  if (abs(theta_grid_pm[j] - theta_grid_pm[j+1]) < merge_epsilon){
+    
+    merged_theta_grid_pm = c(merged_theta_grid_pm, theta_grid_pm[j] + theta_grid_pm[j+1])
+    merged_pi_hat_pm = c(merged_pi_hat_pm, pi_hat_pm[j] + pi_hat_pm[j+1])
+    
+  } else {
+    
+    merged_theta_grid_pm = c(merged_theta_grid_pm, theta_grid_pm[j], theta_grid_pm[j+1])
+    merged_pi_hat_pm = c(merged_pi_hat_pm, pi_hat_pm[j], pi_hat_pm[j+1])
+    
+  }
+  
+}
+
+merged_prior_data = data.frame("prob" = c(merged_pi_hat_npmle, merged_pi_hat_pm),
+                               "grid" = c(merged_theta_grid_npmle, merged_theta_grid_pm),
+                               "model" = c(rep("NPMLE", length(merged_pi_hat_npmle)), rep("SURE-PM", length(merged_pi_hat_pm))))
+
+prior_plot = ggplot(merged_prior_data, aes(x = grid, y = prob, group = model)) +
+  geom_point(aes(color = model), size=1, alpha=0.9) +
+  geom_segment(aes(color=model, xend=grid, yend= 0), alpha=0.9, size = 0.5) + 
+  scale_color_manual(values = c(NPMLE_color, SURE_PM_color)) +
+  theme(legend.position="bottom",
+        text=element_text(size=12), legend.margin=margin(),
+        legend.key.size = unit(3,"line")) +
+  xlab(TeX("$u_j\n\n\n$")) +
+  ylab(TeX("$pi_j")) 
