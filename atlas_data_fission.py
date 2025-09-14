@@ -56,6 +56,11 @@ clean_covariates = ['par_rank_pooled_pooled_mean',
 
 est_var = "kfr_top20_black_pooled_p25"
 df = load_data_for_outcome(est_var)
+
+# only difference between Jiafeng Chen's and our data processing:
+# log this variable to help NN training
+df['hhinc_mean2000'] = np.log(df['hhinc_mean2000'])
+
 estimates = df[est_var].values
 sigma_np = df[est_var + "_se"].values
 
@@ -280,6 +285,7 @@ def fission_mse_without_close(m_sim=m_sim, Z=Z, alpha=alpha, epsilon_matrix=epsi
                                     zeros_for_theta, objective="SURE", d=2)
         theta_hat_ls_train = output_ls_sigma_only[4][-1,:]
         mse_ls_sigma_only = np.sum((Z_evaluate_np - theta_hat_ls_train)**2)/n
+        print(f"mse_ls_sigma_only: {mse_ls_sigma_only}")
         mse_ls_sigma_only_list.append(mse_ls_sigma_only)
 
 
@@ -313,6 +319,7 @@ def fission_mse_without_close(m_sim=m_sim, Z=Z, alpha=alpha, epsilon_matrix=epsi
                                         zeros_for_theta, hidden_sizes=(8,8))
         theta_hat_ls_full_train = output_ls_full[4][-1,:]
         mse_ls_full = np.sum((Z_evaluate_np - theta_hat_ls_full_train)**2)/n
+        print(f"mse_ls_full: {mse_ls_full}")
         mse_ls_full_list.append(mse_ls_full)
 
 
