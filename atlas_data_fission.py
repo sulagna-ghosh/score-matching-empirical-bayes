@@ -63,6 +63,10 @@ n = df.shape[0]
 B = 100
 Z = tr.tensor(estimates).to(device)
 X_sigma = tr.tensor(sigma_np.reshape(n, 1)).to(device)
+print(df.columns)
+X = tr.tensor(df[[clean_covariates]]).to(device)
+X = tr.concat(X, X_sigma)
+print(X[0, :])
 
 use_location = False
 use_scale = True
@@ -194,14 +198,16 @@ def fission_mse_without_close(m_sim=m_sim, Z=Z, alpha=alpha, epsilon_matrix=epsi
     mosek_failures_idx_list = []
 
     mse_pm_list = []
-    # mse_thing_list = []
-    # mse_ls_list = []
-    # mse_thing_residualized_list = []
-    # mse_thing_full_list = []
-    # mse_thing_bivariate_list = []
-    # mse_ls_residualized_list = []
-    # mse_ls_full_list = []
-    # mse_ls_bivariate_list = []
+
+    mse_thing_sigma_only_list = []
+    mse_ls_sigma_only_list = []
+
+    mse_thing_bivariate_list = []
+    mse_ls_bivariate_list = []
+
+    mse_thing_full_list = []
+    mse_ls_full_list = []
+
     mse_mle_list = []
 
     zeros_for_theta = np.zeros((n,))
@@ -213,6 +219,12 @@ def fission_mse_without_close(m_sim=m_sim, Z=Z, alpha=alpha, epsilon_matrix=epsi
         fissioned_datasets = make_fissioned_datasets(m, Z=Z, alpha=alpha, epsilon_matrix=epsilon_matrix, sigma_np=sigma_np)
         Z_train, scaled_sigma_train, Z_evaluate, scaled_sigma_evaluate = fissioned_datasets
         Z_evaluate_np = Z_evaluate.cpu().detach().numpy()
+
+        X_full_train = tr.tensor(np.concatenate([df[clean_covariates].values, scaled_sigma_train.cpu().detach().numpy()], axis=1)).to(device)
+        X_bivariate_train = tr.concat((X_full_train[:, 4].reshape(n,1), scaled_sigma_train), dim=1)
+        # bivariate include hhinc_mean2000 and scaled_sigma_train
+
+        # X_sigma is a global variable
 
         # NPMLE 
 
@@ -256,11 +268,68 @@ def fission_mse_without_close(m_sim=m_sim, Z=Z, alpha=alpha, epsilon_matrix=epsi
         mse_pm = np.sum((Z_evaluate_np - theta_hat_pm_train)**2)/n
         mse_pm_list.append(mse_pm)
 
+        ### Covariate methods ###
+
+        ## Sigma only ##
+
+        # SURE-THING
+        output_thing_sigma_only = train_covariates(scaled_sigma_train, Z_train, 
+                                        zeros_for_theta, use_location = use_location, use_scale = use_scale, hidden_sizes=(8,8))
+        theta_hat_thing_train = output_thing_sigma_only[5][-1,:]
+        mse_thing_sigma_only = np.sum((Z_evaluate_np - theta_hat_thing_train)**2)/n
+        mse_thing_sigma_only_list.append(mse_thing_sigma_only)
+
+        # SURE-LS
+        output_ls_sigma_only = train_sure_ls(scaled_sigma_train, Z_train, 
+                                    zeros_for_theta, objective="SURE", d=2)
+        theta_hat_ls_train = output_ls_sigma_only[4][-1,:]
+        mse_ls_sigma_only = np.sum((Z_evaluate_np - theta_hat_ls_train)**2)/n
+        mse_ls_sigma_only_list.append(mse_ls_sigma_only)
+
+
+        ## Bivariate ##
+
+        # SURE-THING (bivariate)
+        output_thing_bivariate = train_covariates(X_bivariate_train, Z_train, 
+                                        zeros_for_theta, use_location = use_location, use_scale = use_scale, hidden_sizes=(8,8))
+        theta_hat_thing_bivariate_train = output_thing_bivariate[5][-1,:]
+        mse_thing_bivariate = np.sum((Z_evaluate_np - theta_hat_thing_bivariate_train)**2)/n
+        mse_thing_bivariate_list.append(mse_thing_bivariate)
+
+        # SURE-LS (bivariate)
+        output_ls_bivariate = train_sure_ls(X_bivariate_train, Z_train, 
+                                        zeros_for_theta, hidden_sizes=(8,8))
+        theta_hat_ls_bivariate_train = output_ls_bivariate[4][-1,:]
+        mse_ls_bivariate = np.sum((Z_evaluate_np - theta_hat_ls_bivariate_train)**2)/n
+        mse_ls_bivariate_list.append(mse_ls_bivariate)
+
+        ## Full covariates ##
+
+        # SURE-THING (all covariates)
+        output_thing_full = train_covariates(X_full_train, Z_train, 
+                                        zeros_for_theta, use_location = use_location, use_scale = use_scale, hidden_sizes=(8,8))
+        theta_hat_thing_full_train = output_thing_full[5][-1,:]
+        mse_thing_full = np.sum((Z_evaluate_np - theta_hat_thing_full_train)**2)/n
+        mse_thing_full_list.append(mse_thing_full)
+
+        # SURE-LS (all covariates)
+        output_ls_full = train_sure_ls(X_full_train, Z_train, 
+                                        zeros_for_theta, hidden_sizes=(8,8))
+        theta_hat_ls_full_train = output_ls_full[4][-1,:]
+        mse_ls_full = np.sum((Z_evaluate_np - theta_hat_ls_full_train)**2)/n
+        mse_ls_full_list.append(mse_ls_full)
+
 
     mse_df = pd.DataFrame(
         {'NPMLE': mse_npmle_list,
          'mosek_fail': ~np.isnan(mosek_failures_idx_list), 
          'MLE': mse_mle_list,
-         'PM': mse_pm_list})
+         'PM': mse_pm_list,
+         'THING_sigma': mse_thing_sigma_only_list, 
+         'THING_bivariate': mse_thing_bivariate_list,
+         'THING_full':  mse_thing_full_list,
+         'LS_sigma': mse_ls_sigma_only_list, 
+         'LS_bivariate': mse_ls_bivariate_list,
+         'LS_full':  mse_ls_full_list})
 
     return(mse_df)

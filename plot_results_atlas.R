@@ -158,6 +158,7 @@ mean_squared_standard_error = 0.0029098331424100635
 
 B = 25 # number of replicates
 
+# from submitit_data_fission.py
 improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
   filter(mosek_fail=="False") %>%
   head(B) %>%
