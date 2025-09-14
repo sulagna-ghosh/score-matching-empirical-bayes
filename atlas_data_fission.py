@@ -63,10 +63,6 @@ n = df.shape[0]
 B = 100
 Z = tr.tensor(estimates).to(device)
 X_sigma = tr.tensor(sigma_np.reshape(n, 1)).to(device)
-print(df.columns)
-X = tr.tensor(df[[clean_covariates]]).to(device)
-X = tr.concat(X, X_sigma)
-print(X[0, :])
 
 use_location = False
 use_scale = True
