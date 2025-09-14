@@ -160,17 +160,23 @@ B = 25 # number of replicates
 
 # from submitit_data_fission.py
 improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
-  filter(mosek_fail=="False") %>%
+  filter(mosek_fail=="False", !is.na(THING_bivariate)) %>%
   head(B) %>%
   select(-mosek_fail, -X) %>%
-  mutate(rel_PM = (MLE - PM) / (MLE - 2*mean_squared_standard_error),
-         rel_NPMLE = (MLE - NPMLE) / (MLE - 2*mean_squared_standard_error)) %>%
-  select(4:5) %>%
-  pivot_longer(1:2, names_to = "model", values_to = "relative_improvement") 
+  mutate(rel_PM = (MLE - PM) / (MLE - NPMLE),
+         rel_NPMLE = (MLE - NPMLE) / (MLE - NPMLE),
+         rel_THING_sigma = (MLE - THING_sigma) / (MLE - NPMLE),
+         rel_LS_sigma = (MLE - LS_sigma) / (MLE - NPMLE),
+         rel_THING_bivariate = (MLE - THING_bivariate) / (MLE - NPMLE),
+         rel_LS_bivariate = (MLE - LS_bivariate) / (MLE - NPMLE),
+         rel_THING_full = (MLE - THING_full) / (MLE - NPMLE),
+         rel_LS_full = (MLE - LS_full) / (MLE - NPMLE)) %>%
+  select(starts_with("rel_")) %>%
+  pivot_longer(starts_with("rel_"), names_to = "model", values_to = "relative_improvement") 
 
 improvement_over_MLE %>%
   group_by(model) %>%
-  summarize(mean_improvement = mean(relative_improvement),
+  summarize(mean_improvement = mean(relative_improvement, na.rm=T),
             se_improvement = sd(relative_improvement)/sqrt(B)) 
 
 
