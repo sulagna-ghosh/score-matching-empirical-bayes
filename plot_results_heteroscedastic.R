@@ -120,7 +120,7 @@ ggplot(df_mean_plot, aes(x = factor(n), color=model, shape=model, linetype=model
         legend.position="bottom",
         text=element_text(size=25),
         legend.key.size = unit(2,"line")) +
-  # geom_hline(data = bayes_risk, aes(yintercept = yintercept), show.legend = F) +
+  geom_hline(data = bayes_risk, aes(yintercept = yintercept), show.legend = F) +
   geom_text(data = bayes_risk, aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)), hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
   scale_y_continuous(expand = expansion(mult = c(0.13, 0.1))) + 
   scale_color_manual(values=dark2_palette[c(1,3,2,4,10,9,8)], name="") +
@@ -130,6 +130,52 @@ ggplot(df_mean_plot, aes(x = factor(n), color=model, shape=model, linetype=model
   xlab("n")
 
 ggsave("results/figures/figure_1.png", height=20, width=16) 
+
+### One panel of MSEs #####
+
+# Could you redo the panel for "bimodal prior with two-point variance" 
+# including only SURE-grandmean, NPMLE, SURE-PM?
+# (As a single panel and perhaps with thicker lines)
+
+bimodal_only_mse_plot = df_mean_plot %>%
+  filter(experiment == '"Bimodal " * mu[i] * ", Two-point " * sigma[i]',
+         model %in% c('SURE-grandmean', 'NPMLE', 'SURE-PM')) %>%
+  mutate(model = factor(model, levels = c("NPMLE","SURE-PM","SURE-grandmean")))
+
+bimodel_only_bayes_risk = bayes_risk %>%
+  filter(experiment == '"Bimodal " * mu[i] * ", Two-point " * sigma[i]')
+
+ggplot() + 
+  geom_point(data=bimodal_only_mse_plot,
+             aes(x=factor(n), y=mean, color=model, shape=model),
+             size=2.5) + 
+  geom_line(data=bimodal_only_mse_plot,
+            aes(x=factor(n), y=mean, group=model, color=model, linetype=model),
+            linewidth=1) + 
+  geom_errorbar(data=bimodal_only_mse_plot,
+                aes(x=factor(n), group=model,
+                    ymin=mean-1.96*se, ymax=mean+1.96*se,
+                    color=model),
+                alpha=0.5, show.legend=F, width=0.5) +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position="bottom",
+        text=element_text(size=25),
+        legend.key.size = unit(2,"line")) +
+  scale_y_continuous(expand = expansion(mult = c(0.13, 0.1))) + 
+  scale_color_manual(values=dark2_palette[c(1,3,2,4,10,9,8)], name="") +
+  scale_linetype_manual(values=c(2, 4, 3, 1, 6, 5, 1), name="") +
+  scale_shape_manual(values=c(15, 17, 16, 18, 19, 20, 1), name="") +
+  geom_hline(data = bimodel_only_bayes_risk, aes(yintercept = yintercept), show.legend = F) +
+  geom_text(data = bimodel_only_bayes_risk,
+            aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)),
+            show.legend=F,
+            hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
+  ylab("In-sample MSE") +
+  xlab("n")
+
+ggsave("results/figures/figure_1_bimodal_only.png", height=6, width=8) 
+
+  
 
 # Read path for Figures 2, 3 ####
 
