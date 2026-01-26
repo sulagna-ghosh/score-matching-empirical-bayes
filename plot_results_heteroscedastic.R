@@ -165,11 +165,12 @@ ggplot() +
   scale_color_manual(values=dark2_palette[c(1,3,2,4,10,9,8)], name="") +
   scale_linetype_manual(values=c(2, 4, 3, 1, 6, 5, 1), name="") +
   scale_shape_manual(values=c(15, 17, 16, 18, 19, 20, 1), name="") +
-  geom_hline(data = bimodel_only_bayes_risk, aes(yintercept = yintercept), show.legend = F) +
-  geom_text(data = bimodel_only_bayes_risk,
-            aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)),
-            show.legend=F,
-            hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
+  scale_y_continuous(limits = c(0.15, 0.3)) +
+  #geom_hline(data = bimodel_only_bayes_risk, aes(yintercept = yintercept), show.legend = F) +
+  # geom_text(data = bimodel_only_bayes_risk,
+  #           aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)),
+  #           show.legend=F,
+  #           hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
   ylab("In-sample MSE") +
   xlab("n")
 
