@@ -12,11 +12,13 @@ SURE_LS_color = "#66A61E"
 Z_color = "darkgrey"
 
 
+
 # Plot shrinkage rules against sigma #### 
 
-theta_hat = read.csv("results/atlas/shrinkage_rule.csv") %>% select(-X)
+theta_hat = read.csv("results/atlas/shrinkage_rule.csv")
 
 theta_hat_pivot = theta_hat %>%
+  select(-X) %>%
   pivot_longer(1:5, names_to = "estimator", values_to = "y") 
 
 theta_hat_pivot = theta_hat_pivot %>%
@@ -48,6 +50,22 @@ shrinkage_plot = theta_hat_pivot %>%
 
 shrinkage_plot
 
+## What does Fig 3 in Chen look like for us? ####
+
+# https://jiafengkevinchen.github.io/assets/files/jchen_close.pdf
+
+theta_hat = theta_hat %>%
+  mutate(PM_NPMLE_diff = abs(SURE.PM - NPMLE),
+         THING_NPMLE_diff = abs(SURE.THING - NPMLE),
+         LS_NPMLE_diff = abs(SURE.LS - NPMLE))
+
+theta_hat %>%
+  arrange(-LS_NPMLE_diff) %>%
+  head(5)
+
+theta_hat %>%
+  arrange(-PM_NPMLE_diff) %>%
+  head(5)
 
 # Plot prior ####
 
@@ -158,11 +176,24 @@ mean_squared_standard_error = 0.0029098331424100635
 
 B = 25 # number of replicates
 
+# Get idx
+fission_idx = read.csv("results/atlas/data_fission_mse.csv") %>%
+  filter(mosek_fail=="False", !is.na(THING_bivariate)) %>%
+  head(B) %>% pull(X)
+
+# Get CLOSE MSE
+# (CLOSE only runs locally so it's a separate csv)
+improvement_over_MLE_close = read.csv("results/atlas/sse_close.csv") %>% 
+  filter(X %in% fission_idx) %>%
+  mutate(CLOSE = CLOSE / 10056,
+         CLOSE.residualized = CLOSE.residualized / 10056) %>% select(-X)
+
 # from submitit_data_fission.py
 improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
   filter(mosek_fail=="False", !is.na(THING_bivariate)) %>%
   head(B) %>%
   select(-mosek_fail, -X) %>%
+  bind_cols(improvement_over_MLE_close) %>%
   mutate(rel_PM = (MLE - PM) / (MLE - NPMLE),
          rel_NPMLE = (MLE - NPMLE) / (MLE - NPMLE),
          rel_THING_sigma = (MLE - THING_sigma) / (MLE - NPMLE),
@@ -170,15 +201,17 @@ improvement_over_MLE = read.csv("results/atlas/data_fission_mse.csv") %>%
          rel_THING_bivariate = (MLE - THING_bivariate) / (MLE - NPMLE),
          rel_LS_bivariate = (MLE - LS_bivariate) / (MLE - NPMLE),
          rel_THING_full = (MLE - THING_full) / (MLE - NPMLE),
-         rel_LS_full = (MLE - LS_full) / (MLE - NPMLE)) %>%
+         rel_LS_full = (MLE - LS_full) / (MLE - NPMLE),
+         rel_CLOSE_sigma = (MLE - CLOSE) / (MLE - NPMLE),
+         rel_CLOSE_full = (MLE - CLOSE.residualized) / (MLE - NPMLE)) %>%
   select(starts_with("rel_")) %>%
   pivot_longer(starts_with("rel_"), names_to = "model", values_to = "relative_improvement") 
 
 improvement_over_MLE %>%
   group_by(model) %>%
-  summarize(mean_improvement = mean(relative_improvement, na.rm=T),
-            se_improvement = sd(relative_improvement)/sqrt(B)) 
-
+  summarize(mean_improvement = mean(relative_improvement),
+            se_improvement = sd(relative_improvement)/sqrt(B)) %>%
+  filter(str_detect(model, "_bivariate", negate=TRUE)) %>% view()
 
 # Scratch ####
 
