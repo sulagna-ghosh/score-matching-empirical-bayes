@@ -131,7 +131,7 @@ ggplot(df_mean_plot, aes(x = factor(n), color=model, shape=model, linetype=model
 
 ggsave("results/figures/figure_1.png", height=20, width=16) 
 
-### One panel of MSEs #####
+### Bimodal prior, two-point variance: One panel of MSEs #####
 
 # Could you redo the panel for "bimodal prior with two-point variance" 
 # including only SURE-grandmean, NPMLE, SURE-PM?
@@ -176,7 +176,46 @@ ggplot() +
 
 ggsave("results/figures/figure_1_bimodal_only.png", height=6, width=8) 
 
-  
+### Uni-covariate heteroscedastic prior: One panel of MSEs #####
+
+
+unicovariate_only_mse_plot = df_mean_plot %>%
+  filter(experiment == '"Uni-covariate" * " heteroscedastic" * " prior"',
+         model != 'EBCF') %>%
+  mutate(model = factor(model, levels = c("NPMLE","SURE-PM","SURE-grandmean", "SURE-THING",
+                                          "SURE-LS")))
+
+ggplot() + 
+  geom_point(data=unicovariate_only_mse_plot,
+             aes(x=factor(n), y=mean, color=model, shape=model),
+             size=2.5) + 
+  geom_line(data=unicovariate_only_mse_plot,
+            aes(x=factor(n), y=mean, group=model, color=model, linetype=model),
+            linewidth=1) + 
+  geom_errorbar(data=unicovariate_only_mse_plot,
+                aes(x=factor(n), group=model,
+                    ymin=mean-1.96*se, ymax=mean+1.96*se,
+                    color=model),
+                alpha=0.5, show.legend=F, width=0.5) +
+  theme(axis.text.x = element_text(angle=45, hjust=1),
+        legend.position="bottom",
+        text=element_text(size=25),
+        legend.key.size = unit(2,"line")) +
+  scale_y_continuous(expand = expansion(mult = c(0.13, 0.1))) + 
+  scale_color_manual(values=dark2_palette[c(1,3,2,4,10,9,8)], name="") +
+  scale_linetype_manual(values=c(2, 4, 3, 1, 6, 5, 1), name="") +
+  scale_shape_manual(values=c(15, 17, 16, 18, 19, 20, 1), name="") +
+  #geom_hline(data = bimodel_only_bayes_risk, aes(yintercept = yintercept), show.legend = F) +
+  # geom_text(data = bimodel_only_bayes_risk,
+  #           aes(x = 5, y = yintercept, label = paste0("Bayes risk: ", yintercept)),
+  #           show.legend=F,
+  #           hjust = -0.15, vjust = 1.35, color = 'black', size = 7) +
+  ylab("In-sample MSE") +
+  xlab("n") +
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
+
+ggsave("results/figures/figure_1_unicovariate_only.png", height=6.5, width=8) 
+
 
 # Read path for Figures 2, 3 ####
 
@@ -449,5 +488,83 @@ ggplot() +
 ggsave("results/figures/figure_3_right.png", width = 4, height=5) 
 
 # Manually combine left and right
+
+# Bottom two panels of Figure 3 ####
+
+marginal_01_and_05 = marginal_and_shrinkage_01 %>%
+  filter(name == "B") %>%
+  bind_rows( (marginal_and_shrinkage_05 %>%
+              filter(name == "B")) )
+
+ribbon_marginal_01_and_05 = ribbon_marginal_01 %>%
+  bind_rows(ribbon_marginal_05) %>%
+  bind_cols("variance" = c("sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.1",
+              "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.1",
+              "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.5",
+              "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.5"))
+
+
+ggplot() +
+  geom_area(data=ribbon_marginal_01_and_05, aes(x=Z, y=y), fill="#9EEEEE", alpha=0.4) +
+  geom_line(data=marginal_01_and_05  %>%
+              mutate(delete_to_truncate = (name == "A" & value < -1.5)) %>% 
+              filter(Z >= -3, Z <= 3, !delete_to_truncate), aes(x=Z, y = value, color=model, linetype=model, alpha=alpha_95), size=0.8) +
+  facet_rep_grid(cols= vars(variance), scales="free_y",
+                 switch="both",
+                 repeat.tick.labels = T) +
+  scale_color_manual(values=NPMLE_misspec_truth, name="", breaks=c("NPMLE", "SURE-PM", "Ground truth")) +
+  theme(legend.position="bottom", text=element_text(size=13),
+        legend.key.size = unit(3,"line"),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        strip.text=element_blank()) +
+  ylab(TeX(r"($f_G(z \, | \, sigma_i^2)$)")) +
+  xlab(TeX("z")) +
+  scale_linetype_manual(values=c(2, 4, 1), name="", breaks=c("NPMLE", "SURE-PM", "Ground truth")) +
+  guides(alpha="none",linetype="none", color = "none") +
+  scale_alpha_manual(values=c(1, .25, .25)) +
+  ylab("Marginal\n") 
+
+ggsave("results/figures/figure_3_bottom.png", width = 12, height=3) 
+
+# Top two panels of Figure 3 ####
+
+shrinkage_01_and_05 = marginal_and_shrinkage_01 %>%
+  filter(name == "A") %>%
+  bind_rows( (marginal_and_shrinkage_05 %>%
+                filter(name == "A")) )
+
+invisible_point_for_scaling = data.frame(x = c(0, 0), y = c(-1, 3), name= "A",
+                                         variance = c("sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.5",
+                                                      "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.5")) %>%
+  mutate(variance = factor(variance, levels = c("sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.1",
+                                                "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.5")))
+
+
+ggplot() +
+  geom_line(data=shrinkage_01_and_05  %>%
+              mutate(delete_to_truncate = (name == "A" & value < -1.5)) %>% 
+              filter(Z >= -3, Z <= 3, !delete_to_truncate, 
+                     !((variance == "sigma[i]^{\n    2\n} * {\n    phantom() == phantom()\n} * 0.1") & value < 1.25)), 
+            aes(x=Z, y = value, color=model, linetype=model, alpha=alpha_95), size=0.8) +
+  geom_point(data=invisible_point_for_scaling,
+             aes(x=x, y=y, group=variance), alpha=0) +
+  facet_wrap(~ variance, scales="free") +
+  scale_color_manual(values=NPMLE_misspec_truth, name="", breaks=c("NPMLE", "SURE-PM", "Ground truth")) +
+  theme(legend.position="bottom", text=element_text(size=13),
+        legend.key.size = unit(3,"line"),
+        strip.background = element_blank(),
+        strip.placement = 'outside',
+        strip.text=element_blank()) +
+  ylab(TeX(r"($f_G(z \, | \, sigma_i^2)$)")) +
+  xlab(TeX("z")) +
+  scale_linetype_manual(values=c(2, 4, 1), name="", breaks=c("NPMLE", "SURE-PM", "Ground truth")) +
+  guides(alpha="none",linetype="none", color = "none") +
+  scale_alpha_manual(values=c(1, .25, .25)) +
+  ylab("Posterior mean\n") +
+  scale_x_continuous(limits = c(-3, 3)) +
+  xlab("")
+
+ggsave("results/figures/figure_3_top.png", width = 12, height=3) 
 
 
