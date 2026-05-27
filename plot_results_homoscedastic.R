@@ -86,3 +86,14 @@ nocovariates_binary %>%
   group_by(mu, k, estimator_name) %>%
   summarize(mean_sum_squared_errors = mean(MSE),
             count = n()) %>% view() 
+
+# Compare SURE of NPMLE vs. SURE of SURE-PM
+
+names(nocovariates_normal)
+# homoscedastic experiments didn't save the SURE of NPMLE
+
+
+
+
+
+

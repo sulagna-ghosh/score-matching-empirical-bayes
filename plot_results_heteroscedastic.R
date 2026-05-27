@@ -567,4 +567,35 @@ ggplot() +
 
 ggsave("results/figures/figure_3_top.png", width = 12, height=3) 
 
+# Check the SURE of NPMLE vs. the SURE of SURE-PM ####
+
+
+npmle_and_misspec_df = df %>% 
+  select(SURE_NPMLE, SURE_misspec, experiment, n) %>%
+  filter(!is.na(SURE_NPMLE) & !is.na(SURE_misspec)) %>%
+  mutate(is_sure_of_pm_smaller = SURE_misspec < SURE_NPMLE) 
+
+failed_experiments = npmle_and_misspec_df %>% 
+  filter(!is_sure_of_pm_smaller) %>% select(experiment, n) %>% unique()
+
+npmle_and_misspec_df %>%
+  group_by(n, experiment, is_sure_of_pm_smaller) %>%
+  summarize(count = n(), 
+            pct = n() / dim(npmle_and_misspec_df)[1]) %>% view()
+
+
+
+npmle_and_misspec_df %>%
+  group_by(is_sure_of_pm_smaller) %>%
+  summarize(count = n(), 
+            pct = n() / dim(npmle_and_misspec_df)[1])
+
+npmle_and_misspec_df %>% 
+  filter((experiment %in% failed_experiments$experiment ) & 
+           n %in% failed_experiments$n) %>%
+  ggplot(aes(x = SURE_misspec, y = SURE_NPMLE, color = is_sure_of_pm_smaller)) + 
+           geom_point() + facet_wrap(experiment ~ n, scales="free", nrow=3) + 
+           geom_abline() +
+  theme(legend.position = "bottom")
+
 
