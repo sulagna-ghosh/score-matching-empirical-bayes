@@ -2,9 +2,9 @@
 
 # Parameters
 #SBATCH --error=/home/amberlee0516/score-matching-empirical-bayes/submitit_log/%j/%j_0_log.err
-#SBATCH --gpus-per-node=1
+#SBATCH --gpus-per-node=2
 #SBATCH --job-name=EB
-#SBATCH --mem=15GB
+#SBATCH --mem=24GB
 #SBATCH --nodes=1
 #SBATCH --open-mode=append
 #SBATCH --output=/home/amberlee0516/score-matching-empirical-bayes/submitit_log/%j/%j_0_log.out

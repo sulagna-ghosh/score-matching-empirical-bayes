@@ -1,0 +1,71 @@
+submitit INFO (2026-06-01 12:38:56,723) - Starting with JobEnvironment(job_id=915380, hostname=j004-ds, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-06-01 12:38:56,723) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/915380/915380_submitted.pkl
+simulate_data.py: device = cuda:0
+Start location_scale_comparison
+m: 1300
+n: 100
+experiment: c
+Finished training EB misspecified with NPMLE init, with SURE: 0.04982094065429564
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.17536795259205626
+Finished training EB misspecified, with SURE: 0.08314616963817954
+Finished training EB misspecified, with in-sample MSE: 0.08032591358298034
+
+ Training SURE of the models:
+SURE-PM: 0.08314616963817954
+NPMLE: 1.020386781349721
+SURE-PM, NPMLE init: 0.04982094065429564
+experiment: d
+Finished training EB misspecified with NPMLE init, with SURE: 0.010411533193342102
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.011233437429807147
+Finished training EB misspecified, with SURE: 0.010414989971331395
+Finished training EB misspecified, with in-sample MSE: 0.011230534428398251
+
+ Training SURE of the models:
+SURE-PM: 0.010414989971331395
+NPMLE: 0.08308262022604447
+SURE-PM, NPMLE init: 0.010411533193342102
+experiment: e
+Finished training EB misspecified with NPMLE init, with SURE: 0.11428521617536824
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.24954556783206092
+Finished training EB misspecified, with SURE: 0.1142901514695432
+Finished training EB misspecified, with in-sample MSE: 0.24953317750172987
+
+ Training SURE of the models:
+SURE-PM: 0.1142901514695432
+NPMLE: 0.381625259479231
+SURE-PM, NPMLE init: 0.11428521617536824
+n: 200
+experiment: c
+Finished training EB misspecified with NPMLE init, with SURE: 0.056197273131473865
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.05385324184787686
+Finished training EB misspecified, with SURE: 0.0562002820093845
+Finished training EB misspecified, with in-sample MSE: 0.05385565007789971
+
+ Training SURE of the models:
+SURE-PM: 0.0562002820093845
+NPMLE: 0.5064450728562176
+SURE-PM, NPMLE init: 0.056197273131473865
+experiment: d
+Finished training EB misspecified with NPMLE init, with SURE: -0.015920245339871554
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.0060597625502457455
+Finished training EB misspecified, with SURE: -0.015917971735772394
+Finished training EB misspecified, with in-sample MSE: 0.00605502718252381
+
+ Training SURE of the models:
+SURE-PM: -0.015917971735772394
+NPMLE: 0.02773992616011764
+SURE-PM, NPMLE init: -0.015920245339871554
+experiment: e
+Finished training EB misspecified with NPMLE init, with SURE: 0.13300662313614203
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.17333232589363803
+Finished training EB misspecified, with SURE: 0.13301293304446887
+Finished training EB misspecified, with in-sample MSE: 0.17333475598363549
+
+ Training SURE of the models:
+SURE-PM: 0.13301293304446887
+NPMLE: 0.3461244901412651
+SURE-PM, NPMLE init: 0.13300662313614203
+n: 400
+experiment: c
+Finished training EB misspecified with NPMLE init, with SURE: -0.005276204835607459
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.05845368396576221

@@ -39,6 +39,7 @@ def simulate_location_scale_with_seed(random_seed,
             print(f"experiment: {experiment}")
 
             rn.seed(random_seed)
+            tr.manual_seed(random_seed)
 
             theta, Z, X = simulate_data.xie(experiment=experiment, n=n)
 
@@ -87,8 +88,8 @@ def simulate_location_scale_with_seed(random_seed,
             print(f"NPMLE: {SURE_NPMLE}")
             print(f"SURE-PM, NPMLE init: {SURE_NPMLEinit}")
 
-            if SURE_misspec > SURE_NPMLEinit:
-                print(f"NPMLE's SURE is lower by {SURE_misspec - SURE_NPMLEinit}.")
+            if SURE_misspec > SURE_NPMLE:
+                print(f"NPMLE's SURE is lower by {SURE_misspec - SURE_NPMLE}.")
                 print(f"Seed: {random_seed}")
                 is_NPMLE_SURE_lower_than_SURE_PM_list.append(True)
             else:
@@ -123,18 +124,19 @@ def simulate_location_scale_with_seed(random_seed,
     
     return(mse_sure_df)
 
-def make_df(ns=[100, 200, 400, 800, 1600, 3200],
+def make_df(start_seed, end_seed,
+            ns=[100, 200, 400, 800, 1600, 3200],
             experiments=["c", "d", "e"],
-            optimizer_str="adam", m_sim=1000, B=100):
+            optimizer_str="adam", B=100):
     """
     Compute MSEs and SURE on train and test for all models, m_sim times and returns a concatenated dataframe. 
     """
 
     mse_sure_results = [] # list of dataframes
     
-    for m in range(m_sim):
-        print(f"m_sim: {m}")
-        mse_sure_results.append(simulate_location_scale_with_seed(random_seed=m_sim,
+    for m in range(start_seed, end_seed + 1):
+        print(f"m: {m}")
+        mse_sure_results.append(simulate_location_scale_with_seed(random_seed=m,
                                                                   ns=ns, experiments=experiments, B=B,
                                                         optimizer_str=optimizer_str)) 
 
