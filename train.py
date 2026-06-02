@@ -13,13 +13,14 @@ import simulate_data # simulate_data.device
 
 def train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', 
                         init_val_theta = tr.log(tr.Tensor([1.5])), init_val_pi = tr.log(tr.Tensor([1.5])),
-                        use_location=False, use_scale=False,
+                        use_location=False, use_scale=False, randomly_initialize_theta_pi=False,
                         device=simulate_data.device, optimizer_str="adam",
                         lr=1e-2, n_iter=4000): 
     """
     Training function for SURE-PM. 
     is_cuda: if True, then generate model on simulate_data.device (which is GPU if GPU is available).
              So if is_cuda=True but only CPU is available, it will be on CPU.
+    * randomly_initialize_theta_pi is for model_theta_pi_sure
     """
     
     # define model
@@ -30,7 +31,8 @@ def train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
                                         use_location=use_location, use_scale=use_scale, device=device)
     elif opt_objective == 'both': 
         model = models.model_theta_pi_sure(Z, B, init_val_theta=init_val_theta, init_val_pi=init_val_pi, 
-                                           use_location=use_location, use_scale=use_scale, device=device)
+                                           use_location=use_location, use_scale=use_scale, device=device,
+                                           randomly_initialize_theta_pi=randomly_initialize_theta_pi)
     elif opt_objective == 'pi-sparse': 
         model = models.model_pi_sure_sparse(Z, B, init_val=init_val_pi, device=device) 
 

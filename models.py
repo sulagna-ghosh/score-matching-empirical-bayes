@@ -14,13 +14,17 @@ class model_theta_pi_sure(tr.nn.Module):
     """
 
     def __init__(self, Z, B, init_val_theta, init_val_pi, use_location=False, use_scale=True, device="cpu",
-                 quantile_IQR = 0.95):
+                 quantile_IQR=0.95, randomly_initialize_theta_pi=False):
 
         super(model_theta_pi_sure, self).__init__()
 
         # real hyperparams 
-        self.theta_real_vals = tr.nn.Parameter((tr.ones(B-1) * init_val_theta).to(device), requires_grad=True)
-        self.pi_real_vals = tr.nn.Parameter((tr.ones(B) * init_val_pi).to(device), requires_grad=True)
+        if randomly_initialize_theta_pi:
+            self.theta_real_vals = tr.nn.Parameter((tr.rand(B-1) * init_val_theta).to(device), requires_grad=True)
+            self.pi_real_vals = tr.nn.Parameter((tr.rand(B) * init_val_pi).to(device), requires_grad=True)
+        else: 
+            self.theta_real_vals = tr.nn.Parameter((tr.ones(B-1) * init_val_theta).to(device), requires_grad=True)
+            self.pi_real_vals = tr.nn.Parameter((tr.ones(B) * init_val_pi).to(device), requires_grad=True)
 
         self.B = B
         self.min_Z = min(Z).to(device)
