@@ -69,7 +69,7 @@ def simulate_location_scale_with_seed(random_seed,
             if found_NPMLE_solution:
                 # EB - NPMLEinit
                 result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE),
-                                                            optimizer_str=optimizer_str, use_location=True, use_scale=True, device=simulate_data.device) 
+                                                            optimizer_str=optimizer_str, use_location=False, use_scale=True, device=simulate_data.device) 
                 model_NPMLEinit, SURE_NPMLEinit, score_NPMLEinit, theta_hats_NPMLEinit, twonorm_diff_NPMLEinit = result_NPMLEinit
                 SURE_NPMLEinit = SURE_NPMLEinit[-1]
                 print(f"Finished training EB misspecified with NPMLE init, with SURE: {SURE_NPMLEinit}")
@@ -77,7 +77,7 @@ def simulate_location_scale_with_seed(random_seed,
 
             # EB - misspecified
             result_misspec = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
-                                                    optimizer_str=optimizer_str, use_scale=True, use_location=True, device=simulate_data.device) 
+                                                    optimizer_str=optimizer_str, use_scale=True, use_location=False, device=simulate_data.device) 
             model_misspec, SURE_misspec, score_misspec, theta_hats_misspec, twonorm_diff_misspec = result_misspec
             SURE_misspec = SURE_misspec[-1]
             print(f"Finished training EB misspecified, with SURE: {SURE_misspec}")
@@ -143,3 +143,5 @@ def make_df(start_seed, end_seed,
     mse_sure_df = pd.concat(mse_sure_results)
 
     return mse_sure_df 
+
+

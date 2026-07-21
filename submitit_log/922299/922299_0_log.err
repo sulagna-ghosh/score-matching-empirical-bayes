@@ -1,0 +1,56 @@
+submitit WARNING (2026-06-03 23:52:17,012) - Caught signal SIGUSR2 on m001: this job is timed-out.
+submitit ERROR (2026-06-03 23:52:17,143) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/logging/__init__.py", line 1697, in isEnabledFor
+    return self._cache[level]
+KeyError: 30
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+  File "/home/amberlee0516/score-matching-empirical-bayes/submitit_optimization_checks.py", line 11, in save_mse_df
+    df = make_df(start_seed, end_seed, ns,
+  File "/home/amberlee0516/score-matching-empirical-bayes/optimization_checks.py", line 139, in make_df
+    mse_sure_results.append(simulate_location_scale_with_seed(random_seed=m,
+  File "/home/amberlee0516/score-matching-empirical-bayes/optimization_checks.py", line 71, in simulate_location_scale_with_seed
+    result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE),
+  File "/home/amberlee0516/score-matching-empirical-bayes/train.py", line 87, in train_no_covariates
+    optimizer.step()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/optim/optimizer.py", line 494, in wrapper
+    return out
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/autograd/profiler.py", line 705, in __exit__
+    torch.ops.profiler._record_function_exit._RecordFunction(record)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/_ops.py", line 888, in __call__
+    if _must_dispatch_in_python(args, kwargs):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/_ops.py", line 944, in _must_dispatch_in_python
+    return pytree.tree_any(
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/utils/_pytree.py", line 1187, in tree_any
+    return any(map(pred, flat_args))
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/torch/utils/_pytree.py", line 879, in tree_iter
+    if _is_leaf(tree, is_leaf=is_leaf):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/job_environment.py", line 196, in bypass
+    self._logger.warning(f"Bypassing signal {signal.Signals(signum).name}")
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/logging/__init__.py", line 1457, in warning
+    if self.isEnabledFor(WARNING):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/logging/__init__.py", line 1705, in isEnabledFor
+    level >= self.getEffectiveLevel()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/logging/__init__.py", line 1683, in getEffectiveLevel
+    while logger:
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/job_environment.py", line 226, in checkpoint_and_try_requeue
+    raise utils.UncompletedJobError(message)
+submitit.core.utils.UncompletedJobError: Job not requeued because: timed-out and not checkpointable.
+srun: error: m001: task 0: Exited with exit code 1

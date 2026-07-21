@@ -11,6 +11,59 @@ import random
 
 # experiments c)-f) in xie 2012 and four additional experiments in section 6.2 
 
+# TODO: 
+master_seed = 0000
+heteroscedastic_synthetic_data_path = "hi" # Some path object
+
+def set_seed():
+    pass
+
+
+def synthetic_data_of_experiment(ns, m_sim, experiment):
+
+    # Nested dictionary
+
+    experiment_data_dict = {}
+    for n in ns:
+        for m in range(m_sim):
+            experiment_data_dict[(n, m)] = simulate_data.xie(
+                experiment=experiment, n=n)
+
+    return experiment_data_dict
+
+def generate_and_save_synthetic_data(ns, m_sim, experiments):
+
+    set_seed()
+
+    for experiment in experiments:
+        pass
+
+    # Save as a json
+
+    pass
+
+def read_experiment_dataset(experiment, heteroscedastic_synthetic_data_path):
+    pass
+
+def read_slice_of_experiment(experiment_data_dict, n, m):
+    """
+    * Returns theta, Z, X as tensors (as per simulate_data.xie output)
+    """
+    return experiment_data_dict[(n, m)]
+
+
+def revised_simulate_experiment_location_scale(ns, m_sim, experiment):
+
+    synthetic_data = read_experiment_dataset()
+
+
+    pass
+
+def revised_make_df():
+    # Maybe I should make each experiment one job so I can run things in parallel
+    pass
+
+
 def simulate_location_scale(ns=[100, 200, 400, 800, 1600, 3200, 6400],
                           experiments=["c", "d", "d5", "e", "f"],
                           hidden_sizes=(8,8), B=100,

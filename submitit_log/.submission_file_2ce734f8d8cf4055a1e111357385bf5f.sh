@@ -1,0 +1,1 @@
+/home/amberlee0516/score-matching-empirical-bayes/submitit_log/922300/922300_submission.sh

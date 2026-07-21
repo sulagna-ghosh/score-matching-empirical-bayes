@@ -26,7 +26,7 @@ if __name__ == "__main__":
     executor.update_parameters(name="EB", slurm_partition="general", gpus_per_node=2, nodes=1,
                                mem_gb=24, timeout_min=700)
     
-    job = executor.submit(save_mse_df, start_seed = 1900, end_seed = 2099, ns=[100, 200, 400],
+    job = executor.submit(save_mse_df, start_seed = 3000, end_seed = 3199, ns=[100, 400],
             experiments=["c", "d", "e"],
             optimizer_str="adam", B=100) 
 
