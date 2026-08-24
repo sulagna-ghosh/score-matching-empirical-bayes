@@ -1,4 +1,5 @@
 import simulate_data
+from simulate_data import device
 import train
 import models
 
@@ -8,56 +9,190 @@ import pandas as pd
 import torch as tr 
 import scipy.stats as ss
 import random
+from pathlib import Path
+import pickle
+import ast
 
 # experiments c)-f) in xie 2012 and four additional experiments in section 6.2 
 
-# TODO: 
-master_seed = 0000
-heteroscedastic_synthetic_data_path = "hi" # Some path object
+master_seed = 24422442
+m_sim = 500
+ns = [100, 200, 400, 800, 1600, 3200, 6400]
+experiments=['c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']
 
-def set_seed():
-    pass
-
-
-def synthetic_data_of_experiment(ns, m_sim, experiment):
+def synthetic_data_of_experiment(ns, m_sim, experiment, generator):
 
     # Nested dictionary
-
     experiment_data_dict = {}
     for n in ns:
         for m in range(m_sim):
             experiment_data_dict[(n, m)] = simulate_data.xie(
-                experiment=experiment, n=n)
-
+                experiment=experiment, n=n, generator=generator)
+        
     return experiment_data_dict
 
-def generate_and_save_synthetic_data(ns, m_sim, experiments):
+def generate_and_save_synthetic_data(master_seed, ns, m_sim, experiments):
 
-    set_seed()
+    assert set(experiments) <= set(['c', 'd', 'd5', 'e', 'f', 'g', 'h', 'i', 'j']) 
+
+    # Generator
+    generator = np.random.default_rng(seed=master_seed)
+
+    save_path = Path.cwd() / "synthetic_data"
+    save_path.mkdir(exist_ok=True)
 
     for experiment in experiments:
-        pass
+        
+        experiment_save_path = save_path / experiment
+        Path(save_path / experiment).mkdir(exist_ok=True)
 
-    # Save as a json
+        experiment_data_dict = synthetic_data_of_experiment(ns, m_sim, experiment, generator)
+        # string_keyed_experiment_data_dict = {str(key): value for key, value in experiment_data_dict.items()}
 
-    pass
+        with open(str(experiment_save_path) + '/data.pkl', 'wb') as f:
+            pickle.dump(experiment_data_dict, f)
+    
 
-def read_experiment_dataset(experiment, heteroscedastic_synthetic_data_path):
-    pass
+def read_experiment_dict(experiment):
+    assert experiment in set(['c', 'd', 'd5', 'e', 'f', 'g', 'h', 'i', 'j']) 
+
+    experiment_save_path = Path.cwd() / "synthetic_data" / experiment
+
+    with open(str(experiment_save_path) + "/data.pkl", "rb") as f:
+        loaded_data_dict = pickle.load(f)
+    
+    # restored_data_dict = {ast.literal_eval(key): value for key, value in loaded_data_dict.items()}
+
+    return loaded_data_dict
 
 def read_slice_of_experiment(experiment_data_dict, n, m):
     """
-    * Returns theta, Z, X as tensors (as per simulate_data.xie output)
+    * Returns theta, Z, X as array, tensor, tensor (as per simulate_data.xie output)
     """
     return experiment_data_dict[(n, m)]
 
 
-def revised_simulate_experiment_location_scale(ns, m_sim, experiment):
 
-    synthetic_data = read_experiment_dataset()
+def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, experiment,
+                          hidden_sizes=(8,8), B=100,
+                          optimizer_str="adam",
+                          simulate_location_list=[False],
+                          simulate_scale_list=[True], 
+                          skip_connect=False):
 
+    synthetic_data = read_experiment_dict(experiment)
 
-    pass
+    ns_list, use_locations_list, use_scales_list = [], [], []
+
+    MSE_wellspec_list, SURE_wellspec_list = [], []
+    MSE_misspec_list, SURE_misspec_list = [], []
+    MSE_NPMLE_list, SURE_NPMLE_list = [], []
+    MSE_NPMLEinit_list, SURE_NPMLEinit_list = [], []
+    MSE_thetaG_list, SURE_thetaG_list = [], []
+    MSE_surels_list, SURE_surels_list = [], []
+    MSE_ebcf_list = []
+
+    for n in ns:
+        print(f"\nn: {n}")
+        for m in range(m_sim_start, m_sim_end+1): # endpoint of range is not inclusive
+            print(f"m: {m}")
+
+            theta, Z, X = read_slice_of_experiment(synthetic_data, n, m)
+            Z = Z.to(device)
+            X = X.to(device)
+
+            MSE_NPMLE, SURE_NPMLE, found_NPMLE_solution, pi_hat_NPMLE = train.train_and_evaluate_npmle(n, B, Z, theta, X)
+
+            # Xie - theta G parametric baseline
+            theta_hat_G, MSE_thetaG, SURE_thetaG, grand_mean, lambda_hat = models.theta_hat_G(theta, Z, X)
+            print(f"Finished solving parametric estimator, with SURE {SURE_thetaG}")
+            print(f"Finished solving parametric estimator, with in-sample MSE {MSE_thetaG}")
+            
+            # EBCF 
+            theta_hats_ebcf, A_hats_ebcf, MSE_ebcf, model_ebcf = train.train_EBCF(X, Z, theta) 
+            print(f"Finished solving EBCF, with in-sample MSE {MSE_ebcf}") 
+
+            # EB - SURE LS
+            result_surels = train.train_sure_ls(X, Z, theta, set_seed = None, d=2, device=simulate_data.device, 
+                                                optimizer_str=optimizer_str, hidden_sizes=hidden_sizes) 
+            model_surels, Ft_Rep_surels, SURE_surels, score_surels, theta_hats_surels, twonorm_diff_surels = result_surels
+            SURE_surels = SURE_surels[-1] 
+            print(f"Finished training EB SURE-LS, with SURE: {SURE_surels}")
+            print(f"Finished training EB SURE-LS, with in-sample MSE: {twonorm_diff_surels / n}") 
+
+            for use_scale in simulate_scale_list:
+
+                print(f"use_scale: {use_scale}")
+
+                for use_location in simulate_location_list:
+
+                    print(f"use_location: {use_location}")
+
+                    ns_list.append(n)
+                    use_locations_list.append(use_location)
+                    use_scales_list.append(use_scale)
+
+                    if found_NPMLE_solution:
+                        # EB - NPMLEinit
+                        result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE),
+                                                                    optimizer_str=optimizer_str, use_location=use_location, use_scale=use_scale, device=simulate_data.device) 
+                        _, SURE_NPMLEinit, _, _, twonorm_diff_NPMLEinit = result_NPMLEinit
+                        SURE_NPMLEinit = SURE_NPMLEinit[-1]
+                        print(f"Finished training EB misspecified with NPMLE init, with SURE: {SURE_NPMLEinit}")
+                        print(f"Finished training EB misspecified with NPMLE init, with in-sample MSE: {twonorm_diff_NPMLEinit / n}")
+
+                    # EB - misspecified
+                    result_misspec = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
+                                                            optimizer_str=optimizer_str, use_scale=use_scale, use_location=use_location, device=simulate_data.device) 
+                    _, SURE_misspec, _, _, twonorm_diff_misspec = result_misspec
+                    SURE_misspec = SURE_misspec[-1]
+                    print(f"Finished training EB misspecified, with SURE: {SURE_misspec}")
+                    print(f"Finished training EB misspecified, with in-sample MSE: {twonorm_diff_misspec / n}")
+
+                    # EB - well specified
+                    result_wellspec = train.train_covariates(X, Z, theta, objective="SURE", set_seed=None, d=2, B=B, drop_sigma=False,
+                                                                optimizer_str=optimizer_str,
+                                                                hidden_sizes=hidden_sizes, use_location=use_location, use_scale=use_scale, device=simulate_data.device, 
+                                                                skip_connect=skip_connect) 
+                    _, _, SURE_wellspec, NLL_wellspec, _, _, twonorm_diff_wellspec = result_wellspec
+                    SURE_wellspec = SURE_wellspec[-1]
+                    NLL_wellspec = NLL_wellspec[-1]
+                    print(f"Finished training EB wellspecified, with SURE: {SURE_wellspec}")
+                    print(f"Finished training EB wellspecified, with in-sample MSE: {twonorm_diff_wellspec / n}")
+
+                    # Append train results
+                    MSE_misspec_list.append(twonorm_diff_misspec/n), SURE_misspec_list.append(SURE_misspec)
+                    MSE_wellspec_list.append(twonorm_diff_wellspec/n), SURE_wellspec_list.append(SURE_wellspec)
+                    MSE_thetaG_list.append(MSE_thetaG), SURE_thetaG_list.append(SURE_thetaG)
+                    MSE_surels_list.append(twonorm_diff_surels/n), SURE_surels_list.append(SURE_surels) 
+                    MSE_ebcf_list.append(MSE_ebcf) 
+
+                    if found_NPMLE_solution:
+                        MSE_NPMLE_list.append(MSE_NPMLE), MSE_NPMLEinit_list.append(twonorm_diff_NPMLEinit/n)
+                        SURE_NPMLE_list.append(SURE_NPMLE), SURE_NPMLEinit_list.append(SURE_NPMLEinit)
+                    else:
+                        MSE_NPMLE_list.append(None), MSE_NPMLEinit_list.append(None)
+                        SURE_NPMLE_list.append(None), SURE_NPMLEinit_list.append(None)
+
+    mse_sure_df = pd.DataFrame({'n': ns_list,
+                                'use_location': use_locations_list,
+                                'use_scale': use_scales_list,
+                                'MSE_wellspec': MSE_wellspec_list,
+                                'MSE_misspec': MSE_misspec_list,
+                                'MSE_surels': MSE_surels_list,
+                                'MSE_NPMLEinit': MSE_NPMLEinit_list,
+                                'MSE_NPMLE': MSE_NPMLE_list,
+                                'MSE_thetaG': MSE_thetaG_list,
+                                'MSE_EBCF': MSE_ebcf_list,
+                                'SURE_wellspec': SURE_wellspec_list,
+                                'SURE_misspec': SURE_misspec_list,
+                                'SURE_surels': SURE_surels_list,
+                                'SURE_NPMLEinit': SURE_NPMLEinit_list,
+                                'SURE_NPMLE': SURE_NPMLE_list,
+                                'SURE_thetaG': SURE_thetaG_list,
+                                'data': len(ns)*m_sim*len(simulate_location_list)*len(simulate_scale_list)*['train']}) 
+    
+    return(mse_sure_df)
 
 def revised_make_df():
     # Maybe I should make each experiment one job so I can run things in parallel

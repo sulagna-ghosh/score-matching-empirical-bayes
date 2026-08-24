@@ -464,8 +464,37 @@ def train_EBCF(X, Z, theta, K = 5, set_seed = None, d=2, device=simulate_data.de
         A_hats.append(A_test_hat) 
         MSE += MSE_test 
 
-        print(k) 
+        # print(k) 
     
     MSE = MSE/K 
 
     return (theta_hats, A_hats, MSE, model) 
+
+def train_and_evaluate_npmle(n, B, Z, theta, X):
+    """
+    Returns MSE and SURE
+    """
+
+    found_NPMLE_solution=False
+    try: 
+
+        # NPMLE - misspecified. 
+        # CPU 
+        result_NPMLE = train_npmle(n, B, Z, theta, X) 
+        _, _, _, _, twonorm_diff_NPMLE, pi_hat_NPMLE = result_NPMLE
+        pi_hat_NPMLE[pi_hat_NPMLE < 0] = 0
+        model_NPMLE = models.model_pi_sure(Z=Z, B=B, init_val=tr.log(pi_hat_NPMLE), device="cpu") # to compute SURE, theta hat
+        SURE_NPMLE = model_NPMLE.opt_func(Z.cpu(), n, B, sigma=X[:,-1].cpu()).item()
+        # model_NPMLE is CPU
+        print(f"Finished solving NPMLE, with SURE {SURE_NPMLE}")
+        print(f"Finished solving NPMLE, with in-sample MSE {twonorm_diff_NPMLE / n}")
+        
+        found_NPMLE_solution = True
+
+    except Exception as e:
+        print(f"Mosek failed on this run") 
+    
+    if found_NPMLE_solution:
+        return twonorm_diff_NPMLE/n, SURE_NPMLE, found_NPMLE_solution, pi_hat_NPMLE
+    else:
+        return np.nan, np.nan, found_NPMLE_solution, np.nan

@@ -5,6 +5,7 @@ from entmax import sparsemax
 import numpy as np
 import numpy.random as rn
 from scipy import optimize
+from simulate_data import device 
 
 # SURE-PM  
 
@@ -618,9 +619,9 @@ class model_sure_ls(tr.nn.Module):
 
         lambda_n, b_n = self.forward(feature_representation) 
         n = len(lambda_n) 
-        sigma = X[:,-1] 
+        sigma = X[:,-1].to(device)
 
-        term1 = (lambda_n * Z - b_n)**2 
+        term1 = (lambda_n * Z.to(device) - b_n)**2 
         term2 = 2 * (sigma**2) * lambda_n 
 
         return (sigma**2 + term1 - term2).sum()/n 
@@ -641,7 +642,7 @@ class model_sure_ls(tr.nn.Module):
         lambda_n, b_n = self.forward(feature_representation) 
         sigma = X[:,-1] 
 
-        s_G_n = (b_n - (Z * lambda_n)) / (sigma**2) 
+        s_G_n = (b_n - (Z.to(device) * lambda_n)) / (sigma.to(device)**2) 
 
         return s_G_n 
     
@@ -714,7 +715,7 @@ class model_EBCF_NPreg(tr.nn.Module):
         Z_hat_n = self.forward(feature_representation) 
         n = len(Z) 
 
-        return ((Z - Z_hat_n)**2).sum()/n 
+        return ((Z.to(device) - Z_hat_n)**2).sum()/n 
     
     def get_Z_hat(self, Z, X): 
 

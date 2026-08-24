@@ -1,0 +1,30 @@
+submitit ERROR (2026-08-20 13:49:59,907) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+  File "/home/amberlee0516/score-matching-empirical-bayes/submitit_simulate_heteroscedastic.py", line 7, in main
+    mse_sure_df = revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, experiment)
+  File "/home/amberlee0516/score-matching-empirical-bayes/experiment_heteroscedastic.py", line 177, in revised_simulate_experiment_location_scale
+    mse_sure_df = pd.DataFrame({'n': ns_list,
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/pandas/core/frame.py", line 778, in __init__
+    mgr = dict_to_mgr(data, index, columns, dtype=dtype, copy=copy, typ=manager)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/pandas/core/internals/construction.py", line 503, in dict_to_mgr
+    return arrays_to_mgr(arrays, columns, index, dtype=dtype, typ=typ, consolidate=copy)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/pandas/core/internals/construction.py", line 114, in arrays_to_mgr
+    index = _extract_index(arrays)
+  File "/home/amberlee0516/miniconda3/envs/nn_env/lib/python3.9/site-packages/pandas/core/internals/construction.py", line 677, in _extract_index
+    raise ValueError("All arrays must be of the same length")
+ValueError: All arrays must be of the same length
+srun: error: h001: task 0: Exited with exit code 1

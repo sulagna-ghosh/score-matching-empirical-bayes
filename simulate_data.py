@@ -63,34 +63,34 @@ def simulate_data_discrete_nocovariates(n=1000, k=5, val_theta = 3, sigma=1):
     
     return (theta, Z, X) 
 
-def xie(experiment, n=10000, device=device):
+def xie(experiment, generator, n=10000, device=device):
     '''
     Eight experiments: First four of them are the same experiments as c, d, e, f from Xie 2012 
     and rest are new additional experiments. These are the experiments done in figure 1 in section 6.2. 
     '''
 
     if experiment == "c":
-        variance = rn.uniform(0.1, 1, size=(n,))
+        variance = generator.uniform(0.1, 1, size=(n,))
         sigma = np.sqrt(variance) 
         theta = variance
-        Z = variance + sigma*rn.normal(size=(n,))
+        Z = variance + sigma*generator.normal(size=(n,))
 
     elif experiment == "d":
-        precision = rn.chisquare(df=10, size=(n,))
+        precision = generator.chisquare(df=10, size=(n,))
         variance = 1/precision
         sigma = np.sqrt(variance)
         theta = variance
-        Z = variance + sigma*rn.normal(size=(n,))
+        Z = variance + sigma*generator.normal(size=(n,))
 
     elif experiment == "d5":
-        precision = rn.chisquare(df=5, size=(n,))
+        precision = generator.chisquare(df=5, size=(n,))
         variance = 1/precision
         sigma = np.sqrt(variance)
         theta = variance
-        Z = variance + sigma*rn.normal(size=(n,))
+        Z = variance + sigma*generator.normal(size=(n,))
 
     elif experiment == "e":
-        bernoulli = rn.binomial(n=1, p=0.5, size=(n,))
+        bernoulli = generator.binomial(n=1, p=0.5, size=(n,))
         variance = 0.1*bernoulli + (0.5)*(1-bernoulli)
         # print(variance)
 
@@ -98,60 +98,60 @@ def xie(experiment, n=10000, device=device):
 
         for var, idx in zip(variance, range(n)):
             if var == 0.1:
-                theta[idx] = rn.normal(loc=2, scale=np.sqrt(0.1))
+                theta[idx] = generator.normal(loc=2, scale=np.sqrt(0.1))
             elif var == 0.5:
-                theta[idx] = rn.normal(loc=0, scale=np.sqrt(0.5))
+                theta[idx] = generator.normal(loc=0, scale=np.sqrt(0.5))
             else:  
                 print("experiment (e) variance error")
 
         sigma = np.sqrt(variance)
-        Z = theta + sigma*rn.normal(size=(n,))
+        Z = theta + sigma*generator.normal(size=(n,))
 
     elif experiment == "f":
-        variance = rn.uniform(0.1, 1, size=(n,))
+        variance = generator.uniform(0.1, 1, size=(n,))
         sigma = np.sqrt(variance) 
         theta = variance
-        Z = rn.uniform(variance - np.sqrt(3)*sigma, variance + np.sqrt(3)*sigma,
+        Z = generator.uniform(variance - np.sqrt(3)*sigma, variance + np.sqrt(3)*sigma,
                        size=(n,))
         
     elif experiment == "g": 
-        # bernoulli1 = rn.binomial(n=1, p=0.5, size=(n,))
+        # bernoulli1 = generator.binomial(n=1, p=0.5, size=(n,))
         # variance = 0.1*bernoulli1 + (0.5)*(1-bernoulli1)
-        variance = rn.uniform(0.1, 0.5, size=(n,))
+        variance = generator.uniform(0.1, 0.5, size=(n,))
 
-        bernoulli = rn.binomial(n=1, p=0.5, size=(n,))
+        bernoulli = generator.binomial(n=1, p=0.5, size=(n,))
         theta = bernoulli*(variance) + (1-bernoulli)*(10*variance)
         sigma = np.sqrt(variance)
 
-        Z = theta + sigma*rn.normal(size=(n,))
+        Z = theta + sigma*generator.normal(size=(n,))
     
     elif experiment == "h": 
-        variance = rn.uniform(0.1, 1, size=(n,))
+        variance = generator.uniform(0.1, 1, size=(n,))
 
-        theta = rn.poisson(lam = 2*variance) 
+        theta = generator.poisson(lam = 2*variance) 
         sigma = np.sqrt(variance)
 
-        Z = theta + sigma*rn.normal(size=(n,)) 
+        Z = theta + sigma*generator.normal(size=(n,)) 
 
     elif experiment == "i": 
-        variance = rn.uniform(1.5, 2.5, size=(n,))
+        variance = generator.uniform(1.5, 2.5, size=(n,))
         sigma = np.sqrt(variance)
 
-        X_prev = rn.uniform(0, 1, size=(n, 5))
-        theta =  (np.pi*X_prev[:,0]*X_prev[:,1]) + 20*((X_prev[:,2]-0.5)**2) + 5*X_prev[:,3] + 2*rn.normal(size=(n,)) 
+        X_prev = generator.uniform(0, 1, size=(n, 5))
+        theta =  (np.pi*X_prev[:,0]*X_prev[:,1]) + 20*((X_prev[:,2]-0.5)**2) + 5*X_prev[:,3] + 2*generator.normal(size=(n,)) 
 
-        Z = theta + sigma*rn.normal(size=(n,)) 
+        Z = theta + sigma*generator.normal(size=(n,)) 
 
     elif experiment == "j": 
-        X_prev = rn.uniform(0, 1, size=(n, 1)) 
+        X_prev = generator.uniform(0, 1, size=(n, 1)) 
         variance = 2*(X_prev[:,0]**2) + 5*X_prev[:,0] + 1 
         sigma = np.sqrt(variance) 
 
         m_X = 2*variance + 0.5
         A_X = 0.25*variance
-        theta = m_X + np.sqrt(A_X)*rn.normal(size=(n,)) 
+        theta = m_X + np.sqrt(A_X)*generator.normal(size=(n,)) 
 
-        Z = theta + sigma*rn.normal(size=(n,))
+        Z = theta + sigma*generator.normal(size=(n,))
 
     Z = tr.tensor(Z, requires_grad = False)
 
