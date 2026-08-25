@@ -339,3 +339,19 @@ Finished solving NPMLE, with in-sample MSE 3.929588912777813
 m_sim: 9
 Finished solving NPMLE, with SURE 26.50413976495322
 Finished solving NPMLE, with in-sample MSE 3.4235743549258064
+df:              estimator       sure  ...  sure_2000th_iter  sure_3000th_iter
+0                NPMLE  35.559624  ...               NaN               NaN
+1      SURE-PM uniform   2.559737  ...          2.643558          2.560126
+2    SURE-PM NPMLEinit   2.559512  ...          2.559521          2.559514
+3       SURE-PM random   2.559735  ...          2.642169          2.560105
+4       SURE-PM random   2.559728  ...          2.647157          2.560098
+..                 ...        ...  ...               ...               ...
+125     SURE-PM random   2.890286  ...          3.069784          3.013439
+126     SURE-PM random   2.904361  ...          3.069077          3.015007
+127     SURE-PM random   2.905365  ...          3.069087          3.015850
+128     SURE-PM random   2.905005  ...          3.069133          3.016084
+129     SURE-PM random   2.905293  ...          3.069806          3.015793
+
+[130 rows x 5 columns]
+submitit INFO (2026-08-25 14:02:32,787) - Job completed successfully
+submitit INFO (2026-08-25 14:02:32,789) - Exiting after successful completion
