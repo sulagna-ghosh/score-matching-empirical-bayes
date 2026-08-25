@@ -15,7 +15,7 @@ class model_theta_pi_sure(tr.nn.Module):
     """
 
     def __init__(self, Z, B, init_val_theta, init_val_pi, use_location=False, use_scale=True, device="cpu",
-                 quantile_IQR=0.95, randomly_initialize_theta_pi=False):
+                 quantile_IQR=0.95, randomly_initialize_theta_pi=False, initialize_at_npmle=False):
 
         super(model_theta_pi_sure, self).__init__()
 
@@ -43,6 +43,8 @@ class model_theta_pi_sure(tr.nn.Module):
         self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=use_scale)
 
         self.device = device
+
+        self.initialize_at_npmle = initialize_at_npmle
         
     def forward(self):
         """Forward pass through the network. 
@@ -58,10 +60,17 @@ class model_theta_pi_sure(tr.nn.Module):
     def get_theta_grid_and_pi(self, n, B):
         theta_diff, pi_param = self.forward()
         theta_cum = tr.concat((tr.zeros(1).to(self.device), theta_diff), dim=0)
-        theta_cum = (tr.cumsum(theta_cum, dim = 0) - 0.5) * tr.exp(self.log_scale)
+        if self.initialize_at_npmle: 
+            theta_cum = tr.cumsum(theta_cum, dim = 0)*(self.max_Z-self.min_Z)
+        else:
+            theta_cum = (tr.cumsum(theta_cum, dim = 0) - 0.5) * tr.exp(self.log_scale)
 
         theta_cum = theta_cum[None, :]
-        theta_grid = theta_cum.expand(n, B) + self.location
+
+        if self.initialize_at_npmle:
+            theta_grid = theta_cum.expand(n, B) + self.min_Z
+        else:
+            theta_grid = theta_cum.expand(n, B) + self.location
 
         pi_param = pi_param[None, :]
         pi_param = pi_param.expand(n, B)

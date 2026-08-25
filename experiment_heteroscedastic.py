@@ -189,8 +189,7 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
                                 'SURE_surels': SURE_surels_list,
                                 'SURE_NPMLEinit': SURE_NPMLEinit_list,
                                 'SURE_NPMLE': SURE_NPMLE_list,
-                                'SURE_thetaG': SURE_thetaG_list,
-                                'data': len(ns)*m_sim*len(simulate_location_list)*len(simulate_scale_list)*['train']}) 
+                                'SURE_thetaG': SURE_thetaG_list}) 
     
     return(mse_sure_df)
 

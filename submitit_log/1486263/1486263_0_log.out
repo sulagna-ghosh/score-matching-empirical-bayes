@@ -1,0 +1,6 @@
+submitit INFO (2026-08-25 10:28:23,346) - Starting with JobEnvironment(job_id=1486263, hostname=k001, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-08-25 10:28:23,346) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/1486263/1486263_submitted.pkl
+simulate_data.py: device = cuda:0
+m_sim: 0
+Finished solving NPMLE, with SURE 0.23077029990296566
+Finished solving NPMLE, with in-sample MSE 0.08549596974742771
