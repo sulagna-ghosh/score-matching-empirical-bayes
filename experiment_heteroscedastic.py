@@ -82,7 +82,7 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
 
     synthetic_data = read_experiment_dict(experiment)
 
-    ns_list, use_locations_list, use_scales_list = [], [], []
+    ms_list, ns_list, use_locations_list, use_scales_list = [], [], [], []
 
     MSE_wellspec_list, SURE_wellspec_list = [], []
     MSE_misspec_list, SURE_misspec_list = [], []
@@ -128,6 +128,7 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
 
                     print(f"use_location: {use_location}")
 
+                    ms_list.append(m)
                     ns_list.append(n)
                     use_locations_list.append(use_location)
                     use_scales_list.append(use_scale)
@@ -175,6 +176,7 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
                         SURE_NPMLE_list.append(None), SURE_NPMLEinit_list.append(None)
 
     mse_sure_df = pd.DataFrame({'n': ns_list,
+                                'm': ms_list,
                                 'use_location': use_locations_list,
                                 'use_scale': use_scales_list,
                                 'MSE_wellspec': MSE_wellspec_list,
