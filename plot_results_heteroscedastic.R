@@ -581,9 +581,7 @@ failed_experiments = npmle_and_misspec_df %>%
 npmle_and_misspec_df %>%
   group_by(n, experiment, is_sure_of_pm_smaller) %>%
   summarize(count = n(), 
-            pct = n() / dim(npmle_and_misspec_df)[1]) %>% view()
-
-
+            pct = round(n() / dim(npmle_and_misspec_df)[1], 5)) %>% view()
 
 npmle_and_misspec_df %>%
   group_by(is_sure_of_pm_smaller) %>%
@@ -597,5 +595,28 @@ npmle_and_misspec_df %>%
            geom_point() + facet_wrap(experiment ~ n, scales="free", nrow=3) + 
            geom_abline() +
   theme(legend.position = "bottom")
+
+## Read data when setting seed ##### 
+
+# NOTE: only for one experiment so far
+df_names = list.files("results/heteroscedastic")
+df_names = df_names[str_detect(df_names, "experiment_c")]
+
+df = NULL
+for (df_name in df_names){ 
+  
+  if (is.null(df)){
+    df = read.csv(paste("results/heteroscedastic", df_name, sep="/"))
+  } else {
+    df = df %>% bind_rows(read.csv(paste("results/heteroscedastic", df_name, sep="/")))
+  }
+  
+}
+
+df_subset = df %>% 
+  select(n, SURE_misspec, SURE_NPMLE) %>%
+  mutate(NPMLE_PM_diff = SURE_NPMLE - SURE_misspec)
+
+df_subset %>% group_by(n) %>% summarize(NPMLE_lower_objective = sum(NPMLE_PM_diff < 0))
 
 
