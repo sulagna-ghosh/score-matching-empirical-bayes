@@ -17,9 +17,6 @@ if __name__ == "__main__":
     from experiment_heteroscedastic import revised_simulate_experiment_location_scale
     from pathlib import Path
 
-    # TEMPORARY: TODO: delete once i'm ready to run everyhting!!
-    ns = [100, 200]
-
     print("%j")
     log_folder="submitit_log/%j"
 

@@ -64,8 +64,10 @@ if __name__ == "__main__":
             model, sures, _, _, _ = pm_random_output
             append_metrics_to_lists(sures, "SURE-PM random",  m_sim, n)
 
-    def save_csv(experiment_str, n=200, total_m_sim=10,
+    def save_csv(experiment_str, n=1000, total_m_sim=10,
                 use_scale=True, use_location=False, B=100):
+
+        print(f"n: {n}")
 
         # Load data
         experiment_dict = read_experiment_dict(experiment_str)
@@ -111,7 +113,7 @@ if __name__ == "__main__":
 
     def main():
         for experiment_str in experiments:
-            save_csv(experiment_str=experiment_str, n=200, total_m_sim=10)
+            save_csv(experiment_str=experiment_str, n=1000, total_m_sim=10)
 
     log_folder="submitit_log/%j"
     executor = submitit.AutoExecutor(folder=log_folder)
