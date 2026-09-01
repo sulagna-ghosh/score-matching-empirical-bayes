@@ -121,8 +121,7 @@ if __name__ == "__main__":
 
     def main():
         for experiment_str in ['h', 'i', 'j']:
-            save_csv(experiment_str=experiment_str, n=200, total_m_sim=10,
-            n_iter=8000, lr=1e-4, file_suffix="_niter8000_lr-4")
+            save_csv(experiment_str=experiment_str, n=100, total_m_sim=10)
 
     log_folder="submitit_log/%j"
     executor = submitit.AutoExecutor(folder=log_folder)
