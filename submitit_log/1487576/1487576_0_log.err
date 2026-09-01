@@ -1,6 +1,0 @@
-submitit WARNING (2026-08-25 22:33:34,190) - Caught signal SIGUSR2 on r001: this job is preempted.
-slurmstepd: error: *** STEP 1487576.0 ON r001 CANCELLED AT 2026-08-25T22:33:34 DUE TO JOB REQUEUE ***
-slurmstepd: error: *** JOB 1487576 ON r001 CANCELLED AT 2026-08-25T22:33:34 DUE TO JOB REQUEUE ***
-srun: Job step aborted: Waiting up to 63 seconds for job step to finish.
-submitit WARNING (2026-08-25 22:33:34,273) - Bypassing signal SIGCONT
-submitit WARNING (2026-08-25 22:33:34,321) - Bypassing signal SIGTERM

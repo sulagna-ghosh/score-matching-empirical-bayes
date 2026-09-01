@@ -1,5 +1,0 @@
-submitit INFO (2026-08-24 18:42:48,491) - Starting with JobEnvironment(job_id=1484322, hostname=j002-ds, local_rank=0(1), node=0(1), global_rank=0(1))
-submitit INFO (2026-08-24 18:42:48,491) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/1484322/1484322_submitted.pkl
-simulate_data.py: device = cuda:0
-m_sim: 0
-submitit ERROR (2026-08-24 18:42:52,440) - Submitted job triggered an exception
