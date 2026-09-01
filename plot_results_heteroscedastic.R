@@ -12,17 +12,18 @@ dark2_palette <- unique(c(palette1, palette2, palette3))
 theme_set(theme_bw())
 
 ## Read and process in-sample MSEs ##### 
-
 df_names = list.files("results/heteroscedastic")
-df_names = df_names[str_detect(df_names, "location_scale_comparison")]
+df_names = df_names[str_detect(df_names, "experiment")]
 
 df = NULL
-for (df_name in df_names[-1]){ # ignore location_scale_comparison 0
-  
+for (df_name in df_names){
+  experiment_str = substr(df_name, 12, 12)
   if (is.null(df)){
     df = read.csv(paste("results/heteroscedastic", df_name, sep="/"))
+    df$experiment = experiment_str
   } else {
-    df = df %>% bind_rows(read.csv(paste("results/heteroscedastic", df_name, sep="/")))
+    df = df %>% bind_rows(read.csv(paste("results/heteroscedastic", df_name, sep="/")) 
+                          %>% mutate(experiment=experiment_str))
   }
   
 }
@@ -36,7 +37,7 @@ df$use_location = as.logical(df$use_location)
 df$use_scale = as.logical(df$use_scale)
 
 df_mean = df %>%
-  group_by(n, use_location, use_scale, experiment, data, objective, model) %>%
+  group_by(n, use_location, use_scale, experiment, objective, model) %>%
   summarize(mean = mean(value, na.rm=T),
             count = n(),
             se = sd(value, na.rm=T)/sqrt(count), .groups="drop") %>% 
@@ -56,7 +57,7 @@ bayes_risk = data.frame("experiment" = c("c", "d", "e", "f", "g", "h", "i", "j")
 
 
 df_mean_plot = df_mean %>%
-  filter(data=="train", objective=="MSE",
+  filter(objective=="MSE",
          !use_location, use_scale, experiment != "d5",
          model != "NPMLEinit") %>%
   mutate(model = case_when(model == "misspec" ~ "SURE-PM",
@@ -105,7 +106,7 @@ levels(bayes_risk$experiment) = c(c = TeX(r"(Uniform$$ prior)"),
                                   j = TeX(r"(Uni-covariate$$ heteroscedastic$$ prior)"))
 
 df_mean_plot_line = df_mean_plot %>%
-  select(n, experiment, count, mean, model,) %>%
+  select(n, experiment, count, mean, model) %>%
   bind_rows(ground_truth_df)
 
 ggplot(df_mean_plot, aes(x = factor(n), color=model, shape=model, linetype=model)) +
@@ -726,18 +727,14 @@ combined_metrics %>% select(experiment, relative_variation_within_random_init,
                             relative_variation_of_random_and_uniform_init) %>%
   mutate(relative_variation_within_random_init = round(relative_variation_within_random_init, 8), 
          relative_variation_of_NPMLE_and_uniform_init = round(relative_variation_of_NPMLE_and_uniform_init, 8), 
-         relative_variation_of_random_and_uniform_init= round(relative_variation_of_NPMLE_and_uniform_init, 8))
+         relative_variation_of_random_and_uniform_init= round(relative_variation_of_random_and_uniform_init, 8)) 
 
 
 
 
+# Optimization checks n = 1000 ####
 
-
-
-
-
-
-
+df = read.csv("results/optimization_checks/c_1000_different_inits.csv")
 
 
 
