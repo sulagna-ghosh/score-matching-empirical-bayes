@@ -120,7 +120,7 @@ if __name__ == "__main__":
         df.to_csv("results/optimization_checks/" + filename)
 
     def main():
-        for experiment_str in ['h', 'i', 'j']:
+        for experiment_str in ['c', 'd', 'e', 'f', 'g']:
             save_csv(experiment_str=experiment_str, n=100, total_m_sim=10)
 
     log_folder="submitit_log/%j"

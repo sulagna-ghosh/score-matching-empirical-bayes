@@ -1,0 +1,250 @@
+submitit INFO (2026-09-01 15:48:05,049) - Starting with JobEnvironment(job_id=1558508, hostname=g007, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-09-01 15:48:05,050) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/1558508/1558508_submitted.pkl
+simulate_data.py: device = cuda:0
+experiment: c
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Finished solving NPMLE, with SURE 0.3501988001480156
+Finished solving NPMLE, with in-sample MSE 0.07243012383495008
+m_sim: 1
+Finished solving NPMLE, with SURE 0.7549479959055031
+Finished solving NPMLE, with in-sample MSE 0.09230595282757165
+m_sim: 2
+Finished solving NPMLE, with SURE 0.9572079989433319
+Finished solving NPMLE, with in-sample MSE 0.0676010612044185
+m_sim: 3
+Finished solving NPMLE, with SURE 0.8584128976101796
+Finished solving NPMLE, with in-sample MSE 0.061120341923897634
+m_sim: 4
+Finished solving NPMLE, with SURE 1.045527929934791
+Finished solving NPMLE, with in-sample MSE 0.07938816405569094
+m_sim: 5
+Finished solving NPMLE, with SURE 0.5286712263215988
+Finished solving NPMLE, with in-sample MSE 0.1108911982149349
+m_sim: 6
+Finished solving NPMLE, with SURE 1.1460607273248495
+Finished solving NPMLE, with in-sample MSE 0.14532359000880532
+m_sim: 7
+Finished solving NPMLE, with SURE 0.6007222651232768
+Finished solving NPMLE, with in-sample MSE 0.07695690334838204
+m_sim: 8
+Finished solving NPMLE, with SURE 0.4361047488322663
+Finished solving NPMLE, with in-sample MSE 0.08136920357091937
+m_sim: 9
+Finished solving NPMLE, with SURE 0.6274297903195872
+Finished solving NPMLE, with in-sample MSE 0.08351350500723573
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE  0.350199               NaN  ...  0  100           c
+1      SURE-PM uniform  0.004834          0.005220  ...  0  100           c
+2    SURE-PM NPMLEinit  0.004823          0.004831  ...  0  100           c
+3       SURE-PM random  0.004831          0.005292  ...  0  100           c
+4       SURE-PM random  0.004834          0.005281  ...  0  100           c
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random -0.006350          0.025344  ...  9  100           c
+126     SURE-PM random -0.006350          0.025352  ...  9  100           c
+127     SURE-PM random -0.006351          0.025363  ...  9  100           c
+128     SURE-PM random -0.006351          0.025328  ...  9  100           c
+129     SURE-PM random -0.006350          0.025386  ...  9  100           c
+
+[130 rows x 8 columns]
+experiment: d
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Finished solving NPMLE, with SURE -0.015034346971373722
+Finished solving NPMLE, with in-sample MSE 0.008474825084965831
+m_sim: 1
+Finished solving NPMLE, with SURE 0.04389204419936977
+Finished solving NPMLE, with in-sample MSE 0.009256350741577105
+m_sim: 2
+Finished solving NPMLE, with SURE 0.10655287267433694
+Finished solving NPMLE, with in-sample MSE 0.009212123269382195
+m_sim: 3
+Finished solving NPMLE, with SURE 0.14283548638042676
+Finished solving NPMLE, with in-sample MSE 0.009753784153713663
+m_sim: 4
+Finished solving NPMLE, with SURE 0.20152200789566116
+Finished solving NPMLE, with in-sample MSE 0.050660855327767935
+m_sim: 5
+Finished solving NPMLE, with SURE 0.03548148944451654
+Finished solving NPMLE, with in-sample MSE 0.01171758378701022
+m_sim: 6
+Finished solving NPMLE, with SURE 0.0013321157505059667
+Finished solving NPMLE, with in-sample MSE 0.009542816709077247
+m_sim: 7
+Finished solving NPMLE, with SURE 0.05798984865673379
+Finished solving NPMLE, with in-sample MSE 0.0036299803947433683
+m_sim: 8
+Finished solving NPMLE, with SURE 0.10677567656904553
+Finished solving NPMLE, with in-sample MSE 0.015828678170572
+m_sim: 9
+Finished solving NPMLE, with SURE 0.022037590201085706
+Finished solving NPMLE, with in-sample MSE 0.0035968228723755407
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE -0.015034               NaN  ...  0  100           d
+1      SURE-PM uniform -0.016048         -0.016041  ...  0  100           d
+2    SURE-PM NPMLEinit -0.019896         -0.019881  ...  0  100           d
+3       SURE-PM random -0.016048         -0.016041  ...  0  100           d
+4       SURE-PM random -0.016048         -0.016042  ...  0  100           d
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.016272          0.016333  ...  9  100           d
+126     SURE-PM random  0.016272          0.016334  ...  9  100           d
+127     SURE-PM random  0.016273          0.016329  ...  9  100           d
+128     SURE-PM random  0.016273          0.016330  ...  9  100           d
+129     SURE-PM random  0.016272          0.016335  ...  9  100           d
+
+[130 rows x 8 columns]
+experiment: e
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Finished solving NPMLE, with SURE 0.32526012948361904
+Finished solving NPMLE, with in-sample MSE 0.3413243041359744
+m_sim: 1
+Finished solving NPMLE, with SURE 0.30114193091631003
+Finished solving NPMLE, with in-sample MSE 0.23466135315142866
+m_sim: 2
+Finished solving NPMLE, with SURE 0.3246699224565744
+Finished solving NPMLE, with in-sample MSE 0.24277269865236964
+m_sim: 3
+Finished solving NPMLE, with SURE 0.2951071825908624
+Finished solving NPMLE, with in-sample MSE 0.3161351853331889
+m_sim: 4
+Finished solving NPMLE, with SURE 0.35820714231225337
+Finished solving NPMLE, with in-sample MSE 0.20052906678189944
+m_sim: 5
+Finished solving NPMLE, with SURE 0.3571081762973111
+Finished solving NPMLE, with in-sample MSE 0.2678632138659099
+m_sim: 6
+Finished solving NPMLE, with SURE 0.414131910207056
+Finished solving NPMLE, with in-sample MSE 0.271104351327277
+m_sim: 7
+Finished solving NPMLE, with SURE 0.3221693994360802
+Finished solving NPMLE, with in-sample MSE 0.24206683946093993
+m_sim: 8
+Finished solving NPMLE, with SURE 0.32803401357326334
+Finished solving NPMLE, with in-sample MSE 0.2348320897642556
+m_sim: 9
+Finished solving NPMLE, with SURE 0.2950519469027608
+Finished solving NPMLE, with in-sample MSE 0.2845532541815967
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE  0.325260               NaN  ...  0  100           e
+1      SURE-PM uniform  0.146815          0.147071  ...  0  100           e
+2    SURE-PM NPMLEinit  0.146810          0.146873  ...  0  100           e
+3       SURE-PM random  0.146814          0.147070  ...  0  100           e
+4       SURE-PM random  0.146815          0.147074  ...  0  100           e
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.141327          0.141539  ...  9  100           e
+126     SURE-PM random  0.141327          0.141532  ...  9  100           e
+127     SURE-PM random  0.141328          0.141544  ...  9  100           e
+128     SURE-PM random  0.141329          0.141533  ...  9  100           e
+129     SURE-PM random  0.141328          0.141536  ...  9  100           e
+
+[130 rows x 8 columns]
+experiment: f
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Finished solving NPMLE, with SURE 0.682347000933254
+Finished solving NPMLE, with in-sample MSE 0.07041072785203356
+m_sim: 1
+Finished solving NPMLE, with SURE 1.0787324296582042
+Finished solving NPMLE, with in-sample MSE 0.06699158764396168
+m_sim: 2
+Finished solving NPMLE, with SURE 0.6729356087993911
+Finished solving NPMLE, with in-sample MSE 0.10285334031933173
+m_sim: 3
+Finished solving NPMLE, with SURE 0.9190476680768702
+Finished solving NPMLE, with in-sample MSE 0.06798873770638898
+m_sim: 4
+Finished solving NPMLE, with SURE 1.0504916926605492
+Finished solving NPMLE, with in-sample MSE 0.06495659168298769
+m_sim: 5
+Finished solving NPMLE, with SURE 0.6555399841771786
+Finished solving NPMLE, with in-sample MSE 0.12310195394880641
+m_sim: 6
+Finished solving NPMLE, with SURE 0.220290178315135
+Finished solving NPMLE, with in-sample MSE 0.09244442940458959
+m_sim: 7
+Finished solving NPMLE, with SURE 0.8411610574847879
+Finished solving NPMLE, with in-sample MSE 0.07674560187108592
+m_sim: 8
+Finished solving NPMLE, with SURE 0.517766370252161
+Finished solving NPMLE, with in-sample MSE 0.08037569845205975
+m_sim: 9
+Finished solving NPMLE, with SURE 0.4125270112218885
+Finished solving NPMLE, with in-sample MSE 0.0729752880852245
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE  0.682347               NaN  ...  0  100           f
+1      SURE-PM uniform  0.073662          0.073959  ...  0  100           f
+2    SURE-PM NPMLEinit  0.073649          0.073656  ...  0  100           f
+3       SURE-PM random  0.073660          0.073921  ...  0  100           f
+4       SURE-PM random  0.073661          0.073949  ...  0  100           f
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random -0.041631         -0.039486  ...  9  100           f
+126     SURE-PM random -0.041630         -0.039420  ...  9  100           f
+127     SURE-PM random -0.041629         -0.039673  ...  9  100           f
+128     SURE-PM random -0.041630         -0.039504  ...  9  100           f
+129     SURE-PM random -0.041629         -0.039405  ...  9  100           f
+
+[130 rows x 8 columns]
+experiment: g
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Finished solving NPMLE, with SURE 0.8269287934899033
+Finished solving NPMLE, with in-sample MSE 0.24770809414566572
+m_sim: 1
+Finished solving NPMLE, with SURE 1.0901390017898396
+Finished solving NPMLE, with in-sample MSE 0.20500612312065047
+m_sim: 2
+Finished solving NPMLE, with SURE 1.1882852326963098
+Finished solving NPMLE, with in-sample MSE 0.2015234360549491
+m_sim: 3
+Finished solving NPMLE, with SURE 1.7441759605133713
+Finished solving NPMLE, with in-sample MSE 0.20123897987439535
+m_sim: 4
+Finished solving NPMLE, with SURE 1.0117431864893731
+Finished solving NPMLE, with in-sample MSE 0.1814903657980078
+m_sim: 5
+Finished solving NPMLE, with SURE 2.2013261102574266
+Finished solving NPMLE, with in-sample MSE 0.16269091819872084
+m_sim: 6
+Finished solving NPMLE, with SURE 1.161820700896512
+Finished solving NPMLE, with in-sample MSE 0.1686485618725212
+m_sim: 7
+Finished solving NPMLE, with SURE 0.8320687066251115
+Finished solving NPMLE, with in-sample MSE 0.2045250372062275
+m_sim: 8
+Finished solving NPMLE, with SURE 0.9310287451130697
+Finished solving NPMLE, with in-sample MSE 0.19439924849563028
+m_sim: 9
+Finished solving NPMLE, with SURE 0.9040126233689761
+Finished solving NPMLE, with in-sample MSE 0.2453634505457746
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE  0.826929               NaN  ...  0  100           g
+1      SURE-PM uniform  0.127880          0.128198  ...  0  100           g
+2    SURE-PM NPMLEinit  0.128063          0.128169  ...  0  100           g
+3       SURE-PM random  0.127869          0.128213  ...  0  100           g
+4       SURE-PM random  0.127870          0.128255  ...  0  100           g
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.136359          0.146080  ...  9  100           g
+126     SURE-PM random  0.136367          0.145521  ...  9  100           g
+127     SURE-PM random  0.136364          0.139182  ...  9  100           g
+128     SURE-PM random  0.136363          0.146259  ...  9  100           g
+129     SURE-PM random  0.136366          0.137107  ...  9  100           g
+
+[130 rows x 8 columns]
+submitit INFO (2026-09-01 17:37:24,621) - Job completed successfully
+submitit INFO (2026-09-01 17:37:24,623) - Exiting after successful completion
