@@ -623,58 +623,14 @@ df_subset %>% group_by(n) %>% summarize(NPMLE_lower_objective = sum(NPMLE_PM_dif
 
 ## Optimization checks #####
 
-df = read.csv("results/optimization_checks/c_200_different_inits.csv")
-df$experiment = "c"
-# add m (should be doing this in python)
-vec = c()
-for (i in 1:10){
-  vec = c(vec, rep(i, 13))
-}
-df$m = vec
-
-df_new = read.csv("results/optimization_checks/d_200_different_inits.csv")
-df_new$experiment = "d"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-df_new = read.csv("results/optimization_checks/e_200_different_inits.csv")
-df_new$experiment = "e"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-df_new = read.csv("results/optimization_checks/f_200_different_inits.csv")
-df_new$experiment = "f"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-df_new = read.csv("results/optimization_checks/g_200_different_inits.csv")
-df_new$experiment = "g"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-
-df_new = read.csv("results/optimization_checks/h_200_different_inits.csv")
-df_new$experiment = "h"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-
-df_new = read.csv("results/optimization_checks/i_200_different_inits.csv")
-df_new$experiment = "i"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
-
-df_new = read.csv("results/optimization_checks/j_200_different_inits.csv")
-df_new$experiment = "j"
-df_new$m = vec
-
-df = df %>% bind_rows(df_new)
+df = read.csv("results/optimization_checks/c_200_different_inits.csv") %>% 
+  bind_rows(read.csv("results/optimization_checks/d_200_different_inits.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/e_200_different_inits.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/f_200_different_inits.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/g_200_different_inits.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/h_200_different_inits.csv")) %>% 
+  bind_rows(read.csv("results/optimization_checks/i_200_different_inits.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/j_200_different_inits.csv"))
 
 # Calculations
 
@@ -730,12 +686,85 @@ combined_metrics %>% select(experiment, relative_variation_within_random_init,
          relative_variation_of_random_and_uniform_init= round(relative_variation_of_random_and_uniform_init, 8)) 
 
 
+df  %>% 
+  filter(estimator!= "NPMLE",
+         experiment %in% c("h", "i", "j")) %>%
+ggplot(aes(x = sure)) + 
+  geom_histogram(aes(fill = estimator)) + 
+  facet_grid(estimator~experiment, scales="free_x")
 
 
-# Optimization checks n = 1000 ####
+df  %>% 
+  filter(estimator!= "NPMLE") %>%
+  ggplot(aes(x = sure)) + 
+  geom_histogram(aes(fill = estimator)) + 
+  facet_grid(estimator~experiment, scales="free_x")
 
-df = read.csv("results/optimization_checks/c_1000_different_inits.csv")
+
+# Optimization checks different inits ####
+
+df_hij = read.csv("results/optimization_checks/h_200_different_inits_niter8000_lr-4.csv") %>%
+  bind_rows(read.csv("results/optimization_checks/i_200_different_inits_niter8000_lr-4.csv")) %>%
+  bind_rows(read.csv("results/optimization_checks/j_200_different_inits_niter8000_lr-4.csv"))
 
 
+# Calculations
 
+# sqrt( samplevariance( SURE of uniform init ) )
+variation_across_init_hij = df_hij %>%
+  filter(estimator == "SURE-PM uniform") %>%
+  group_by(experiment) %>%
+  summarize(sample_sd_sure_uniform = sqrt(var(sure)))
+
+# sqrt( mean (samplevariance(SURE of random init within simulation) ))
+random_variation_within_replicate_hij = df_hij %>%
+  filter(estimator == "SURE-PM random") %>%
+  group_by(experiment, m) %>%
+  summarize(sample_var = var(sure), .groups="drop") %>%
+  group_by(experiment) %>%
+  summarize(sqrt_avg_sample_variance_random = sqrt( mean(sample_var )))
+
+# sqrt( 1/(2R) sum( (SURE of NPMLEinit - SURE of uniform init)^2 ))
+variation_of_NPMLE_and_uniform_init_hij = df_hij %>%
+  filter(estimator %in% c("SURE-PM NPMLEinit", "SURE-PM uniform")) %>%
+  select(estimator, sure, experiment, m) %>%
+  pivot_wider(names_from=estimator, values_from=sure) %>%
+  mutate(difference_sq = (`SURE-PM uniform` - `SURE-PM NPMLEinit`)**2 ) %>%
+  group_by(experiment) %>%
+  summarize(sqrt_mean_of_squared_difference_NPMLEinit_divided_by_2 = sqrt(mean(difference_sq)/2))
+
+# sqrt( 1/(2R) sum( (SURE of random init - SURE of uniform init)^2 ))
+# SURE of random init is an average
+variation_of_random_and_uniform_init_hij = df_hij %>%
+  filter(estimator %in% c("SURE-PM random", "SURE-PM uniform")) %>%
+  select(estimator, sure, experiment, m) %>%
+  group_by(estimator, experiment) %>%
+  summarize(mean_sure = mean(sure), .groups="drop") %>%
+  pivot_wider(names_from=estimator, values_from=mean_sure) %>%
+  mutate(difference_sq = (`SURE-PM uniform` - `SURE-PM random`)**2 ) %>%
+  group_by(experiment) %>%
+  summarize(sqrt_mean_of_squared_difference_randominit_divided_by_2 = sqrt(mean(difference_sq)/2))
+
+combined_metrics_hij = variation_across_init_hij %>%
+  left_join(random_variation_within_replicate, by='experiment') %>%
+  left_join(variation_of_NPMLE_and_uniform_init, by='experiment') %>%
+  left_join(variation_of_random_and_uniform_init, by='experiment') %>%
+  mutate(relative_variation_within_random_init = sqrt_avg_sample_variance_random / sample_sd_sure_uniform,
+         relative_variation_of_NPMLE_and_uniform_init = sqrt_mean_of_squared_difference_NPMLEinit_divided_by_2 / sample_sd_sure_uniform,
+         relative_variation_of_random_and_uniform_init = sqrt_mean_of_squared_difference_randominit_divided_by_2 / sample_sd_sure_uniform)
+
+
+combined_metrics_hij %>% select(experiment, relative_variation_within_random_init, 
+                            relative_variation_of_NPMLE_and_uniform_init, 
+                            relative_variation_of_random_and_uniform_init) %>%
+  mutate(relative_variation_within_random_init = round(relative_variation_within_random_init, 8), 
+         relative_variation_of_NPMLE_and_uniform_init = round(relative_variation_of_NPMLE_and_uniform_init, 8), 
+         relative_variation_of_random_and_uniform_init= round(relative_variation_of_random_and_uniform_init, 8)) 
+
+
+df_hij  %>% 
+  filter(estimator!= "NPMLE") %>%
+  ggplot(aes(x = sure)) + 
+  geom_histogram(aes(fill = estimator)) + 
+  facet_grid(estimator~experiment, scales="free_x")
 
