@@ -621,21 +621,28 @@ df_subset = df %>%
 df_subset %>% group_by(n) %>% summarize(NPMLE_lower_objective = sum(NPMLE_PM_diff < 0))
 
 
-## Optimization checks #####
+## Optimization checks: table #####
 
-df = read.csv("results/optimization_checks/c_200_different_inits.csv") %>% 
-  bind_rows(read.csv("results/optimization_checks/d_200_different_inits.csv")) %>%
-  bind_rows(read.csv("results/optimization_checks/e_200_different_inits.csv")) %>%
-  bind_rows(read.csv("results/optimization_checks/f_200_different_inits.csv")) %>%
-  bind_rows(read.csv("results/optimization_checks/g_200_different_inits.csv")) %>%
-  bind_rows(read.csv("results/optimization_checks/h_200_different_inits.csv")) %>% 
-  bind_rows(read.csv("results/optimization_checks/i_200_different_inits.csv")) %>%
-  bind_rows(read.csv("results/optimization_checks/j_200_different_inits.csv"))
+df_names = list.files("results/optimization_checks")
+df_names = df_names[str_detect(df_names, "100_different")]
 
-# Calculations
+df = read.csv(paste0("results/optimization_checks", "/", df_names[1]))
+for (df_name in df_names[2:length(df_names)]){
+  df = df %>% bind_rows(read.csv(paste0("results/optimization_checks", "/", df_name)))
+}
+
+# Calculations: average SURE's
+
+df %>%
+  group_by(estimator, n, experiment) %>%
+  summarize(avg_sure = mean(sure)) %>%
+  pivot_wider(names_from = estimator, values_from = avg_sure) %>%
+  view()
+
+# Calculations: decomposing variance
 
 # sqrt( samplevariance( SURE of uniform init ) )
-variation_across_init = df %>%
+variation_across_replicates = df %>%
   filter(estimator == "SURE-PM uniform") %>%
   group_by(experiment) %>%
   summarize(sample_sd_sure_uniform = sqrt(var(sure)))
@@ -669,7 +676,7 @@ variation_of_random_and_uniform_init = df %>%
   group_by(experiment) %>%
   summarize(sqrt_mean_of_squared_difference_randominit_divided_by_2 = sqrt(mean(difference_sq)/2))
 
-combined_metrics = variation_across_init %>%
+combined_metrics = variation_across_replicates %>%
   left_join(random_variation_within_replicate, by='experiment') %>%
   left_join(variation_of_NPMLE_and_uniform_init, by='experiment') %>%
   left_join(variation_of_random_and_uniform_init, by='experiment') %>%
@@ -681,9 +688,10 @@ combined_metrics = variation_across_init %>%
 combined_metrics %>% select(experiment, relative_variation_within_random_init, 
                             relative_variation_of_NPMLE_and_uniform_init, 
                             relative_variation_of_random_and_uniform_init) %>%
-  mutate(relative_variation_within_random_init = round(relative_variation_within_random_init, 8), 
-         relative_variation_of_NPMLE_and_uniform_init = round(relative_variation_of_NPMLE_and_uniform_init, 8), 
-         relative_variation_of_random_and_uniform_init= round(relative_variation_of_random_and_uniform_init, 8)) 
+  mutate(relative_variation_within_random_init = 100*round(relative_variation_within_random_init, 5), 
+         relative_variation_of_NPMLE_and_uniform_init = 100*round(relative_variation_of_NPMLE_and_uniform_init, 5), 
+         relative_variation_of_random_and_uniform_init= 100*round(relative_variation_of_random_and_uniform_init, 5))  %>%
+  view()
 
 
 df  %>% 
@@ -699,6 +707,8 @@ df  %>%
   ggplot(aes(x = sure)) + 
   geom_histogram(aes(fill = estimator)) + 
   facet_grid(estimator~experiment, scales="free_x")
+
+
 
 
 # Optimization checks different inits ####
