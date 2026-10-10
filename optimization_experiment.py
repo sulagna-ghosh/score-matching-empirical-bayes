@@ -42,7 +42,7 @@ if __name__ == "__main__":
         # NPMLE-initialization
         if found_npmle_solution:
             # Grid of NPMLE: B evenly spaced points between smallest and largest Z value.
-            pi_param_from_NPMLE = get_NPMLE_initialization(pi_hat_NPMLE, B)
+            pi_param_from_NPMLE = get_NPMLE_initialization(pi_hat_npmle, B)
             pm_npmleinit_output = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', 
                                     init_val_theta = tr.log(tr.Tensor([1.5])), init_val_pi = tr.Tensor(pi_param_from_NPMLE),
                                     use_location=use_location, use_scale=use_scale, randomly_initialize_theta_pi=False,
