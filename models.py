@@ -39,7 +39,11 @@ class model_theta_pi_sure(tr.nn.Module):
         self.use_location=use_location
         self.use_scale=use_scale
 
-        self.location=tr.nn.Parameter(tr.ones(1).to(device)*self.median_Z, requires_grad=use_location)
+        if initialize_at_npmle:
+            # The "location" is different to line up the grids
+            self.location=tr.nn.Parameter(tr.ones(1).to(device)*self.min_Z, requires_grad=use_location)
+        else:
+            self.location=tr.nn.Parameter(tr.ones(1).to(device)*self.median_Z, requires_grad=use_location)
         self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=use_scale)
 
         self.device = device
@@ -60,17 +64,13 @@ class model_theta_pi_sure(tr.nn.Module):
     def get_theta_grid_and_pi(self, n, B):
         theta_diff, pi_param = self.forward()
         theta_cum = tr.concat((tr.zeros(1).to(self.device), theta_diff), dim=0)
-        if self.initialize_at_npmle: 
-            theta_cum = tr.cumsum(theta_cum, dim = 0)*(self.max_Z-self.min_Z)
+        if self.initialize_at_npmle:
+            theta_cum = (tr.cumsum(theta_cum, dim = 0)) * tr.exp(self.log_scale)
         else:
             theta_cum = (tr.cumsum(theta_cum, dim = 0) - 0.5) * tr.exp(self.log_scale)
 
         theta_cum = theta_cum[None, :]
-
-        if self.initialize_at_npmle:
-            theta_grid = theta_cum.expand(n, B) + self.min_Z
-        else:
-            theta_grid = theta_cum.expand(n, B) + self.location
+        theta_grid = theta_cum.expand(n, B) + self.location
 
         pi_param = pi_param[None, :]
         pi_param = pi_param.expand(n, B)

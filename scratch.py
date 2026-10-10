@@ -43,6 +43,7 @@ print(f"theta_grid: {theta_grid[0].detach().cpu().numpy()}")
 # print(f"pi_grid") # Correct
 # for i in range(len(pi_grid[0])):
 #     print(pi_grid[0,i]) # Correct
+print(f"sure_pm_model.location: {sure_pm_model.location}")
 
-# print(np.isclose(theta_grid_npmle, theta_grid[0].detach().cpu().numpy()))
+print(np.isclose(theta_grid_npmle, theta_grid[0].detach().cpu().numpy()))
 # Returns TRUE for all grid points
