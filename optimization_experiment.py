@@ -9,12 +9,11 @@ if __name__ == "__main__":
     from models import model_theta_pi_sure
     from train import train_and_evaluate_npmle, train_no_covariates
 
-    # TODO: write function to see the weights and grid
-
-    # TODO: be able to pick specific values of m_sim
+    def get_NPMLE_initialization(pi_hat_NPMLE, B):
+        return np.log( 0.99*pi_hat_NPMLE + 0.01*1/B )
 
     def train_estimators_and_get_sure(slice_of_experiment, use_location, use_scale, n, B,
-                                    m_sim, experiment_str, append_metrics_to_lists, n_iter=4000,
+                                    m_sim, experiment_str, append_metrics_to_lists, n_iter=2000,
                                     lr=1e-2):
 
         theta, Z, X = slice_of_experiment
@@ -43,8 +42,9 @@ if __name__ == "__main__":
         # NPMLE-initialization
         if found_npmle_solution:
             # Grid of NPMLE: B evenly spaced points between smallest and largest Z value.
+            pi_param_from_NPMLE = get_NPMLE_initialization(pi_hat_NPMLE, B)
             pm_npmleinit_output = train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', 
-                                    init_val_theta = tr.log(tr.Tensor([1.5])), init_val_pi = tr.log(tr.Tensor(pi_hat_npmle)),
+                                    init_val_theta = tr.log(tr.Tensor([1.5])), init_val_pi = tr.Tensor(pi_param_from_NPMLE),
                                     use_location=use_location, use_scale=use_scale, randomly_initialize_theta_pi=False,
                                     device=device, optimizer_str="adam",
                                     lr=lr, n_iter=n_iter, initialize_at_npmle=True)
@@ -65,7 +65,7 @@ if __name__ == "__main__":
             model, sures, _, _, _ = pm_random_output
             append_metrics_to_lists(sures, "SURE-PM random",  m_sim, n, experiment_str)
 
-    def save_csv(experiment_str, n=1600, total_m_sim=10,
+    def save_csv(experiment_str, n=100, total_m_sim=10,
                 use_scale=True, use_location=False, B=100, n_iter=4000, lr=1e-2, file_suffix=""):
 
         print(f"experiment: {experiment_str}")
@@ -120,12 +120,12 @@ if __name__ == "__main__":
         df.to_csv("results/optimization_checks/" + filename)
 
     def main():
-        for experiment_str in ['c', 'd', 'e', 'f', 'g']:
+        for experiment_str in ['c', 'd', 'e', 'f', 'g', 'h', 'i', 'j']:
             save_csv(experiment_str=experiment_str, n=100, total_m_sim=10)
 
     log_folder="submitit_log/%j"
     executor = submitit.AutoExecutor(folder=log_folder)
-    executor.update_parameters(name="h,i,j", slurm_partition="general", gpus_per_node=1, nodes=1,
+    executor.update_parameters(name="opt_checks", slurm_partition="general", gpus_per_node=1, nodes=1,
                                mem_gb=3, timeout_min=600)
 
     job = executor.submit(main) 

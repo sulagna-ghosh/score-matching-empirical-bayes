@@ -25,8 +25,8 @@ softmax_log_of_pi_hat_NPMLE = softmax(log_of_fix_pi_hat_npmle)
 theta_diff = (1/(B-1))*np.ones(B-1) 
 theta_cum = np.cumsum(theta_diff, axis = 0)*(max(Z.detach().cpu().numpy())-min(Z.detach().cpu().numpy())) 
 theta_cum = np.concatenate((np.zeros(1), theta_cum))
-theta_grid = theta_cum + min(Z.detach().cpu().numpy())
-# print(f"theta_grid: {theta_grid}") # Correct
+theta_grid_npmle = theta_cum + min(Z.detach().cpu().numpy())
+print(f"NPMLE theta_grid: {theta_grid_npmle}") # Correct
 # print(f"len(theta_grid): {len(theta_grid)}")
 # print(f"min(Z): {min(Z)}")
 # print(f"max(Z): {max(Z)}")
@@ -35,11 +35,14 @@ print("Initialize SURE-PM model")
 sure_pm_model = model_theta_pi_sure(Z, B, 
                                     init_val_pi=log_of_fix_pi_hat_npmle, init_val_theta=1,
                                     use_location=False, use_scale=True,
-                                    initialize_at_npmle=True)
+                                    initialize_at_npmle=True,
+                                    quantile_IQR=1)
 theta_grid, pi_grid = sure_pm_model.get_theta_grid_and_pi(n, B)
 
-print(f"theta_grid: {theta_grid}")
+print(f"theta_grid: {theta_grid[0].detach().cpu().numpy()}")
 # print(f"pi_grid") # Correct
 # for i in range(len(pi_grid[0])):
 #     print(pi_grid[0,i]) # Correct
 
+# print(np.isclose(theta_grid_npmle, theta_grid[0].detach().cpu().numpy()))
+# Returns TRUE for all grid points
