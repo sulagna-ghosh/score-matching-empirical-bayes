@@ -39,7 +39,7 @@ class model_theta_pi_sure(tr.nn.Module):
         self.use_location=use_location
         self.use_scale=use_scale
 
-        self.location=tr.nn.Parameter(tr.zeros(1).to(device)*self.median_Z, requires_grad=use_location)
+        self.location=tr.nn.Parameter(tr.ones(1).to(device)*self.median_Z, requires_grad=use_location)
         self.log_scale=tr.nn.Parameter(tr.ones(1).to(device)*self.log_IQR_Z, requires_grad=use_scale)
 
         self.device = device

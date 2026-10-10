@@ -1,0 +1,250 @@
+submitit INFO (2026-10-10 12:04:22,378) - Starting with JobEnvironment(job_id=2122550, hostname=l001, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 12:04:22,379) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2122550/2122550_submitted.pkl
+simulate_data.py: device = cuda:0
+
+n: 100
+m: 300
+Finished solving NPMLE, with SURE 0.2820626407668265
+Finished solving NPMLE, with in-sample MSE 0.09350472157062015
+Finished solving parametric estimator, with SURE 0.05905965804978558
+Finished solving parametric estimator, with in-sample MSE 0.06233711065588932
+Finished solving EBCF, with in-sample MSE 0.03099094715839972
+Finished training EB SURE-LS, with SURE: 0.015547377851573615
+Finished training EB SURE-LS, with in-sample MSE: 0.028464225247864235
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.037969723255392863
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.06161378408158988
+Finished training EB misspecified, with SURE: 0.03801326075731609
+Finished training EB misspecified, with in-sample MSE: 0.06160091985006114
+Finished training EB wellspecified, with SURE: -0.0820477143828488
+Finished training EB wellspecified, with in-sample MSE: 0.14981508569188046
+m: 301
+Finished solving NPMLE, with SURE 0.593654522094455
+Finished solving NPMLE, with in-sample MSE 0.0821456107546407
+Finished solving parametric estimator, with SURE 0.016782977997405524
+Finished solving parametric estimator, with in-sample MSE 0.05417484701159696
+Finished solving EBCF, with in-sample MSE 0.006197970843238759
+Finished training EB SURE-LS, with SURE: -0.07812598611572263
+Finished training EB SURE-LS, with in-sample MSE: 0.007179686235133474
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.0024158984308925826
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.05613217442946969
+Finished training EB misspecified, with SURE: 0.0025735645791765192
+Finished training EB misspecified, with in-sample MSE: 0.056152021799038374
+Finished training EB wellspecified, with SURE: -0.08621564218009731
+Finished training EB wellspecified, with in-sample MSE: 0.01192174277508937
+m: 302
+Finished solving NPMLE, with SURE 0.8143152483790622
+Finished solving NPMLE, with in-sample MSE 0.066002463127959
+Finished solving parametric estimator, with SURE 0.11674628125156888
+Finished solving parametric estimator, with in-sample MSE 0.07464135044003495
+Finished solving EBCF, with in-sample MSE 0.05673343147698643
+Finished training EB SURE-LS, with SURE: 0.06602854918705134
+Finished training EB SURE-LS, with in-sample MSE: 0.02776062665673865
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.09832537139675061
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.08970791278209832
+Finished training EB misspecified, with SURE: 0.09849468020670067
+Finished training EB misspecified, with in-sample MSE: 0.08900648123925226
+Finished training EB wellspecified, with SURE: -0.03346342496393241
+Finished training EB wellspecified, with in-sample MSE: 0.1517816924979222
+m: 303
+Finished solving NPMLE, with SURE 0.4146549606079877
+Finished solving NPMLE, with in-sample MSE 0.12308652221521249
+Finished solving parametric estimator, with SURE 0.01620586918992095
+Finished solving parametric estimator, with in-sample MSE 0.0787430747589424
+Finished solving EBCF, with in-sample MSE 0.06290120766773984
+Finished training EB SURE-LS, with SURE: -0.028881970634977338
+Finished training EB SURE-LS, with in-sample MSE: 0.022235501730895047
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.0037345168492711168
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.07032875234414905
+Finished training EB misspecified, with SURE: 0.0037424306971023213
+Finished training EB misspecified, with in-sample MSE: 0.07034281437641027
+Finished training EB wellspecified, with SURE: -0.08314674585581192
+Finished training EB wellspecified, with in-sample MSE: 0.09819775135765754
+m: 304
+Finished solving NPMLE, with SURE 0.6635760415873707
+Finished solving NPMLE, with in-sample MSE 0.09590480791106559
+Finished solving parametric estimator, with SURE 0.0979482571964343
+Finished solving parametric estimator, with in-sample MSE 0.056955033527422844
+Finished solving EBCF, with in-sample MSE 0.053429144249317065
+Finished training EB SURE-LS, with SURE: -0.02027196957651647
+Finished training EB SURE-LS, with in-sample MSE: 0.040281642394262025
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.04067088309096647
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.10619162970198817
+Finished training EB misspecified, with SURE: 0.04071680109062555
+Finished training EB misspecified, with in-sample MSE: 0.10614574509870443
+Finished training EB wellspecified, with SURE: -0.13004482466014408
+Finished training EB wellspecified, with in-sample MSE: 0.19708259540303824
+m: 305
+Finished solving NPMLE, with SURE 0.22413542203540998
+Finished solving NPMLE, with in-sample MSE 0.11391324352119721
+Finished solving parametric estimator, with SURE 0.08791180724092856
+Finished solving parametric estimator, with in-sample MSE 0.07950212826739005
+Finished solving EBCF, with in-sample MSE 0.04944361873419843
+Finished training EB SURE-LS, with SURE: 0.03939282455219771
+Finished training EB SURE-LS, with in-sample MSE: 0.01943982129491658
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: -0.0004741040009015762
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.17122659256412498
+Finished training EB misspecified, with SURE: -0.0003980302545660663
+Finished training EB misspecified, with in-sample MSE: 0.1710254619730523
+Finished training EB wellspecified, with SURE: -0.08396286820402404
+Finished training EB wellspecified, with in-sample MSE: 0.18468926573859917
+m: 306
+Finished solving NPMLE, with SURE 0.3460842155377343
+Finished solving NPMLE, with in-sample MSE 0.08047986396246103
+Finished solving parametric estimator, with SURE 0.0598101780126814
+Finished solving parametric estimator, with in-sample MSE 0.055896323908352044
+Finished solving EBCF, with in-sample MSE 0.036460562317965205
+Finished training EB SURE-LS, with SURE: 0.010973173697676142
+Finished training EB SURE-LS, with in-sample MSE: 0.04438472924341723
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.034133196295188385
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.0713863246670166
+Finished training EB misspecified, with SURE: 0.03417664058461845
+Finished training EB misspecified, with in-sample MSE: 0.07134434058814723
+Finished training EB wellspecified, with SURE: -0.09409385177051663
+Finished training EB wellspecified, with in-sample MSE: 0.20537908805157074
+m: 307
+Finished solving NPMLE, with SURE 0.6639548344603874
+Finished solving NPMLE, with in-sample MSE 0.12352129379471302
+Finished solving parametric estimator, with SURE 0.1252263157621794
+Finished solving parametric estimator, with in-sample MSE 0.07197557958176613
+Finished solving EBCF, with in-sample MSE 0.08361124906064783
+Finished training EB SURE-LS, with SURE: -0.06435951493126145
+Finished training EB SURE-LS, with in-sample MSE: 0.09348645245470458
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.06950360922592985
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.09068305404332275
+Finished training EB misspecified, with SURE: 0.06959705077471277
+Finished training EB misspecified, with in-sample MSE: 0.09065269559780698
+Finished training EB wellspecified, with SURE: -0.10754046497304637
+Finished training EB wellspecified, with in-sample MSE: 0.1845138633254328
+m: 308
+Finished solving NPMLE, with SURE 0.6722697558417841
+Finished solving NPMLE, with in-sample MSE 0.0843841639270602
+Finished solving parametric estimator, with SURE 0.10278274917802377
+Finished solving parametric estimator, with in-sample MSE 0.05715554271390766
+Finished solving EBCF, with in-sample MSE 0.036496916070951256
+Finished training EB SURE-LS, with SURE: 0.006492171582655231
+Finished training EB SURE-LS, with in-sample MSE: 0.015063598524819801
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.05202751019541957
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.08803308810460393
+Finished training EB misspecified, with SURE: 0.05205043131176936
+Finished training EB misspecified, with in-sample MSE: 0.0880115236350551
+Finished training EB wellspecified, with SURE: -0.11543574392256956
+Finished training EB wellspecified, with in-sample MSE: 0.16478249349202184
+m: 309
+Finished solving NPMLE, with SURE 0.5426638456059024
+Finished solving NPMLE, with in-sample MSE 0.06618010169787089
+Finished solving parametric estimator, with SURE 0.10085090959435966
+Finished solving parametric estimator, with in-sample MSE 0.0625966289337786
+Finished solving EBCF, with in-sample MSE 0.06136658810921451
+Finished training EB SURE-LS, with SURE: -0.025221282480783647
+Finished training EB SURE-LS, with in-sample MSE: 0.12250752254869057
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.08583436195952374
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.06275811769938748
+Finished training EB misspecified, with SURE: 0.08584839229406342
+Finished training EB misspecified, with in-sample MSE: 0.06276814044081158
+Finished training EB wellspecified, with SURE: -0.1743941142295268
+Finished training EB wellspecified, with in-sample MSE: 0.34784340215789156
+m: 310
+Finished solving NPMLE, with SURE 1.0051220343182523
+Finished solving NPMLE, with in-sample MSE 0.17197013784309703
+Finished solving parametric estimator, with SURE 0.04187180123635159
+Finished solving parametric estimator, with in-sample MSE 0.07137993626710891
+Finished solving EBCF, with in-sample MSE 0.08946143124056935
+Finished training EB SURE-LS, with SURE: 5.7789115586350805e-05
+Finished training EB SURE-LS, with in-sample MSE: 0.016443360927746054
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: -0.10322672729922254
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.20771520263437968
+Finished training EB misspecified, with SURE: -0.10318617691450413
+Finished training EB misspecified, with in-sample MSE: 0.20749074347600643
+Finished training EB wellspecified, with SURE: -0.16176153793920747
+Finished training EB wellspecified, with in-sample MSE: 0.18683199149470986
+m: 311
+Finished solving NPMLE, with SURE 0.5996999371373649
+Finished solving NPMLE, with in-sample MSE 0.0689524147928618
+Finished solving parametric estimator, with SURE -0.07816045150144973
+Finished solving parametric estimator, with in-sample MSE 0.059714158307763304
+Finished solving EBCF, with in-sample MSE 0.00936072147651235
+Finished training EB SURE-LS, with SURE: -0.14310872259230073
+Finished training EB SURE-LS, with in-sample MSE: 0.0018365966025520402
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: -0.08992554419063907
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.05969944461215063
+Finished training EB misspecified, with SURE: -0.08992370217357155
+Finished training EB misspecified, with in-sample MSE: 0.05965253746767915
+Finished training EB wellspecified, with SURE: -0.18309222142759227
+Finished training EB wellspecified, with in-sample MSE: 0.03386126406451477
+m: 312
+Finished solving NPMLE, with SURE 0.5263251081353453
+Finished solving NPMLE, with in-sample MSE 0.08043905403586607
+Finished solving parametric estimator, with SURE -0.10428953496764543
+Finished solving parametric estimator, with in-sample MSE 0.06522036599361754
+Finished solving EBCF, with in-sample MSE 0.02157356876813298
+Finished training EB SURE-LS, with SURE: -0.18577238247097846
+Finished training EB SURE-LS, with in-sample MSE: 0.010200621334341811
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: -0.1155615912687486
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.0651428357789203
+Finished training EB misspecified, with SURE: -0.11557592641129226
+Finished training EB misspecified, with in-sample MSE: 0.0651511114507296
+Finished training EB wellspecified, with SURE: -0.23141433623528215
+Finished training EB wellspecified, with in-sample MSE: 0.050543640333412576
+m: 313
+Finished solving NPMLE, with SURE 0.5895772114113584
+Finished solving NPMLE, with in-sample MSE 0.08226871562685276
+Finished solving parametric estimator, with SURE 0.14204524496590681
+Finished solving parametric estimator, with in-sample MSE 0.06055158993419279
+Finished solving EBCF, with in-sample MSE 0.11127786522655865
+Finished training EB SURE-LS, with SURE: 0.03388456911904877
+Finished training EB SURE-LS, with in-sample MSE: 0.02342136834315749
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.11587728093999822
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.06303991372307555
+Finished training EB misspecified, with SURE: 0.11593275062186813
+Finished training EB misspecified, with in-sample MSE: 0.06303160873319574
+Finished training EB wellspecified, with SURE: -0.059494614673481244
+Finished training EB wellspecified, with in-sample MSE: 0.14185547784615793
+m: 314
+Finished solving NPMLE, with SURE 0.687328889806897
+Finished solving NPMLE, with in-sample MSE 0.07418085220834418
+Finished solving parametric estimator, with SURE 0.152611049027417
+Finished solving parametric estimator, with in-sample MSE 0.08047284891492684
+Finished solving EBCF, with in-sample MSE 0.09510501712145047
+Finished training EB SURE-LS, with SURE: 0.07296839121947443
+Finished training EB SURE-LS, with in-sample MSE: 0.05357227725585205
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.13387271634651376
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.09193885795050992
+Finished training EB misspecified, with SURE: 0.1338834244077001
+Finished training EB misspecified, with in-sample MSE: 0.09192027245648676
+Finished training EB wellspecified, with SURE: -0.06360463468098326
+Finished training EB wellspecified, with in-sample MSE: 0.16071925485439728
+m: 315
+Finished solving NPMLE, with SURE 0.6165231341780795
+Finished solving NPMLE, with in-sample MSE 0.09038825719963456
+Finished solving parametric estimator, with SURE 0.13671502023318077
+Finished solving parametric estimator, with in-sample MSE 0.09196226655072465

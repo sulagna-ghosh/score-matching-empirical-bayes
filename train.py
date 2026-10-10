@@ -15,7 +15,7 @@ def train_no_covariates(n, B, Z, theta, X, opt_objective = 'both',
                         init_val_theta = tr.log(tr.Tensor([1.5])), init_val_pi = tr.log(tr.Tensor([1.5])),
                         use_location=False, use_scale=False, randomly_initialize_theta_pi=False,
                         device=simulate_data.device, optimizer_str="adam",
-                        lr=1e-2, n_iter=4000, initialize_at_npmle=False): 
+                        lr=1e-2, n_iter=2000, initialize_at_npmle=False): 
     """
     Training function for SURE-PM. 
     is_cuda: if True, then generate model on simulate_data.device (which is GPU if GPU is available).

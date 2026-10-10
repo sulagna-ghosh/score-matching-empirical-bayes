@@ -1,0 +1,21 @@
+submitit INFO (2026-10-10 12:02:43,485) - Starting with JobEnvironment(job_id=2122542, hostname=l001, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 12:02:43,485) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2122542/2122542_submitted.pkl
+simulate_data.py: device = cuda:0
+
+n: 100
+m: 0
+Finished solving NPMLE, with SURE 0.35019759551226726
+Finished solving NPMLE, with in-sample MSE 0.07242973210566292
+Finished solving parametric estimator, with SURE 0.01958791383123193
+Finished solving parametric estimator, with in-sample MSE 0.05258897596965082
+submitit WARNING (2026-10-10 12:03:07,850) - Bypassing signal SIGCONT
+submitit WARNING (2026-10-10 12:03:07,851) - Bypassing signal SIGTERM
+Finished solving EBCF, with in-sample MSE 0.03758157201443916
+Finished training EB SURE-LS, with SURE: -0.026738765019198966
+Finished training EB SURE-LS, with in-sample MSE: 0.0035755558072319104
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: 0.00482456750320047
+Finished training EB misspecified with NPMLE init, with in-sample MSE: 0.05029452583899327
+Finished training EB misspecified, with SURE: 0.004831059354778447
+Finished training EB misspecified, with in-sample MSE: 0.050294053407280236
