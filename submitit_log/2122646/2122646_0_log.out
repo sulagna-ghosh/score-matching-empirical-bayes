@@ -1,0 +1,16 @@
+submitit INFO (2026-10-10 16:57:27,521) - Starting with JobEnvironment(job_id=2122646, hostname=h001, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 16:57:27,521) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2122646/2122646_submitted.pkl
+simulate_data.py: device = cuda:0
+
+n: 100
+m: 350
+Finished solving NPMLE, with SURE 6.213987625709003
+Finished solving NPMLE, with in-sample MSE 1.7429945033511907
+Finished solving parametric estimator, with SURE 1.6199879017723724
+Finished solving parametric estimator, with in-sample MSE 1.5661705360067322
+Finished solving EBCF, with in-sample MSE 1.6324064903293443
+Finished training EB SURE-LS, with SURE: 0.7246148713055713
+Finished training EB SURE-LS, with in-sample MSE: 1.9749125398262632
+use_scale: True
+use_location: False
+submitit ERROR (2026-10-10 16:57:50,924) - Submitted job triggered an exception
