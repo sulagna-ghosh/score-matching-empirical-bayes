@@ -92,6 +92,9 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
     MSE_surels_list, SURE_surels_list = [], []
     MSE_ebcf_list = []
 
+    def get_NPMLE_initialization(pi_hat_NPMLE, B):
+            return np.log( 0.99*pi_hat_NPMLE + 0.01*1/B )
+
     for n in ns:
         print(f"\nn: {n}")
         for m in range(m_sim_start, m_sim_end+1): # endpoint of range is not inclusive
@@ -135,8 +138,9 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
 
                     if found_NPMLE_solution:
                         # EB - NPMLEinit
-                        result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(pi_hat_NPMLE),
-                                                                    optimizer_str=optimizer_str, use_location=use_location, use_scale=use_scale, device=simulate_data.device) 
+                        result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(get_NPMLE_initialization(pi_hat_NPMLE)),
+                                                                    optimizer_str=optimizer_str, use_location=use_location, use_scale=use_scale, device=simulate_data.device,
+                                                                    initialize_at_npmle=True, quantile_IQR=1) 
                         _, SURE_NPMLEinit, _, _, twonorm_diff_NPMLEinit = result_NPMLEinit
                         SURE_NPMLEinit = SURE_NPMLEinit[-1]
                         print(f"Finished training EB misspecified with NPMLE init, with SURE: {SURE_NPMLEinit}")
