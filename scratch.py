@@ -1,6 +1,6 @@
-from experiment_homoscedastic_copy import n, homoskedastic_sigma
-from experiment_homoscedastic_copy import problems_binary_theta, make_discrete_homoscedastic_df
-from experiment_homoscedastic_copy import problems_normal_theta, make_normal_homoscedastic_df
+from experiment_homoscedastic import n, homoskedastic_sigma
+from experiment_homoscedastic import problems_binary_theta, make_discrete_homoscedastic_df
+from experiment_homoscedastic import problems_normal_theta, make_normal_homoscedastic_df
 
 
 normal_df = make_normal_homoscedastic_df(problems_normal_theta, homoskedastic_sigma, m_sim=1)

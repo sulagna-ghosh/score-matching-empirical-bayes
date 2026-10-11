@@ -1709,3 +1709,43 @@ Finished solving NPMLE, with in-sample MSE 0.3382462142965183
 Finished solving parametric estimator, with SURE 0.3808301035758354
 Finished solving parametric estimator, with in-sample MSE 0.35657578663725886
 Finished solving EBCF, with in-sample MSE 0.34485372525690977
+Finished training EB SURE-LS, with SURE: 0.3608620618174439
+Finished training EB SURE-LS, with in-sample MSE: 0.33649800617814873
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.3156757039485471
+Finished training EB misspecified, with in-sample MSE: 0.3269399103593546
+Finished training EB wellspecified, with SURE: 0.2128126653139557
+Finished training EB wellspecified, with in-sample MSE: 0.37608747846488816
+m: 257
+Finished solving NPMLE, with SURE 1.2289718982560702
+Finished solving NPMLE, with in-sample MSE 0.35181074747261826
+Finished solving parametric estimator, with SURE 0.43607372837768876
+Finished solving parametric estimator, with in-sample MSE 0.40081633673506284
+Finished solving EBCF, with in-sample MSE 0.3776607837652199
+Finished training EB SURE-LS, with SURE: 0.38257753710398107
+Finished training EB SURE-LS, with in-sample MSE: 0.3527559855594466
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.35640511399616087
+Finished training EB misspecified, with in-sample MSE: 0.3363492834193743
+Finished training EB wellspecified, with SURE: 0.2516864680148235
+Finished training EB wellspecified, with in-sample MSE: 0.3692048962717355
+m: 258
+Finished solving NPMLE, with SURE 1.4222058149581414
+Finished solving NPMLE, with in-sample MSE 0.4327601284236769
+Finished solving parametric estimator, with SURE 0.4007471708563336
+Finished solving parametric estimator, with in-sample MSE 0.45457165122660553
+Finished solving EBCF, with in-sample MSE 0.42602301063225934
+Finished training EB SURE-LS, with SURE: 0.36192980220349114
+Finished training EB SURE-LS, with in-sample MSE: 0.39198230335784395
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.26694193849518383
+Finished training EB misspecified, with in-sample MSE: 0.4302351288010844

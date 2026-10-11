@@ -1178,3 +1178,35 @@ Finished solving NPMLE, with SURE 1.0914858586268683
 Finished solving NPMLE, with in-sample MSE 0.3624252896070958
 Finished solving parametric estimator, with SURE 0.3909954156471313
 Finished solving parametric estimator, with in-sample MSE 0.38745584965532437
+Finished solving EBCF, with in-sample MSE 0.3860645024080461
+Finished training EB SURE-LS, with SURE: 0.3674461657111245
+Finished training EB SURE-LS, with in-sample MSE: 0.36125975352558415
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.30778275444871694
+Finished training EB misspecified, with in-sample MSE: 0.35476252285641
+Finished training EB wellspecified, with SURE: 0.24695974414821747
+Finished training EB wellspecified, with in-sample MSE: 0.46708716612820245
+m: 474
+Finished solving NPMLE, with SURE 1.2854022666098412
+Finished solving NPMLE, with in-sample MSE 0.47145322790038446
+Finished solving parametric estimator, with SURE 0.4096692323354197
+Finished solving parametric estimator, with in-sample MSE 0.5024447199462467
+Finished solving EBCF, with in-sample MSE 0.49395230548085556
+Finished training EB SURE-LS, with SURE: 0.3619641296520406
+Finished training EB SURE-LS, with in-sample MSE: 0.467963543328437
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.32503828294801973
+Finished training EB misspecified, with in-sample MSE: 0.47076844001960977
+Finished training EB wellspecified, with SURE: 0.26413121068869255
+Finished training EB wellspecified, with in-sample MSE: 0.4775009256292717
+m: 475
+Finished solving NPMLE, with SURE 1.1920952482093774
+Finished solving NPMLE, with in-sample MSE 0.3085314099417679
+Finished solving parametric estimator, with SURE 0.4118070885916743
+Finished solving parametric estimator, with in-sample MSE 0.3599186875568074

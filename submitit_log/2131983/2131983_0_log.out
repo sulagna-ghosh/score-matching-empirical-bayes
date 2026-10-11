@@ -1521,3 +1521,35 @@ use_scale: True
 use_location: False
 Finished training EB misspecified with NPMLE init, with SURE: nan
 Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.26998223594923526
+Finished training EB misspecified, with in-sample MSE: 0.4585795274238294
+Finished training EB wellspecified, with SURE: 0.08391947493481162
+Finished training EB wellspecified, with in-sample MSE: 0.5442328017516695
+m: 395
+Finished solving NPMLE, with SURE 1.248399637378001
+Finished solving NPMLE, with in-sample MSE 0.41236553281774496
+Finished solving parametric estimator, with SURE 0.3842961219965465
+Finished solving parametric estimator, with in-sample MSE 0.41155192252706335
+Finished solving EBCF, with in-sample MSE 0.4082216818709325
+Finished training EB SURE-LS, with SURE: 0.3497586813769282
+Finished training EB SURE-LS, with in-sample MSE: 0.38449415668243253
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
+Finished training EB misspecified, with SURE: 0.2976454124743896
+Finished training EB misspecified, with in-sample MSE: 0.40739213520901457
+Finished training EB wellspecified, with SURE: 0.2059440800569752
+Finished training EB wellspecified, with in-sample MSE: 0.3914953598715384
+m: 396
+Finished solving NPMLE, with SURE 1.3485485991086745
+Finished solving NPMLE, with in-sample MSE 0.37751368902993476
+Finished solving parametric estimator, with SURE 0.3892188907110409
+Finished solving parametric estimator, with in-sample MSE 0.4159287180728027
+Finished solving EBCF, with in-sample MSE 0.3932912471143954
+Finished training EB SURE-LS, with SURE: 0.3328656928455618
+Finished training EB SURE-LS, with in-sample MSE: 0.3831132748185897
+use_scale: True
+use_location: False
+Finished training EB misspecified with NPMLE init, with SURE: nan
+Finished training EB misspecified with NPMLE init, with in-sample MSE: nan
