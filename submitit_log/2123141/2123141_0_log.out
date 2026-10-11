@@ -1,5 +1,0 @@
-submitit INFO (2026-10-10 16:16:30,179) - Starting with JobEnvironment(job_id=2123141, hostname=j005-ds, local_rank=0(1), node=0(1), global_rank=0(1))
-submitit INFO (2026-10-10 16:16:30,179) - Loading pickle: /home/sulagnag/score-matching-empirical-bayes/submitit_log/2123141/2123141_submitted.pkl
-simulate_data.py: device = cpu
-submitit INFO (2026-10-10 16:16:52,762) - Job completed successfully
-submitit INFO (2026-10-10 16:16:52,763) - Exiting after successful completion

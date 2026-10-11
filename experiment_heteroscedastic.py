@@ -138,7 +138,7 @@ def revised_simulate_experiment_location_scale(ns, m_sim_start, m_sim_end, exper
 
                     if found_NPMLE_solution:
                         # EB - NPMLEinit
-                        result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(get_NPMLE_initialization(pi_hat_NPMLE)),
+                        result_NPMLEinit = train.train_no_covariates(n, B, Z, theta, X, opt_objective = 'both', init_val_pi = tr.log(get_NPMLE_initialization(pi_hat_NPMLE, B)),
                                                                     optimizer_str=optimizer_str, use_location=use_location, use_scale=use_scale, device=simulate_data.device,
                                                                     initialize_at_npmle=True, quantile_IQR=1) 
                         _, SURE_NPMLEinit, _, _, twonorm_diff_NPMLEinit = result_NPMLEinit

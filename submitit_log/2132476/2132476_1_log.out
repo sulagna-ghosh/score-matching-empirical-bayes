@@ -1,0 +1,18 @@
+submitit INFO (2026-10-11 18:47:04,084) - Starting with JobEnvironment(job_id=2132476, hostname=m002, local_rank=0(1), node=1(2), global_rank=1(2))
+submitit INFO (2026-10-11 18:47:04,084) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2132476/2132476_submitted.pkl
+simulate_data.py: device = cuda:0
+problem: {'sigma_theta': [0.31622776601683794, 1, 2.23606797749979]}
+m_sim: 0
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 1
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 2
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
