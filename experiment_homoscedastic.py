@@ -14,7 +14,6 @@ import models
 ################### GENERAL VARIABLES ###################
 
 n = 1000
-grid_size = 5
 homoskedastic_sigma = np.ones(n) # Homoscedastic
 
 ################### NORMAL THETA CASE ###################
