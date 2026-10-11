@@ -1,0 +1,317 @@
+submitit INFO (2026-10-10 16:18:15,551) - Starting with JobEnvironment(job_id=2123147, hostname=g007, local_rank=0(1), node=0(1), global_rank=0(1))
+submitit INFO (2026-10-10 16:18:15,551) - Loading pickle: /home/sulagnag/score-matching-empirical-bayes/submitit_log/2123147/2123147_submitted.pkl
+simulate_data.py: device = cuda:0
+experiment: c
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           c
+1      SURE-PM uniform  0.004824          0.004872  ...  0  100           c
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           c
+3       SURE-PM random  0.004825          0.004867  ...  0  100           c
+4       SURE-PM random  0.004824          0.004871  ...  0  100           c
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random -0.006383         -0.005278  ...  9  100           c
+126     SURE-PM random -0.006382         -0.005236  ...  9  100           c
+127     SURE-PM random -0.006387         -0.005330  ...  9  100           c
+128     SURE-PM random -0.006385         -0.005318  ...  9  100           c
+129     SURE-PM random -0.006385         -0.005134  ...  9  100           c
+
+[130 rows x 8 columns]
+experiment: d
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           d
+1      SURE-PM uniform -0.019921         -0.016244  ...  0  100           d
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           d
+3       SURE-PM random -0.019921         -0.016183  ...  0  100           d
+4       SURE-PM random -0.019921         -0.016227  ...  0  100           d
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.016272          0.016297  ...  9  100           d
+126     SURE-PM random  0.016272          0.016290  ...  9  100           d
+127     SURE-PM random  0.016272          0.016301  ...  9  100           d
+128     SURE-PM random  0.016272          0.016301  ...  9  100           d
+129     SURE-PM random  0.016272          0.016297  ...  9  100           d
+
+[130 rows x 8 columns]
+experiment: e
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           e
+1      SURE-PM uniform  0.146828          0.147085  ...  0  100           e
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           e
+3       SURE-PM random  0.146829          0.147099  ...  0  100           e
+4       SURE-PM random  0.146831          0.147094  ...  0  100           e
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.141327          0.141435  ...  9  100           e
+126     SURE-PM random  0.141328          0.141448  ...  9  100           e
+127     SURE-PM random  0.141328          0.141451  ...  9  100           e
+128     SURE-PM random  0.141328          0.141434  ...  9  100           e
+129     SURE-PM random  0.141328          0.141440  ...  9  100           e
+
+[130 rows x 8 columns]
+experiment: f
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           f
+1      SURE-PM uniform  0.073652          0.073779  ...  0  100           f
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           f
+3       SURE-PM random  0.073651          0.073744  ...  0  100           f
+4       SURE-PM random  0.073652          0.073771  ...  0  100           f
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random -0.041640         -0.041609  ...  9  100           f
+126     SURE-PM random -0.041640         -0.041610  ...  9  100           f
+127     SURE-PM random -0.041640         -0.041601  ...  9  100           f
+128     SURE-PM random -0.041640         -0.041608  ...  9  100           f
+129     SURE-PM random -0.041640         -0.041603  ...  9  100           f
+
+[130 rows x 8 columns]
+experiment: g
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           g
+1      SURE-PM uniform  0.127868          0.128096  ...  0  100           g
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           g
+3       SURE-PM random  0.127868          0.128107  ...  0  100           g
+4       SURE-PM random  0.127856          0.128113  ...  0  100           g
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.136344          0.136823  ...  9  100           g
+126     SURE-PM random  0.136346          0.136948  ...  9  100           g
+127     SURE-PM random  0.136345          0.136835  ...  9  100           g
+128     SURE-PM random  0.136345          0.136852  ...  9  100           g
+129     SURE-PM random  0.136346          0.136896  ...  9  100           g
+
+[130 rows x 8 columns]
+experiment: h
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           h
+1      SURE-PM uniform  0.308503          0.308846  ...  0  100           h
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           h
+3       SURE-PM random  0.308503          0.308829  ...  0  100           h
+4       SURE-PM random  0.308502          0.308828  ...  0  100           h
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  0.216404          0.216973  ...  9  100           h
+126     SURE-PM random  0.216406          0.217058  ...  9  100           h
+127     SURE-PM random  0.216405          0.217022  ...  9  100           h
+128     SURE-PM random  0.216406          0.217023  ...  9  100           h
+129     SURE-PM random  0.216292          0.217098  ...  9  100           h
+
+[130 rows x 8 columns]
+experiment: i
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           i
+1      SURE-PM uniform  1.221845          1.223685  ...  0  100           i
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           i
+3       SURE-PM random  1.221848          1.223834  ...  0  100           i
+4       SURE-PM random  1.221845          1.223845  ...  0  100           i
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  1.298787          1.299613  ...  9  100           i
+126     SURE-PM random  1.298790          1.299626  ...  9  100           i
+127     SURE-PM random  1.298788          1.299651  ...  9  100           i
+128     SURE-PM random  1.298788          1.299687  ...  9  100           i
+129     SURE-PM random  1.298788          1.299667  ...  9  100           i
+
+[130 rows x 8 columns]
+experiment: j
+n: 100
+n_iter: 4000
+lr: 0.01
+
+m_sim: 0
+Mosek failed on this run
+m_sim: 1
+Mosek failed on this run
+m_sim: 2
+Mosek failed on this run
+m_sim: 3
+Mosek failed on this run
+m_sim: 4
+Mosek failed on this run
+m_sim: 5
+Mosek failed on this run
+m_sim: 6
+Mosek failed on this run
+m_sim: 7
+Mosek failed on this run
+m_sim: 8
+Mosek failed on this run
+m_sim: 9
+Mosek failed on this run
+df:              estimator      sure  sure_1000th_iter  ...  m    n  experiment
+0                NPMLE       NaN               NaN  ...  0  100           j
+1      SURE-PM uniform  2.254301          2.256096  ...  0  100           j
+2    SURE-PM NPMLEinit       NaN               NaN  ...  0  100           j
+3       SURE-PM random  2.254308          2.256145  ...  0  100           j
+4       SURE-PM random  2.254316          2.256295  ...  0  100           j
+..                 ...       ...               ...  ... ..  ...         ...
+125     SURE-PM random  1.920473          1.922732  ...  9  100           j
+126     SURE-PM random  1.920500          1.922936  ...  9  100           j
+127     SURE-PM random  1.920475          1.922894  ...  9  100           j
+128     SURE-PM random  1.920482          1.922536  ...  9  100           j
+129     SURE-PM random  1.920475          1.922529  ...  9  100           j
+
+[130 rows x 8 columns]
+submitit INFO (2026-10-10 19:16:53,376) - Job completed successfully
+submitit INFO (2026-10-10 19:16:53,382) - Exiting after successful completion

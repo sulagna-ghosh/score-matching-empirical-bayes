@@ -1,0 +1,24 @@
+submitit ERROR (2026-10-10 16:10:02,649) - Submitted job triggered an exception
+Traceback (most recent call last):
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/runpy.py", line 197, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/site-packages/submitit/core/_submit.py", line 11, in <module>
+    submitit_main()
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/site-packages/submitit/core/submission.py", line 76, in submitit_main
+    process_job(args.folder)
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/site-packages/submitit/core/submission.py", line 69, in process_job
+    raise error
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/site-packages/submitit/core/submission.py", line 55, in process_job
+    result = delayed.result()
+  File "/home/sulagnag/miniconda3/envs/EMPIRICAL-BAYES/lib/python3.9/site-packages/submitit/core/utils.py", line 137, in result
+    self._result = self.function(*self.args, **self.kwargs)
+  File "/home/sulagnag/score-matching-empirical-bayes/optimization_experiment.py", line 124, in main
+    save_csv(experiment_str=experiment_str, n=100, total_m_sim=10)
+  File "/home/sulagnag/score-matching-empirical-bayes/optimization_experiment.py", line 77, in save_csv
+    experiment_dict = read_experiment_dict(experiment_str)
+  File "/home/sulagnag/score-matching-empirical-bayes/experiment_heteroscedastic.py", line 61, in read_experiment_dict
+    with open(str(experiment_save_path) + "/data.pkl", "rb") as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/sulagnag/score-matching-empirical-bayes/synthetic_data/c/data.pkl'
+srun: error: g007: task 0: Exited with exit code 1
