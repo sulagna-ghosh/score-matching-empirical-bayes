@@ -1,0 +1,1 @@
+/home/sulagnag/score-matching-empirical-bayes/submitit_log/2122736/2122736_submission.sh
