@@ -41,8 +41,8 @@ nocovariates_normal_var_2.2 = nocovariates_normal %>%
 nocovariates_normal_50 = bind_rows(nocovariates_normal_var_0.1,
                                    nocovariates_normal_var_1,
                                    nocovariates_normal_var_2.2) %>%
-  select(sigma_theta, SURE_2step_MSE, SURE_both_MSE, SURE_theta_MSE, SURE_pi_MSE, SURE_sparse_MSE, NPMLE_MSE, SURE_NPMLEinit_MSE, BAYES_MSE) %>%
-  pivot_longer(2:9, names_to="estimator", values_to="MSE")
+  select(sigma_theta, SURE_both_MSE,  NPMLE_MSE, BAYES_MSE) %>%
+  pivot_longer(2:4, names_to="estimator", values_to="MSE")
 nocovariates_normal_50$estimator_name <- substr(nocovariates_normal_50$estimator, 1, nchar(nocovariates_normal_50$estimator) - 4)
 head(nocovariates_normal_50) 
 
@@ -73,11 +73,12 @@ for (file in list.files("results/homoscedastic", pattern="binary_homo_*")){
   
 }
 
+
 remove_idx_for_50_sim = c(1, 2, 3, 4, 13, 14, 15, 16, 25, 26, 27, 28)
-nocovariates_binary = nocovariates_binary[-remove_idx_for_50_sim,] %>%
+nocovariates_binary = nocovariates_binary %>%
   group_by(k, mu) %>%
-  select(mu, k, SURE_2step_MSE, SURE_both_MSE, SURE_theta_MSE, SURE_pi_MSE, SURE_sparse_MSE, NPMLE_MSE, SURE_NPMLEinit_MSE, BAYES_MSE) %>%
-  pivot_longer(3:10, names_to="estimator", values_to="MSE")
+  select(mu, k, SURE_both_MSE, NPMLE_MSE, BAYES_MSE) %>%
+  pivot_longer(3:5, names_to="estimator", values_to="MSE")
 nocovariates_binary$estimator_name <- substr(nocovariates_binary$estimator, 1, nchar(nocovariates_binary$estimator) - 4)
 head(nocovariates_binary) 
 
