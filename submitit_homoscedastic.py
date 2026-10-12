@@ -1,9 +1,9 @@
 # Executes different experiments conducted to get table 1 and 2 in section 6.1 
 
 import submitit
-from experiment_homoscedastic_copy import n, homoskedastic_sigma
-from experiment_homoscedastic_copy import problems_binary_theta, make_discrete_homoscedastic_df
-from experiment_homoscedastic_copy import problems_normal_theta, make_normal_homoscedastic_df
+from experiment_homoscedastic import n, homoskedastic_sigma
+from experiment_homoscedastic import problems_binary_theta, make_discrete_homoscedastic_df
+from experiment_homoscedastic import problems_normal_theta, make_normal_homoscedastic_df
 
 
 def get_unique_suffix(csv_names):
@@ -15,6 +15,7 @@ def get_unique_suffix(csv_names):
     return unique_suffix
 
 def save_discrete_df(m_sim):
+    print(f"n: {n}\n")
     
     df = make_discrete_homoscedastic_df(problems_binary_theta, sigma=homoskedastic_sigma, m_sim=m_sim) 
 

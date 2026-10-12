@@ -1,0 +1,111 @@
+submitit INFO (2026-10-11 19:16:32,682) - Starting with JobEnvironment(job_id=2132755, hostname=m002, local_rank=0(1), node=1(2), global_rank=1(2))
+submitit INFO (2026-10-11 19:16:32,682) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2132755/2132755_submitted.pkl
+simulate_data.py: device = cuda:0
+n: 1000
+
+problem: {'mu': [3, 4, 5, 7], 'k': 5}
+m_sim: 0
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 1
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 2
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 3
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 4
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 5
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 6
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 7
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 8
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 9
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 10
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 11
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 12
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 13
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7
+m_sim: 14
+
+k: 5
+val_theta: 3
+val_theta: 4
+val_theta: 5
+val_theta: 7

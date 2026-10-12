@@ -1,0 +1,131 @@
+submitit INFO (2026-10-11 19:15:44,512) - Starting with JobEnvironment(job_id=2132754, hostname=g009, local_rank=0(1), node=1(2), global_rank=1(2))
+submitit INFO (2026-10-11 19:15:44,512) - Loading pickle: /home/amberlee0516/score-matching-empirical-bayes/submitit_log/2132754/2132754_submitted.pkl
+simulate_data.py: device = cuda:0
+problem: {'sigma_theta': [0.31622776601683794, 1, 2.23606797749979]}
+m_sim: 0
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 1
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 2
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 3
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 4
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 5
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 6
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 7
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 8
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 9
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 10
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 11
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 12
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 13
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 14
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 15
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 16
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 17
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 18
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 19
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 20
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 21
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 22
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 23
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+m_sim: 24
+
+sigma_theta: 0.31622776601683794
+sigma_theta: 1
+sigma_theta: 2.23606797749979
+submitit INFO (2026-10-11 19:26:32,750) - Job completed successfully
+submitit INFO (2026-10-11 19:26:32,752) - Exiting after successful completion
